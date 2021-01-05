@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2018,1,7,5,18,18,6,1,0,0,2,0,5,0,2,True,Watford
+Watford,18,2018,18,7,6,1,1,5,0,0,1,0,2,4,1,2,False,Arsenal
+Bournemouth,2,2018,2,7,7,7,5,13,1,0,0,2,1,4,1,2,True,Crystal Palace
+Crystal Palace,7,2018,5,7,13,2,2,7,0,0,1,1,2,2,1,4,False,Bournemouth
+Cardiff City,5,2018,24,7,19,4,3,12,0,0,1,1,2,0,2,5,True,Burnley
+Burnley,4,2018,3,7,12,5,24,19,1,0,0,2,1,2,1,4,False,Cardiff City
+Chelsea,6,2018,4,7,3,12,9,2,0,1,0,1,1,5,2,0,True,Liverpool
+Liverpool,12,2018,9,7,2,6,4,3,0,1,0,1,1,6,1,0,False,Chelsea
+Everton,8,2018,6,7,11,9,25,17,1,0,0,3,0,2,3,2,True,Fulham
+Fulham,9,2018,25,7,17,8,6,11,0,0,1,0,3,1,2,4,False,Everton
+Huddersfield,10,2018,22,7,20,17,17,4,0,0,1,0,2,0,2,5,True,Spurs
+Spurs,17,2018,17,7,4,10,22,20,1,0,0,2,0,5,0,2,False,Huddersfield
+Man City,13,2018,10,7,1,3,21,15,1,0,0,2,0,6,1,0,True,Brighton
+Brighton,3,2018,21,7,15,13,10,1,0,0,1,0,2,1,2,4,False,Man City
+Newcastle,15,2018,23,7,18,11,8,8,0,0,1,0,2,0,2,5,True,Leicester
+Leicester,11,2018,8,7,8,15,23,18,1,0,0,2,0,4,0,3,False,Newcastle
+West Ham,19,2018,20,7,14,14,11,10,1,0,0,3,1,2,1,4,True,Man Utd
+Man Utd,14,2018,11,7,10,19,20,14,0,0,1,1,3,3,1,3,False,West Ham
+Wolves,20,2018,26,7,9,16,13,16,1,0,0,2,0,3,3,1,True,Southampton
+Southampton,16,2018,13,7,16,20,26,9,0,0,1,0,2,1,2,4,False,Wolves

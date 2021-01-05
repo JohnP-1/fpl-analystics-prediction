@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2016,1,19,3,5,5,17,1,0,0,2,0,12,4,3,True,Crystal Palace
+Crystal Palace,5,2016,5,19,17,1,1,3,0,0,1,0,2,4,4,11,False,Arsenal
+Burnley,3,2016,3,19,11,15,15,18,1,0,0,4,1,7,2,10,True,Sunderland
+Sunderland,15,2016,15,19,18,3,3,11,0,0,1,1,4,4,2,13,False,Burnley
+Chelsea,4,2016,4,19,1,14,14,14,1,0,0,4,2,16,1,2,True,Stoke City
+Stoke City,14,2016,14,19,14,4,4,1,0,0,1,2,4,5,6,8,False,Chelsea
+Hull City,7,2016,7,19,19,6,6,7,0,1,0,2,2,3,4,12,True,Everton
+Everton,6,2016,6,19,7,7,7,19,0,1,0,2,2,7,6,6,False,Hull City
+Leicester,8,2016,8,19,15,20,20,12,1,0,0,1,0,5,5,9,True,West Ham
+West Ham,20,2016,20,19,12,8,8,15,0,0,1,0,1,6,4,9,False,Leicester
+Liverpool,9,2016,9,19,2,10,10,5,1,0,0,1,0,13,4,2,True,Man City
+Man City,10,2016,10,19,5,9,9,2,0,0,1,0,1,12,3,4,False,Liverpool
+Man Utd,11,2016,11,19,6,12,12,16,1,0,0,2,1,10,6,3,True,Middlesbrough
+Middlesbrough,12,2016,12,19,16,11,11,6,0,0,1,1,2,4,6,9,False,Man Utd
+Southampton,13,2016,13,19,9,19,19,8,0,0,1,1,2,6,6,7,True,West Brom
+West Brom,19,2016,19,19,8,13,13,9,1,0,0,2,1,7,5,7,False,Southampton
+Swansea,16,2016,16,19,20,2,2,10,0,0,1,0,3,3,3,13,True,Bournemouth
+Bournemouth,2,2016,2,19,10,16,16,20,1,0,0,3,0,7,3,9,False,Swansea
+Watford,18,2016,18,19,13,17,17,4,0,0,1,1,4,6,4,9,True,Spurs
+Spurs,17,2016,17,19,4,18,18,13,1,0,0,4,1,11,6,2,False,Watford

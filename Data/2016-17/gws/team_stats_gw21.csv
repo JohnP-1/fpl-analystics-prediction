@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Burnley,3,2016,3,21,10,13,13,13,1,0,0,1,0,8,2,11,True,Southampton
+Southampton,13,2016,13,21,13,3,3,10,0,0,1,0,1,6,6,9,False,Burnley
+Everton,6,2016,6,21,7,10,10,5,1,0,0,4,0,9,6,6,True,Man City
+Man City,10,2016,10,21,5,6,6,7,0,0,1,0,4,13,3,5,False,Everton
+Hull City,7,2016,7,21,18,2,2,11,1,0,0,3,1,4,4,13,True,Bournemouth
+Bournemouth,2,2016,2,21,11,7,7,18,0,0,1,1,3,7,4,10,False,Hull City
+Leicester,8,2016,8,21,15,4,4,1,0,0,1,0,3,5,6,10,True,Chelsea
+Chelsea,4,2016,4,21,1,8,8,15,1,0,0,3,0,17,1,3,False,Leicester
+Man Utd,11,2016,11,21,6,9,9,3,0,1,0,1,1,11,7,3,True,Liverpool
+Liverpool,9,2016,9,21,3,11,11,6,0,1,0,1,1,13,6,2,False,Man Utd
+Sunderland,15,2016,15,21,19,14,14,9,0,0,1,1,3,4,3,14,True,Stoke City
+Stoke City,14,2016,14,21,9,15,15,19,1,0,0,3,1,7,6,8,False,Sunderland
+Swansea,16,2016,16,21,20,1,1,4,0,0,1,0,4,4,3,14,True,Arsenal
+Arsenal,1,2016,1,21,4,16,16,20,1,0,0,4,0,13,5,3,False,Swansea
+Spurs,17,2016,17,21,2,19,19,8,1,0,0,4,0,13,6,2,True,West Brom
+West Brom,19,2016,19,21,8,17,17,2,0,0,1,0,4,8,5,8,False,Spurs
+Watford,18,2016,18,21,14,12,12,16,0,1,0,0,0,6,5,10,True,Middlesbrough
+Middlesbrough,12,2016,12,21,16,18,18,14,0,1,0,0,0,4,8,9,False,Watford
+West Ham,20,2016,20,21,12,5,5,17,1,0,0,3,0,7,4,10,True,Crystal Palace
+Crystal Palace,5,2016,5,21,17,20,20,12,0,0,1,0,3,4,4,13,False,West Ham

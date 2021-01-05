@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Huddersfield,8,2017,22,25,17,10,9,3,0,0,1,0,3,6,6,13,True,Liverpool
+Liverpool,10,2017,9,25,3,8,22,17,1,0,0,3,0,14,8,3,False,Huddersfield
+Swansea,16,2017,16,25,19,1,1,6,1,0,0,3,1,6,5,14,True,Arsenal
+Arsenal,1,2017,1,25,6,16,16,19,0,0,1,1,3,12,6,7,False,Swansea
+West Ham,20,2017,20,25,12,6,5,13,0,1,0,1,1,6,9,10,True,Crystal Palace
+Crystal Palace,6,2017,5,25,13,20,20,12,0,1,0,1,1,6,8,11,False,West Ham
+Chelsea,5,2017,4,25,4,2,2,10,0,0,1,0,3,15,5,5,True,Bournemouth
+Bournemouth,2,2017,2,25,10,5,4,4,1,0,0,3,0,7,7,11,False,Chelsea
+Everton,7,2017,6,25,9,9,8,8,1,0,0,2,1,8,7,10,True,Leicester
+Leicester,9,2017,8,25,8,7,6,9,0,0,1,1,2,9,7,9,False,Everton
+Man City,11,2017,10,25,1,19,19,20,1,0,0,3,0,22,2,1,True,West Brom
+West Brom,19,2017,19,25,20,11,10,1,0,0,1,0,3,3,11,11,False,Man City
+Newcastle,13,2017,23,25,14,4,3,7,0,1,0,1,1,6,6,13,True,Burnley
+Burnley,4,2017,3,25,7,13,23,14,0,1,0,1,1,9,8,8,False,Newcastle
+Southampton,14,2017,13,25,18,3,21,15,0,1,0,1,1,4,11,10,True,Brighton
+Brighton,3,2017,21,25,15,14,13,18,0,1,0,1,1,5,9,11,False,Southampton
+Stoke City,15,2017,14,25,16,18,18,11,0,1,0,0,0,6,6,13,True,Watford
+Watford,18,2017,18,25,11,15,14,16,0,1,0,0,0,7,6,12,False,Stoke City
+Spurs,17,2017,17,25,5,12,11,2,1,0,0,2,0,14,6,5,True,Man Utd
+Man Utd,12,2017,11,25,2,17,17,5,0,0,1,0,2,16,5,4,False,Spurs

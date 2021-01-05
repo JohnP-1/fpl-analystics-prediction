@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2019,1,34,8,9,8,4,0,1,0,1,1,12,14,8,True,Leicester
+Leicester,9,2019,8,34,4,1,1,8,0,1,0,1,1,17,8,9,False,Arsenal
+Aston Villa,2,2019,27,34,19,12,11,5,0,0,1,0,3,7,6,21,True,Man Utd
+Man Utd,12,2019,11,34,5,2,27,19,1,0,0,3,0,16,10,8,False,Aston Villa
+Bournemouth,3,2019,2,34,18,17,17,9,0,1,0,0,0,7,7,20,True,Spurs
+Spurs,17,2019,17,34,9,3,2,18,0,1,0,0,0,13,10,11,False,Bournemouth
+Brighton,4,2019,21,34,15,10,9,1,0,0,1,1,3,8,12,14,True,Liverpool
+Liverpool,10,2019,9,34,1,4,21,15,1,0,0,3,1,30,2,2,False,Brighton
+Crystal Palace,7,2019,5,34,14,6,4,3,0,0,1,2,3,11,9,14,True,Chelsea
+Chelsea,6,2019,4,34,3,7,5,14,1,0,0,3,2,18,6,10,False,Crystal Palace
+Everton,8,2019,6,34,11,16,13,12,0,1,0,1,1,12,9,13,True,Southampton
+Southampton,16,2019,13,34,12,8,6,11,0,1,0,1,1,13,5,16,False,Everton
+Man City,11,2019,10,34,2,13,23,13,1,0,0,5,0,22,3,9,True,Newcastle
+Newcastle,13,2019,23,34,13,11,10,2,0,0,1,0,5,11,10,13,False,Man City
+Sheffield Utd,15,2019,29,34,7,20,26,6,1,0,0,1,0,13,12,9,True,Wolves
+Wolves,20,2019,26,34,6,15,29,7,0,0,1,0,1,13,13,8,False,Sheffield Utd
+Watford,18,2019,18,34,17,14,28,20,1,0,0,2,1,7,10,17,True,Norwich
+Norwich,14,2019,28,34,20,18,18,17,0,0,1,1,2,5,6,23,False,Watford
+West Ham,19,2019,20,34,16,5,3,10,0,0,1,0,1,8,7,19,True,Burnley
+Burnley,5,2019,3,34,10,19,20,16,1,0,0,1,0,14,7,13,False,West Ham

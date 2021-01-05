@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Man Utd,11,2016,11,2,2,13,13,16,1,0,0,2,0,2,0,0,True,Southampton
+Southampton,13,2016,13,2,16,11,11,2,0,0,1,0,2,0,1,1,False,Man Utd
+Burnley,3,2016,3,2,8,9,9,11,1,0,0,2,0,1,0,1,True,Liverpool
+Liverpool,9,2016,9,2,11,3,3,8,0,0,1,0,2,1,0,1,False,Burnley
+Leicester,8,2016,8,2,15,1,1,13,0,1,0,0,0,0,1,1,True,Arsenal
+Arsenal,1,2016,1,2,13,8,8,15,0,1,0,0,0,0,1,1,False,Leicester
+Stoke City,14,2016,14,2,17,10,10,1,0,0,1,1,4,0,1,1,True,Man City
+Man City,10,2016,10,2,1,14,14,17,1,0,0,4,1,2,0,0,False,Stoke City
+Swansea,16,2016,16,2,12,7,7,3,0,0,1,0,2,1,0,1,True,Hull City
+Hull City,7,2016,7,2,3,16,16,12,1,0,0,2,0,2,0,0,False,Swansea
+Spurs,17,2016,17,2,7,5,5,19,1,0,0,1,0,1,1,0,True,Crystal Palace
+Crystal Palace,5,2016,5,2,19,17,17,7,0,0,1,0,1,0,0,2,False,Spurs
+Watford,18,2016,18,2,14,4,4,4,0,0,1,1,2,0,1,1,True,Chelsea
+Chelsea,4,2016,4,2,4,18,18,14,1,0,0,2,1,2,0,0,False,Watford
+West Brom,19,2016,19,2,9,6,6,5,0,0,1,1,2,1,0,1,True,Everton
+Everton,6,2016,6,2,5,19,19,9,1,0,0,2,1,1,1,0,False,West Brom
+Sunderland,15,2016,15,2,18,12,12,6,0,0,1,1,2,0,0,2,True,Middlesbrough
+Middlesbrough,12,2016,12,2,6,15,15,18,1,0,0,2,1,1,1,0,False,Sunderland
+West Ham,20,2016,20,2,10,2,2,20,1,0,0,1,0,1,0,1,True,Bournemouth
+Bournemouth,2,2016,2,2,20,20,20,10,0,0,1,0,1,0,0,2,False,West Ham

@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Bournemouth,2,2017,2,5,19,3,21,16,1,0,0,2,1,1,0,4,True,Brighton
+Brighton,3,2017,21,5,16,2,2,19,0,0,1,1,2,1,1,3,False,Bournemouth
+Crystal Palace,6,2017,5,5,20,14,13,9,0,0,1,0,1,0,0,5,True,Southampton
+Southampton,14,2017,13,5,9,6,5,20,1,0,0,1,0,2,2,1,False,Crystal Palace
+Huddersfield,8,2017,22,5,6,9,8,15,0,1,0,1,1,2,2,1,True,Leicester
+Leicester,9,2017,8,5,15,8,22,6,0,1,0,1,1,1,1,3,False,Huddersfield
+Liverpool,10,2017,9,5,8,4,3,7,0,1,0,1,1,2,2,1,True,Burnley
+Burnley,4,2017,3,5,7,10,9,8,0,1,0,1,1,2,2,1,False,Liverpool
+Newcastle,13,2017,23,5,4,15,14,13,1,0,0,2,1,3,0,2,True,Stoke City
+Stoke City,15,2017,14,5,13,13,23,4,0,0,1,1,2,1,2,2,False,Newcastle
+Spurs,17,2017,17,5,5,16,16,14,0,1,0,0,0,2,2,1,True,Swansea
+Swansea,16,2017,16,5,14,17,17,5,0,1,0,0,0,1,2,2,False,Spurs
+Watford,18,2017,18,5,11,11,10,1,0,0,1,0,6,2,2,1,True,Man City
+Man City,11,2017,10,5,1,18,18,11,1,0,0,6,0,4,1,0,False,Watford
+West Brom,19,2017,19,5,10,20,20,17,0,1,0,0,0,2,2,1,True,West Ham
+West Ham,20,2017,20,5,17,19,19,10,0,1,0,0,0,1,1,3,False,West Brom
+Chelsea,5,2017,4,5,3,1,1,12,0,1,0,0,0,3,1,1,True,Arsenal
+Arsenal,1,2017,1,5,12,5,4,3,0,1,0,0,0,2,1,2,False,Chelsea
+Man Utd,12,2017,11,5,2,7,6,18,1,0,0,4,0,4,1,0,True,Everton
+Everton,7,2017,6,5,18,12,11,2,0,0,1,0,4,1,1,3,False,Man Utd

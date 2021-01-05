@@ -1,0 +1,23 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Southampton,13,2016,13,36,10,1,1,5,0,0,1,0,2,11,9,15,True,Arsenal
+Arsenal,1,2016,1,36,5,13,13,10,1,0,0,2,0,20,6,9,False,Southampton
+Arsenal,1,2016,1,36,5,11,11,6,1,0,0,2,0,20,6,9,True,Man Utd
+Man Utd,11,2016,11,36,6,1,1,5,0,0,1,0,2,17,14,4,False,Arsenal
+Bournemouth,2,2016,2,36,11,14,14,13,0,1,0,2,2,11,9,16,True,Stoke City
+Stoke City,14,2016,14,36,13,2,2,11,0,1,0,2,2,10,11,15,False,Bournemouth
+Burnley,3,2016,3,36,14,19,19,8,0,1,0,2,2,11,7,18,True,West Brom
+West Brom,19,2016,19,36,8,3,3,14,0,1,0,2,2,12,9,14,False,Burnley
+Chelsea,4,2016,4,36,1,12,12,19,1,0,0,3,0,27,3,5,True,Middlesbrough
+Middlesbrough,12,2016,12,36,19,4,4,1,0,0,1,0,3,5,13,18,False,Chelsea
+Hull City,7,2016,7,36,18,15,15,20,0,0,1,0,2,9,7,20,True,Sunderland
+Sunderland,15,2016,15,36,20,7,7,18,1,0,0,2,0,6,6,23,False,Hull City
+Leicester,8,2016,8,36,9,18,18,15,1,0,0,3,0,12,7,16,True,Watford
+Watford,18,2016,18,36,15,8,8,9,0,0,1,0,3,11,7,17,False,Leicester
+Liverpool,9,2016,9,36,3,13,13,10,0,1,0,0,0,20,10,6,True,Southampton
+Southampton,13,2016,13,36,10,9,9,3,0,1,0,0,0,11,9,15,False,Liverpool
+Man City,10,2016,10,36,4,5,5,16,1,0,0,5,0,20,9,6,True,Crystal Palace
+Crystal Palace,5,2016,5,36,16,10,10,4,0,0,1,0,5,11,5,20,False,Man City
+Swansea,16,2016,16,36,17,6,6,7,1,0,0,1,0,10,5,21,True,Everton
+Everton,6,2016,6,36,7,16,16,17,0,0,1,0,1,16,10,10,False,Swansea
+West Ham,20,2016,20,36,12,17,17,2,1,0,0,1,0,11,9,16,True,Spurs
+Spurs,17,2016,17,36,2,20,20,12,0,0,1,0,1,23,8,4,False,West Ham

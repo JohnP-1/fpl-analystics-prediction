@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Burnley,4,2017,3,36,7,3,21,14,0,1,0,0,0,14,12,10,True,Brighton
+Brighton,3,2017,21,36,14,4,3,7,0,1,0,0,0,8,13,14,False,Burnley
+Crystal Palace,6,2017,5,36,11,9,8,9,1,0,0,5,0,9,11,16,True,Leicester
+Leicester,9,2017,8,36,9,6,5,11,0,0,1,0,5,11,11,13,False,Crystal Palace
+Huddersfield,8,2017,22,36,16,7,6,8,0,0,1,0,2,9,8,18,True,Everton
+Everton,7,2017,6,36,8,8,22,16,1,0,0,2,0,13,9,14,False,Huddersfield
+Liverpool,10,2017,9,36,3,15,14,19,0,1,0,0,0,20,12,4,True,Stoke City
+Stoke City,15,2017,14,36,19,10,9,3,0,1,0,0,0,6,12,18,False,Liverpool
+Man Utd,12,2017,11,36,2,1,1,6,1,0,0,2,1,24,5,6,True,Arsenal
+Arsenal,1,2017,1,36,6,12,11,2,0,0,1,1,2,17,6,12,False,Man Utd
+Newcastle,13,2017,23,36,10,19,19,20,0,0,1,0,1,11,8,16,True,West Brom
+West Brom,19,2017,19,36,20,13,23,10,1,0,0,1,0,5,13,18,False,Newcastle
+Southampton,14,2017,13,36,18,2,2,12,1,0,0,2,1,6,14,15,True,Bournemouth
+Bournemouth,2,2017,2,36,12,14,13,18,0,0,1,1,2,9,11,16,False,Southampton
+Swansea,16,2017,16,36,17,5,4,5,0,0,1,0,1,8,9,18,True,Chelsea
+Chelsea,5,2017,4,36,5,16,16,17,1,0,0,1,0,20,6,9,False,Swansea
+Spurs,17,2017,17,36,4,18,18,13,1,0,0,2,0,21,8,6,True,Watford
+Watford,18,2017,18,36,13,17,17,4,0,0,1,0,2,10,8,18,False,Spurs
+West Ham,20,2017,20,36,15,11,10,1,0,0,1,1,4,8,11,16,True,Man City
+Man City,11,2017,10,36,1,20,20,15,1,0,0,4,1,30,3,2,False,West Ham

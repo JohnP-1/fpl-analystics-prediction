@@ -1,0 +1,23 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Leicester,8,2016,8,27,15,7,7,19,1,0,0,3,1,7,6,14,True,Hull City
+Hull City,7,2016,7,27,19,8,8,15,0,0,1,1,3,5,6,16,False,Leicester
+Liverpool,9,2016,9,27,4,1,1,5,1,0,0,3,1,15,7,5,True,Arsenal
+Arsenal,1,2016,1,27,5,9,9,4,0,0,1,1,3,15,5,6,False,Liverpool
+Man Utd,11,2016,11,27,6,2,2,14,0,1,0,1,1,13,10,3,True,Bournemouth
+Bournemouth,2,2016,2,27,14,11,11,6,0,1,0,1,1,7,6,14,False,Man Utd
+Stoke City,14,2016,14,27,9,12,12,18,1,0,0,2,0,9,9,10,True,Middlesbrough
+Middlesbrough,12,2016,12,27,18,14,14,9,0,0,1,0,2,4,10,13,False,Stoke City
+Sunderland,15,2016,15,27,20,10,10,3,0,0,1,0,2,5,4,18,True,Man City
+Man City,10,2016,10,27,3,15,15,20,1,0,0,2,0,17,5,5,False,Sunderland
+Swansea,16,2016,16,27,16,3,3,12,1,0,0,3,2,8,3,16,True,Burnley
+Burnley,3,2016,3,27,12,16,16,16,0,0,1,2,3,9,4,14,False,Swansea
+Spurs,17,2016,17,27,2,6,6,7,1,0,0,3,2,16,8,3,True,Everton
+Everton,6,2016,6,27,7,17,17,2,0,0,1,2,3,12,8,7,False,Spurs
+Watford,18,2016,18,27,13,13,13,10,0,0,1,3,4,8,7,12,True,Southampton
+Southampton,13,2016,13,27,10,18,18,13,1,0,0,4,3,9,6,11,False,Watford
+West Brom,19,2016,19,27,8,5,5,17,0,0,1,0,2,11,7,9,True,Crystal Palace
+Crystal Palace,5,2016,5,27,17,19,19,8,1,0,0,2,0,7,4,16,False,West Brom
+West Ham,20,2016,20,27,11,4,4,1,0,0,1,1,2,9,6,12,True,Chelsea
+Chelsea,4,2016,4,27,1,20,20,11,1,0,0,2,1,21,3,3,False,West Ham
+Man City,10,2016,10,27,3,14,14,9,0,1,0,0,0,17,5,5,True,Stoke City
+Stoke City,14,2016,14,27,9,10,10,3,0,1,0,0,0,9,9,10,False,Man City

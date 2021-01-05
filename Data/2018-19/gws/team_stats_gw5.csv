@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Bournemouth,2,2018,2,5,5,11,8,11,1,0,0,4,2,3,1,1,True,Leicester
+Leicester,11,2018,8,5,11,2,2,5,0,0,1,2,4,2,0,3,False,Bournemouth
+Chelsea,6,2018,4,5,1,5,24,17,1,0,0,4,1,5,0,0,True,Cardiff City
+Cardiff City,5,2018,24,5,17,6,4,1,0,0,1,1,4,0,2,3,False,Chelsea
+Everton,8,2018,6,5,10,19,20,16,0,0,1,1,3,1,3,1,True,West Ham
+West Ham,19,2018,20,5,16,8,6,10,1,0,0,3,1,1,0,4,False,Everton
+Huddersfield,10,2018,22,5,18,7,5,12,0,0,1,0,1,0,2,3,True,Crystal Palace
+Crystal Palace,7,2018,5,5,12,10,22,18,1,0,0,1,0,2,0,3,False,Huddersfield
+Man City,13,2018,10,5,3,9,25,15,1,0,0,3,0,4,1,0,True,Fulham
+Fulham,9,2018,25,5,15,13,10,3,0,0,1,0,3,1,1,3,False,Man City
+Newcastle,15,2018,23,5,19,1,1,7,0,0,1,1,2,0,1,4,True,Arsenal
+Arsenal,1,2018,1,5,7,15,23,19,1,0,0,2,1,3,0,2,False,Newcastle
+Southampton,16,2018,13,5,13,3,21,14,0,1,0,2,2,1,2,2,True,Brighton
+Brighton,3,2018,21,5,14,16,13,13,0,1,0,2,2,1,2,2,False,Southampton
+Spurs,17,2018,17,5,6,12,9,2,0,0,1,1,2,3,0,2,True,Liverpool
+Liverpool,12,2018,9,5,2,17,17,6,1,0,0,2,1,5,0,0,False,Spurs
+Watford,18,2018,18,5,4,14,11,8,0,0,1,1,2,4,0,1,True,Man Utd
+Man Utd,14,2018,11,5,8,18,18,4,1,0,0,2,1,3,0,2,False,Watford
+Wolves,20,2018,26,5,9,4,3,20,1,0,0,1,0,2,2,1,True,Burnley
+Burnley,4,2018,3,5,20,20,26,9,0,0,1,0,1,0,1,4,False,Wolves

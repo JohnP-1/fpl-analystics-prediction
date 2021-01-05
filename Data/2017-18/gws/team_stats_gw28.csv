@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2017,1,28,6,11,10,1,0,0,1,0,3,13,6,9,True,Man City
+Man City,11,2017,10,28,1,1,1,6,1,0,0,3,0,24,3,1,False,Arsenal
+Bournemouth,2,2017,2,28,11,13,23,15,0,1,0,2,2,8,8,12,True,Newcastle
+Newcastle,13,2017,23,28,15,2,2,11,0,1,0,2,2,7,8,13,False,Bournemouth
+Brighton,3,2017,21,28,12,16,16,18,1,0,0,4,1,7,10,11,True,Swansea
+Swansea,16,2017,16,28,18,3,21,12,0,0,1,1,4,7,6,15,False,Brighton
+Burnley,4,2017,3,28,7,14,13,16,0,1,0,1,1,9,10,9,True,Southampton
+Southampton,14,2017,13,28,16,4,3,7,0,1,0,1,1,5,12,11,False,Burnley
+Crystal Palace,6,2017,5,28,17,17,17,4,0,0,1,0,1,6,9,13,True,Spurs
+Spurs,17,2017,17,28,4,6,5,17,1,0,0,1,0,16,7,5,False,Crystal Palace
+Leicester,9,2017,8,28,8,15,14,19,0,1,0,1,1,9,9,10,True,Stoke City
+Stoke City,15,2017,14,28,19,9,8,8,0,1,0,1,1,6,8,14,False,Leicester
+Liverpool,10,2017,9,28,3,20,20,13,1,0,0,4,1,16,9,3,True,West Ham
+West Ham,20,2017,20,28,13,10,9,3,0,0,1,1,4,7,9,12,False,Liverpool
+Man Utd,12,2017,11,28,2,5,4,5,1,0,0,2,1,18,5,5,True,Chelsea
+Chelsea,5,2017,4,28,5,12,11,2,0,0,1,1,2,16,5,7,False,Man Utd
+Watford,18,2017,18,28,10,7,6,9,1,0,0,1,0,9,6,13,True,Everton
+Everton,7,2017,6,28,9,18,18,10,0,0,1,0,1,9,7,12,False,Watford
+West Brom,19,2017,19,28,20,8,22,14,0,0,1,1,2,3,11,14,True,Huddersfield
+Huddersfield,8,2017,22,28,14,19,19,20,1,0,0,2,1,8,6,14,False,West Brom

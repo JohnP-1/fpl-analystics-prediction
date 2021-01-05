@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Bournemouth,2,2017,2,2,16,18,18,4,0,0,1,0,2,0,0,2,True,Watford
+Watford,18,2017,18,2,4,2,2,16,1,0,0,2,0,1,1,0,False,Bournemouth
+Burnley,4,2017,3,2,13,19,19,3,0,0,1,0,1,1,0,1,True,West Brom
+West Brom,19,2017,19,2,3,4,3,13,1,0,0,1,0,2,0,0,False,Burnley
+Leicester,9,2017,8,2,9,3,21,18,1,0,0,2,0,1,0,1,True,Brighton
+Brighton,3,2017,21,2,18,9,8,9,0,0,1,0,2,0,0,2,False,Leicester
+Liverpool,10,2017,9,2,6,6,5,19,1,0,0,1,0,1,1,0,True,Crystal Palace
+Crystal Palace,6,2017,5,2,19,10,9,6,0,0,1,0,1,0,0,2,False,Liverpool
+Southampton,14,2017,13,2,7,20,20,20,1,0,0,3,2,1,1,0,True,West Ham
+West Ham,20,2017,20,2,20,14,13,7,0,0,1,2,3,0,0,2,False,Southampton
+Stoke City,15,2017,14,2,14,1,1,11,1,0,0,1,0,1,0,1,True,Arsenal
+Arsenal,1,2017,1,2,11,15,14,14,0,0,1,0,1,1,0,1,False,Stoke City
+Swansea,16,2017,16,2,15,12,11,1,0,0,1,0,4,0,1,1,True,Man Utd
+Man Utd,12,2017,11,2,1,16,16,15,1,0,0,4,0,2,0,0,False,Swansea
+Huddersfield,8,2017,22,2,2,13,23,17,1,0,0,1,0,2,0,0,True,Newcastle
+Newcastle,13,2017,23,2,17,8,22,2,0,0,1,0,1,0,0,2,False,Huddersfield
+Spurs,17,2017,17,2,10,5,4,12,0,0,1,1,2,1,0,1,True,Chelsea
+Chelsea,5,2017,4,2,12,17,17,10,1,0,0,2,1,1,0,1,False,Spurs
+Man City,11,2017,10,2,5,7,6,8,0,1,0,1,1,1,1,0,True,Everton
+Everton,7,2017,6,2,8,11,10,5,0,1,0,1,1,1,1,0,False,Man City

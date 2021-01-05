@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Crystal Palace,5,2016,5,35,16,3,3,14,0,0,1,0,2,11,5,19,True,Burnley
+Burnley,3,2016,3,35,14,5,5,16,1,0,0,2,0,11,6,18,False,Crystal Palace
+Everton,6,2016,6,35,7,4,4,1,0,0,1,0,3,16,10,9,True,Chelsea
+Chelsea,4,2016,4,35,1,6,6,7,1,0,0,3,0,26,3,5,False,Everton
+Man Utd,11,2016,11,35,5,16,16,18,0,1,0,1,1,17,14,3,True,Swansea
+Swansea,16,2016,16,35,18,11,11,5,0,1,0,1,1,9,5,21,False,Man Utd
+Middlesbrough,12,2016,12,35,19,10,10,4,0,1,0,2,2,5,13,17,True,Man City
+Man City,10,2016,10,35,4,12,12,19,0,1,0,2,2,19,9,6,False,Middlesbrough
+Southampton,13,2016,13,35,9,7,7,17,0,1,0,0,0,11,8,14,True,Hull City
+Hull City,7,2016,7,35,17,13,13,9,0,1,0,0,0,9,7,19,False,Southampton
+Stoke City,14,2016,14,35,12,20,20,15,0,1,0,0,0,10,10,15,True,West Ham
+West Ham,20,2016,20,35,15,14,14,12,0,1,0,0,0,10,9,16,False,Stoke City
+Sunderland,15,2016,15,35,20,2,2,10,0,0,1,0,1,5,6,23,True,Bournemouth
+Bournemouth,2,2016,2,35,10,15,15,20,1,0,0,1,0,11,8,16,False,Sunderland
+Spurs,17,2016,17,35,2,1,1,6,1,0,0,2,0,23,8,3,True,Arsenal
+Arsenal,1,2016,1,35,6,17,17,2,0,0,1,0,2,18,6,9,False,Spurs
+Watford,18,2016,18,35,13,9,9,3,0,0,1,0,1,11,7,16,True,Liverpool
+Liverpool,9,2016,9,35,3,18,18,13,1,0,0,1,0,20,9,6,False,Watford
+West Brom,19,2016,19,35,8,8,8,11,0,0,1,0,1,12,8,14,True,Leicester
+Leicester,8,2016,8,35,11,19,19,8,1,0,0,1,0,11,7,16,False,West Brom

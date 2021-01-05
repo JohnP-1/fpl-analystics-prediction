@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2019,1,15,10,4,21,13,0,0,1,1,2,4,7,4,True,Brighton
+Brighton,4,2019,21,15,13,1,1,10,1,0,0,2,1,5,3,7,False,Arsenal
+Burnley,5,2019,3,15,12,11,10,3,0,0,1,1,4,5,3,7,True,Man City
+Man City,11,2019,10,15,3,5,3,12,1,0,0,4,1,10,2,3,False,Burnley
+Leicester,9,2019,8,15,2,18,18,20,1,0,0,2,0,11,2,2,True,Watford
+Watford,18,2019,18,15,20,9,8,2,0,0,1,0,2,1,5,9,False,Leicester
+Man Utd,12,2019,11,15,6,17,17,8,1,0,0,2,1,5,6,4,True,Spurs
+Spurs,17,2019,17,15,8,12,11,6,0,0,1,1,2,5,5,5,False,Man Utd
+Sheffield Utd,15,2019,29,15,9,13,23,11,0,0,1,0,2,4,7,4,True,Newcastle
+Newcastle,13,2019,23,15,11,15,29,9,1,0,0,2,0,5,4,6,False,Sheffield Utd
+Wolves,20,2019,26,15,5,19,20,15,1,0,0,2,0,5,8,2,True,West Ham
+West Ham,19,2019,20,15,15,20,26,5,0,0,1,0,2,4,4,7,False,Wolves
+Chelsea,6,2019,4,15,4,2,27,16,1,0,0,2,1,9,2,4,True,Aston Villa
+Aston Villa,2,2019,27,15,16,6,4,4,0,0,1,1,2,4,3,8,False,Chelsea
+Crystal Palace,7,2019,5,15,7,3,2,14,1,0,0,1,0,6,3,6,True,Bournemouth
+Bournemouth,3,2019,2,15,14,7,5,7,0,0,1,0,1,4,4,7,False,Crystal Palace
+Liverpool,10,2019,9,15,1,8,6,18,1,0,0,5,2,14,1,0,True,Everton
+Everton,8,2019,6,15,18,10,9,1,0,0,1,2,5,4,2,9,False,Liverpool
+Southampton,16,2019,13,15,17,14,28,19,1,0,0,2,1,4,3,8,True,Norwich
+Norwich,14,2019,28,15,19,16,13,17,0,0,1,1,2,3,2,10,False,Southampton

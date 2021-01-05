@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2017,1,32,6,15,14,19,1,0,0,3,0,15,6,10,True,Stoke City
+Stoke City,15,2017,14,32,19,1,1,6,0,0,1,0,3,6,9,17,False,Arsenal
+Brighton,3,2017,21,32,13,9,8,8,0,0,1,0,2,8,10,13,True,Leicester
+Leicester,9,2017,8,32,8,3,21,13,1,0,0,2,0,11,10,10,False,Brighton
+Chelsea,5,2017,4,32,5,17,17,4,0,0,1,1,3,17,5,9,True,Spurs
+Spurs,17,2017,17,32,4,5,4,5,1,0,0,3,1,19,7,5,False,Chelsea
+Crystal Palace,6,2017,5,32,17,10,9,3,0,0,1,1,2,7,9,16,True,Liverpool
+Liverpool,10,2017,9,32,3,6,5,17,1,0,0,2,1,19,9,4,False,Crystal Palace
+Everton,7,2017,6,32,9,11,10,1,0,0,1,1,3,11,7,14,True,Man City
+Man City,11,2017,10,32,1,7,6,9,1,0,0,3,1,27,3,1,False,Everton
+Man Utd,12,2017,11,32,2,16,16,15,1,0,0,2,0,21,5,5,True,Swansea
+Swansea,16,2017,16,32,15,12,11,2,0,0,1,0,2,8,7,16,False,Man Utd
+Newcastle,13,2017,23,32,12,8,22,16,1,0,0,1,0,9,8,14,True,Huddersfield
+Huddersfield,8,2017,22,32,16,13,23,12,0,0,1,0,1,8,7,17,False,Newcastle
+Watford,18,2017,18,32,11,2,2,10,0,1,0,2,2,10,7,15,True,Bournemouth
+Bournemouth,2,2017,2,32,10,18,18,11,0,1,0,2,2,9,10,13,False,Watford
+West Brom,19,2017,19,32,20,4,3,7,0,0,1,1,2,3,11,18,True,Burnley
+Burnley,4,2017,3,32,7,19,19,20,1,0,0,2,1,12,10,9,False,West Brom
+West Ham,20,2017,20,32,14,14,13,18,1,0,0,3,0,8,9,14,True,Southampton
+Southampton,14,2017,13,32,18,20,20,14,0,0,1,0,3,5,13,13,False,West Ham

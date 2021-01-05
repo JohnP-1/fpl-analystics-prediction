@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2019,1,21,10,12,11,5,1,0,0,2,0,6,9,6,True,Man Utd
+Man Utd,12,2019,11,21,5,1,1,10,0,0,1,0,2,8,7,6,False,Arsenal
+Brighton,4,2019,21,21,14,6,4,4,0,1,0,1,1,6,6,9,True,Chelsea
+Chelsea,6,2019,4,21,4,4,21,14,0,1,0,1,1,11,3,7,False,Brighton
+Burnley,5,2019,3,21,15,2,27,17,0,0,1,1,2,7,3,11,True,Aston Villa
+Aston Villa,2,2019,27,21,17,5,3,15,1,0,0,2,1,6,3,12,False,Burnley
+Liverpool,10,2019,9,21,1,15,29,8,1,0,0,2,0,19,1,0,True,Sheffield Utd
+Sheffield Utd,15,2019,29,21,8,10,9,1,0,0,1,0,2,7,8,6,False,Liverpool
+Man City,11,2019,10,21,3,8,6,11,1,0,0,2,1,14,2,5,True,Everton
+Everton,8,2019,6,21,11,11,10,3,0,0,1,1,2,7,4,10,False,Man City
+Newcastle,13,2019,23,21,13,9,8,2,0,0,1,0,3,7,4,10,True,Leicester
+Leicester,9,2019,8,21,2,13,23,13,1,0,0,3,0,14,3,4,False,Newcastle
+Norwich,14,2019,28,21,20,7,5,9,0,1,0,1,1,3,5,13,True,Crystal Palace
+Crystal Palace,7,2019,5,21,9,14,28,20,0,1,0,1,1,7,7,7,False,Norwich
+Southampton,16,2019,13,21,12,17,17,6,1,0,0,1,0,7,4,10,True,Spurs
+Spurs,17,2019,17,21,6,16,13,12,0,0,1,0,1,8,6,7,False,Southampton
+Watford,18,2019,18,21,19,20,26,7,1,0,0,2,1,4,7,10,True,Wolves
+Wolves,20,2019,26,21,7,18,18,19,0,0,1,1,2,7,9,5,False,Watford
+West Ham,19,2019,20,21,16,3,2,18,1,0,0,4,0,6,4,10,True,Bournemouth
+Bournemouth,3,2019,2,21,18,19,20,16,0,0,1,0,4,5,5,11,False,West Ham

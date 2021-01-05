@@ -1,0 +1,17 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Bournemouth,3,2019,2,28,18,6,4,4,0,1,0,2,2,7,6,15,True,Chelsea
+Chelsea,6,2019,4,28,4,3,2,18,0,1,0,2,2,13,6,9,False,Bournemouth
+Brighton,4,2019,21,28,15,7,5,12,0,0,1,0,1,6,10,12,True,Crystal Palace
+Crystal Palace,7,2019,5,28,12,4,21,15,1,0,0,1,0,9,9,10,False,Brighton
+Everton,8,2019,6,28,11,12,11,5,0,1,0,1,1,10,7,11,True,Man Utd
+Man Utd,12,2019,11,28,5,8,6,11,0,1,0,1,1,11,9,8,False,Everton
+Newcastle,13,2019,23,28,14,5,3,9,0,1,0,0,0,8,8,12,True,Burnley
+Burnley,5,2019,3,28,9,13,23,14,0,1,0,0,0,11,5,12,False,Newcastle
+Norwich,14,2019,28,28,20,9,8,3,1,0,0,1,0,5,6,17,True,Leicester
+Leicester,9,2019,8,28,3,14,28,20,0,0,1,0,1,15,5,8,False,Norwich
+Spurs,17,2019,17,28,7,20,26,6,0,0,1,2,3,11,7,10,True,Wolves
+Wolves,20,2019,26,28,6,17,17,7,1,0,0,3,2,10,12,6,False,Spurs
+Watford,18,2019,18,28,17,10,9,1,1,0,0,3,0,6,9,13,True,Liverpool
+Liverpool,10,2019,9,28,1,18,18,17,0,0,1,0,3,26,1,1,False,Watford
+West Ham,19,2019,20,28,16,16,13,13,1,0,0,3,1,7,6,15,True,Southampton
+Southampton,16,2019,13,28,13,19,20,16,0,0,1,1,3,10,4,14,False,West Ham

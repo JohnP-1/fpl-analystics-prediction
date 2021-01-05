@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2018,1,16,5,10,22,18,1,0,0,1,0,10,4,2,True,Huddersfield
+Huddersfield,10,2018,22,16,18,1,1,5,0,0,1,0,1,2,4,10,False,Arsenal
+Bournemouth,2,2018,2,16,8,12,9,1,0,0,1,0,4,7,2,7,True,Liverpool
+Liverpool,12,2018,9,16,1,2,2,8,1,0,0,4,0,13,3,0,False,Bournemouth
+Burnley,4,2018,3,16,17,3,21,13,1,0,0,1,0,3,3,10,True,Brighton
+Brighton,3,2018,21,16,13,4,3,17,0,0,1,0,1,6,3,7,False,Burnley
+Cardiff City,5,2018,24,16,14,16,13,19,1,0,0,1,0,4,2,10,True,Southampton
+Southampton,16,2018,13,16,19,5,24,14,0,0,1,0,1,1,6,9,False,Cardiff City
+Chelsea,6,2018,4,16,4,13,10,2,1,0,0,2,0,10,4,2,True,Man City
+Man City,13,2018,10,16,2,6,4,4,0,0,1,0,2,13,2,1,False,Chelsea
+Everton,8,2018,6,16,7,18,18,12,0,1,0,2,2,6,6,4,True,Watford
+Watford,18,2018,18,16,12,8,6,7,0,1,0,2,2,6,3,7,False,Everton
+Leicester,11,2018,8,16,9,17,17,3,0,0,1,0,2,6,4,6,True,Spurs
+Spurs,17,2018,17,16,3,11,8,9,1,0,0,2,0,12,0,4,False,Leicester
+Man Utd,14,2018,11,16,6,9,25,20,1,0,0,4,1,7,5,4,True,Fulham
+Fulham,9,2018,25,16,20,14,11,6,0,0,1,1,4,2,3,11,False,Man Utd
+Newcastle,15,2018,23,16,15,20,26,10,0,0,1,1,2,3,4,9,True,Wolves
+Wolves,20,2018,26,16,10,15,23,15,1,0,0,2,1,6,4,6,False,Newcastle
+West Ham,19,2018,20,16,11,7,5,16,1,0,0,3,2,6,3,7,True,Crystal Palace
+Crystal Palace,7,2018,5,16,16,19,20,11,0,0,1,2,3,3,3,10,False,West Ham

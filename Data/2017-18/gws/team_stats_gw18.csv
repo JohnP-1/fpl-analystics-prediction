@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2017,1,18,5,13,23,18,1,0,0,1,0,10,3,5,True,Newcastle
+Newcastle,13,2017,23,18,18,1,1,5,0,0,1,0,1,4,3,11,False,Arsenal
+Bournemouth,2,2017,2,18,16,10,9,4,0,0,1,0,4,4,4,10,True,Liverpool
+Liverpool,10,2017,9,18,4,2,2,16,1,0,0,4,0,9,7,2,False,Bournemouth
+Brighton,3,2017,21,18,13,4,3,6,0,1,0,0,0,4,6,8,True,Burnley
+Burnley,4,2017,3,18,6,3,21,13,0,1,0,0,0,9,5,4,False,Brighton
+Chelsea,5,2017,4,18,3,14,13,12,1,0,0,1,0,12,2,4,True,Southampton
+Southampton,14,2017,13,18,12,5,4,3,0,0,1,0,1,4,6,8,False,Chelsea
+Everton,7,2017,6,18,9,16,16,20,1,0,0,3,1,7,4,7,True,Swansea
+Swansea,16,2017,16,18,20,7,6,9,0,0,1,1,3,3,3,12,False,Everton
+Leicester,9,2017,8,18,8,6,5,14,0,0,1,0,3,7,5,6,True,Crystal Palace
+Crystal Palace,6,2017,5,18,14,9,8,8,1,0,0,3,0,4,5,9,False,Leicester
+Man City,11,2017,10,18,1,17,17,7,1,0,0,4,1,17,1,0,True,Spurs
+Spurs,17,2017,17,18,7,11,10,1,0,0,1,1,4,9,4,5,False,Man City
+Stoke City,15,2017,14,18,17,20,20,15,0,0,1,0,3,4,4,10,True,West Ham
+West Ham,20,2017,20,18,15,15,14,17,1,0,0,3,0,4,5,9,False,Stoke City
+Watford,18,2017,18,18,10,8,22,11,0,0,1,1,4,6,4,8,True,Huddersfield
+Huddersfield,8,2017,22,18,11,18,18,10,1,0,0,4,1,6,3,9,False,Watford
+West Brom,19,2017,19,18,19,12,11,2,0,0,1,1,2,2,8,8,True,Man Utd
+Man Utd,12,2017,11,18,2,19,19,19,1,0,0,2,1,13,2,3,False,West Brom

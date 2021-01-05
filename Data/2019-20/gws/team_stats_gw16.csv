@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Aston Villa,2,2019,27,16,17,9,8,2,0,0,1,1,4,4,3,9,True,Leicester
+Leicester,9,2019,8,16,2,2,27,17,1,0,0,4,1,12,2,2,False,Aston Villa
+Bournemouth,3,2019,2,16,15,10,9,1,0,0,1,0,3,4,4,8,True,Liverpool
+Liverpool,10,2019,9,16,1,3,2,15,1,0,0,3,0,15,1,0,False,Bournemouth
+Brighton,4,2019,21,16,12,20,26,6,0,1,0,2,2,5,4,7,True,Wolves
+Wolves,20,2019,26,16,6,4,21,12,0,1,0,2,2,5,9,2,False,Brighton
+Everton,8,2019,6,16,14,6,4,4,1,0,0,3,1,5,2,9,True,Chelsea
+Chelsea,6,2019,4,16,4,8,6,14,0,0,1,1,3,9,2,5,False,Everton
+Man City,11,2019,10,16,3,12,11,5,0,0,1,1,2,10,2,4,True,Man Utd
+Man Utd,12,2019,11,16,5,11,10,3,1,0,0,2,1,6,6,4,False,Man City
+Newcastle,13,2019,23,16,11,16,13,18,1,0,0,2,1,6,4,6,True,Southampton
+Southampton,16,2019,13,16,18,13,23,11,0,0,1,1,2,4,3,9,False,Newcastle
+Norwich,14,2019,28,16,19,15,29,8,0,0,1,1,2,3,2,11,True,Sheffield Utd
+Sheffield Utd,15,2019,29,16,8,14,28,19,1,0,0,2,1,5,7,4,False,Norwich
+Spurs,17,2019,17,16,7,5,3,13,1,0,0,5,0,6,5,5,True,Burnley
+Burnley,5,2019,3,16,13,17,17,7,0,0,1,0,5,5,3,8,False,Spurs
+Watford,18,2019,18,16,20,7,5,10,0,1,0,0,0,1,6,9,True,Crystal Palace
+Crystal Palace,7,2019,5,16,10,18,18,20,0,1,0,0,0,6,4,6,False,Watford
+West Ham,19,2019,20,16,16,1,1,9,0,0,1,1,3,4,4,8,True,Arsenal
+Arsenal,1,2019,1,16,9,19,20,16,1,0,0,3,1,5,7,4,False,West Ham

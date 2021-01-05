@@ -1,0 +1,33 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Leicester,9,2017,8,37,9,1,1,6,1,0,0,3,1,12,11,14,True,Arsenal
+Arsenal,1,2017,1,37,6,9,8,9,0,0,1,1,3,18,6,13,False,Leicester
+Man City,11,2017,10,37,1,3,21,14,1,0,0,3,1,31,4,2,True,Brighton
+Brighton,3,2017,21,37,14,11,10,1,0,0,1,1,3,9,13,15,False,Man City
+Swansea,16,2017,16,37,18,14,13,17,0,0,1,0,1,8,9,20,True,Southampton
+Southampton,14,2017,13,37,17,16,16,18,1,0,0,1,0,7,15,15,False,Swansea
+Spurs,17,2017,17,37,3,13,23,10,1,0,0,1,0,22,8,7,True,Newcastle
+Newcastle,13,2017,23,37,10,17,17,3,0,0,1,0,1,11,8,18,False,Spurs
+West Ham,20,2017,20,37,15,12,11,2,0,1,0,0,0,9,12,16,True,Man Utd
+Man Utd,12,2017,11,37,2,20,20,15,0,1,0,0,0,24,6,7,False,West Ham
+Chelsea,5,2017,4,37,5,8,22,16,0,1,0,1,1,21,7,9,True,Huddersfield
+Huddersfield,8,2017,22,37,16,5,4,5,0,1,0,1,1,9,10,18,False,Chelsea
+Arsenal,1,2017,1,37,6,4,3,7,1,0,0,5,0,18,6,13,True,Burnley
+Burnley,4,2017,3,37,7,1,1,6,0,0,1,0,5,14,12,11,False,Arsenal
+Bournemouth,2,2017,2,37,12,16,16,18,1,0,0,1,0,10,11,16,True,Swansea
+Swansea,16,2017,16,37,18,2,2,12,0,0,1,0,1,8,9,20,False,Bournemouth
+Brighton,3,2017,21,37,14,12,11,2,1,0,0,1,0,9,13,15,True,Man Utd
+Man Utd,12,2017,11,37,2,3,21,14,0,0,1,0,1,24,6,7,False,Brighton
+Chelsea,5,2017,4,37,5,10,9,4,1,0,0,1,0,21,7,9,True,Liverpool
+Liverpool,10,2017,9,37,4,5,4,5,0,0,1,0,1,20,12,5,False,Chelsea
+Everton,7,2017,6,37,8,14,13,17,0,1,0,1,1,13,10,14,True,Southampton
+Southampton,14,2017,13,37,17,7,6,8,0,1,0,1,1,7,15,15,False,Everton
+Leicester,9,2017,8,37,9,20,20,15,0,0,1,0,2,12,11,14,True,West Ham
+West Ham,20,2017,20,37,15,9,8,9,1,0,0,2,0,9,12,16,False,Leicester
+Man City,11,2017,10,37,1,8,22,16,0,1,0,0,0,31,4,2,True,Huddersfield
+Huddersfield,8,2017,22,37,16,11,10,1,0,1,0,0,0,9,10,18,False,Man City
+Stoke City,15,2017,14,37,20,6,5,11,0,0,1,1,2,6,12,19,True,Crystal Palace
+Crystal Palace,6,2017,5,37,11,15,14,20,1,0,0,2,1,10,11,16,False,Stoke City
+Watford,18,2017,18,37,13,13,23,10,1,0,0,2,1,11,8,18,True,Newcastle
+Newcastle,13,2017,23,37,10,18,18,13,0,0,1,1,2,11,8,18,False,Watford
+West Brom,19,2017,19,37,19,17,17,3,1,0,0,1,0,6,13,18,True,Spurs
+Spurs,17,2017,17,37,3,19,19,19,0,0,1,0,1,22,8,7,False,West Brom
