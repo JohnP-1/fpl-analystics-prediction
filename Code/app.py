@@ -108,8 +108,20 @@ def determine_player_team_unique_id(data, unique_id):
 
     return data[(data['unique_id']==unique_id) & (data['round']==max_round)]['team_unique_id'].values
 
+def determine_player_position(data, unique_id):
+
+    element_type = data[data['unique_id']==unique_id]['element_type'].unique()[0]
+
+    return element_type2position(element_type)
 
 
+def planner_process_player(data, element_id, season):
+    unique_id = determine_unique_id(data, element_id, season)
+    player_form = '{0:.2f}'.format(determine_player_form(data, unique_id))
+    team_unique_id = determine_player_team_unique_id(data, unique_id)
+    player_position = determine_player_position(data, unique_id)
+
+    return unique_id, player_form, team_unique_id, player_position
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -627,99 +639,80 @@ def render_content(tab):
         team_id = '5403039'
         team_picks = DataLoaderObj.scrape_team_information(email, password, team_id)
 
-        fixtures = pd.read_csv('/home/john/Documents/projects/fpl-analytics-and-prediction/Data/2020-21/fixtures.csv')
+        fixtures = pd.read_csv('/home/john/Documents/projects/fpl-analystics-prediction/Data/2020-21/fixtures.csv')
 
         font_size = '10px'
 
         player_1_id = team_picks['element'].iloc[0]
         player_1_captain = team_picks['is_captain'].iloc[0]
-        player_1_unique_id = determine_unique_id(data, player_1_id, season_latest)
-        player_1_player_form = '{0:.2f}'.format(determine_player_form(data, player_1_unique_id))
-        player_1_team_unique_id = determine_player_team_unique_id(data, player_1_unique_id)
+        player_1_unique_id, player_1_player_form, player_1_team_unique_id, player_1_position = planner_process_player(data, player_1_id, season_latest)
+
+        # player_1_unique_id = determine_unique_id(data, player_1_id, season_latest)
+        # player_1_player_form = '{0:.2f}'.format(determine_player_form(data, player_1_unique_id))
+        # player_1_team_unique_id = determine_player_team_unique_id(data, player_1_unique_id)
+        # player_1_player_position = determine_player_position(data, player_1_unique_id)
 
         player_2_id = team_picks['element'].iloc[1]
         player_2_captain = team_picks['is_captain'].iloc[1]
-        player_2_unique_id = determine_unique_id(data, player_2_id, season_latest)
-        player_2_player_form = '{0:.2f}'.format(determine_player_form(data, player_2_unique_id))
-        player_2_team_unique_id = determine_player_team_unique_id(data, player_2_unique_id)
+        player_2_unique_id, player_2_player_form, player_2_team_unique_id, player_2_position = planner_process_player(data, player_2_id, season_latest)
+
 
         player_3_id = team_picks['element'].iloc[2]
         player_3_captain = team_picks['is_captain'].iloc[2]
-        player_3_unique_id = determine_unique_id(data, player_3_id, season_latest)
-        player_3_player_form = '{0:.2f}'.format(determine_player_form(data, player_3_unique_id))
-        player_3_team_unique_id = determine_player_team_unique_id(data, player_3_unique_id)
+        player_3_unique_id, player_3_player_form, player_3_team_unique_id, player_3_position = planner_process_player(data, player_3_id, season_latest)
 
         player_4_id = team_picks['element'].iloc[3]
         player_4_captain = team_picks['is_captain'].iloc[3]
-        player_4_unique_id = determine_unique_id(data, player_4_id, season_latest)
-        player_4_player_form = '{0:.2f}'.format(determine_player_form(data, player_4_unique_id))
-        player_4_team_unique_id = determine_player_team_unique_id(data, player_4_unique_id)
+        player_4_unique_id, player_4_player_form, player_4_team_unique_id, player_4_position = planner_process_player(data, player_4_id, season_latest)
 
         player_5_id = team_picks['element'].iloc[4]
         player_5_captain = team_picks['is_captain'].iloc[4]
-        player_5_unique_id = determine_unique_id(data, player_5_id, season_latest)
-        player_5_player_form = '{0:.2f}'.format(determine_player_form(data, player_5_unique_id))
-        player_5_team_unique_id = determine_player_team_unique_id(data, player_5_unique_id)
+        player_5_unique_id, player_5_player_form, player_5_team_unique_id, player_5_position = planner_process_player(data, player_5_id, season_latest)
 
         player_6_id = team_picks['element'].iloc[5]
         player_6_captain = team_picks['is_captain'].iloc[5]
-        player_6_unique_id = determine_unique_id(data, player_6_id, season_latest)
-        player_6_player_form = '{0:.2f}'.format(determine_player_form(data, player_6_unique_id))
-        player_6_team_unique_id = determine_player_team_unique_id(data, player_6_unique_id)
+        player_6_unique_id, player_6_player_form, player_6_team_unique_id, player_6_position = planner_process_player(data, player_6_id, season_latest)
+
 
         player_7_id = team_picks['element'].iloc[6]
         player_7_captain = team_picks['is_captain'].iloc[6]
-        player_7_unique_id = determine_unique_id(data, player_7_id, season_latest)
-        player_7_player_form = '{0:.2f}'.format(determine_player_form(data, player_7_unique_id))
-        player_7_team_unique_id = determine_player_team_unique_id(data, player_7_unique_id)
+        player_7_unique_id, player_7_player_form, player_7_team_unique_id, player_7_position = planner_process_player(data, player_7_id, season_latest)
+
 
         player_8_id = team_picks['element'].iloc[7]
         player_8_captain = team_picks['is_captain'].iloc[7]
-        player_8_unique_id = determine_unique_id(data, player_8_id, season_latest)
-        player_8_player_form = '{0:.2f}'.format(determine_player_form(data, player_8_unique_id))
-        player_8_team_unique_id = determine_player_team_unique_id(data, player_8_unique_id)
+        player_8_unique_id, player_8_player_form, player_8_team_unique_id, player_8_position = planner_process_player(data, player_8_id, season_latest)
+
 
         player_9_id = team_picks['element'].iloc[8]
         player_9_captain = team_picks['is_captain'].iloc[8]
-        player_9_unique_id = determine_unique_id(data, player_9_id, season_latest)
-        player_9_player_form = '{0:.2f}'.format(determine_player_form(data, player_9_unique_id))
-        player_9_team_unique_id = determine_player_team_unique_id(data, player_9_unique_id)
+        player_9_unique_id, player_9_player_form, player_9_team_unique_id, player_9_position = planner_process_player(data, player_9_id, season_latest)
+
 
         player_10_id = team_picks['element'].iloc[9]
         player_10_captain = team_picks['is_captain'].iloc[9]
-        player_10_unique_id = determine_unique_id(data, player_10_id, season_latest)
-        player_10_player_form = '{0:.2f}'.format(determine_player_form(data, player_10_unique_id))
-        player_10_team_unique_id = determine_player_team_unique_id(data, player_10_unique_id)
+        player_10_unique_id, player_10_player_form, player_10_team_unique_id, player_10_position = planner_process_player(data, player_10_id, season_latest)
+
 
         player_11_id = team_picks['element'].iloc[10]
         player_11_captain = team_picks['is_captain'].iloc[10]
-        player_11_unique_id = determine_unique_id(data, player_11_id, season_latest)
-        player_11_player_form = '{0:.2f}'.format(determine_player_form(data, player_11_unique_id))
-        player_11_team_unique_id = determine_player_team_unique_id(data, unique_id)
+        player_11_unique_id, player_11_player_form, player_11_team_unique_id, player_11_position = planner_process_player(data, player_11_id, season_latest)
 
         player_s1_id = team_picks['element'].iloc[11]
         player_s1_captain = team_picks['is_captain'].iloc[11]
-        player_s1_unique_id = determine_unique_id(data, player_s1_id, season_latest)
-        player_s1_player_form = '{0:.2f}'.format(determine_player_form(data, player_s1_unique_id))
-        player_s1_team_unique_id = determine_player_team_unique_id(data, player_s1_unique_id)
+        player_s1_unique_id, player_s1_player_form, player_s1_team_unique_id, player_s1_position = planner_process_player(data, player_s1_id, season_latest)
 
         player_s2_id = team_picks['element'].iloc[12]
         player_s2_captain = team_picks['is_captain'].iloc[12]
-        player_s2_unique_id = determine_unique_id(data, player_s2_id, season_latest)
-        player_s2_player_form = '{0:.2f}'.format(determine_player_form(data, player_s2_unique_id))
-        player_s2_team_unique_id = determine_player_team_unique_id(data, player_s2_unique_id)
+        player_s2_unique_id, player_s2_player_form, player_s2_team_unique_id, player_s2_position = planner_process_player(data, player_s2_id, season_latest)
 
         player_s3_id = team_picks['element'].iloc[13]
         player_s3_captain = team_picks['is_captain'].iloc[13]
-        player_s3_unique_id = determine_unique_id(data, player_s3_id, season_latest)
-        player_s3_player_form = '{0:.2f}'.format(determine_player_form(data, player_s3_unique_id))
-        player_s3_team_unique_id = determine_player_team_unique_id(data, player_s3_unique_id)
+        player_s3_unique_id, player_s3_player_form, player_s3_team_unique_id, player_s3_position = planner_process_player(data, player_s3_id, season_latest)
 
         player_s4_id = team_picks['element'].iloc[14]
         player_s4_captain = team_picks['is_captain'].iloc[14]
-        player_s4_unique_id = determine_unique_id(data, player_s4_id, season_latest)
-        player_s4_player_form = '{0:.2f}'.format(determine_player_form(data, player_s4_unique_id))
-        player_s4_team_unique_id = determine_player_team_unique_id(data, player_s4_unique_id)
+        player_s4_unique_id, player_s4_player_form, player_s4_team_unique_id, player_s4_position = planner_process_player(data, player_s4_id, season_latest)
 
 
         return (
@@ -743,7 +736,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='1.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='GKP', id='player_1_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_1_position, id='player_1_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_1_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -780,7 +773,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='2.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_2_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_2_position, id='player_2_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_2_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -815,7 +808,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='3.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_3_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_3_position, id='player_3_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_3_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -850,7 +843,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='4.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_4_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_4_position, id='player_4_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_4_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -885,7 +878,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='5.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': '8px', 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_5_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_5_position, id='player_5_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_5_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -920,7 +913,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='6.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_6_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_6_position, id='player_6_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_6_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -955,7 +948,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='7.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_7_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_7_position, id='player_7_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_7_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -990,7 +983,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='8.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_8_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_8_position, id='player_8_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_8_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -1025,7 +1018,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='9.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_9_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_9_position, id='player_9_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_9_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -1060,7 +1053,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='10.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_10_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_10_position, id='player_10_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_10_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -1095,7 +1088,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='11.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_11_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_11_position, id='player_11_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_11_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -1130,7 +1123,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='S1.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_s1_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_s1_position, id='player_s1_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_s1_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -1165,7 +1158,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='S2.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_s2_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_s2_position, id='player_s2_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_s2_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -1200,7 +1193,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='S3.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_s3_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_s4_position, id='player_s3_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_s3_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
@@ -1237,7 +1230,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='S4.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='DEF', id='player_s4_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_s4_position, id='player_s4_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_s4_name',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
