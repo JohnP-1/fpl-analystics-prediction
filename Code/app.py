@@ -106,7 +106,7 @@ def determine_player_team_unique_id(data, unique_id):
 
     max_round = data[data['unique_id']==unique_id]['round'].max()
 
-    return data[(data['unique_id']==unique_id) & (data['round']==max_round)]['team_unique_id'].values
+    return data[(data['unique_id']==unique_id) & (data['round']==max_round)]['team_unique_id'].values[0]
 
 def determine_player_position(data, unique_id):
 
@@ -114,14 +114,52 @@ def determine_player_position(data, unique_id):
 
     return element_type2position(element_type)
 
+def determine_player_name(data, unique_id):
 
-def planner_process_player(data, element_id, season):
+    player_name = data[data['unique_id']==unique_id]['name'].values[0]
+
+    return player_name
+
+def determine_player_team_code(team_codes, team_unique_id):
+
+    team_code = team_codes[team_codes['team_unique_id']==team_unique_id]['code'].unique()[0]
+
+    return team_code
+
+def determine_player_team_id(team_codes, team_unique_id):
+
+    team_id = team_codes[team_codes['team_unique_id']==team_unique_id]['team_id'].unique()[0]
+
+    return team_id
+
+def determine_player_fixtures(fixture_data, team_id, round_next):
+
+
+    fixture_data = fixture_data[fixture_data['event']==round_next]
+    fixtures_team = fixture_data[(fixture_data['team_h']==team_id) | (fixture_data['team_a']==team_id)]
+
+    was_home = []
+    if fixtures_team.shape[0] > 0:
+        for i in fixtures_team.shape[0]:
+            if fixtures_team['team_h'].iloc[i] == team_id:
+                was_home.append(True)
+            else:
+                was_home.append(False)
+                
+    return fixtures_team
+
+
+def planner_process_player(data, team_codes, fixture_data, element_id, season, round_next):
     unique_id = determine_unique_id(data, element_id, season)
     player_form = '{0:.2f}'.format(determine_player_form(data, unique_id))
     team_unique_id = determine_player_team_unique_id(data, unique_id)
+    team_id = determine_player_team_id(team_codes, team_unique_id)
     player_position = determine_player_position(data, unique_id)
+    team_code = determine_player_team_code(team_codes, team_unique_id)
+    player_name = determine_player_name(data, unique_id)
+    determine_player_fixtures(fixture_data, team_id, round_next)
 
-    return unique_id, player_form, team_unique_id, player_position
+    return unique_id, player_form, team_unique_id, team_id, player_position, team_code, player_name
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -141,10 +179,13 @@ styles = {
 path_data = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'player_database.csv')
 path_player_metadata = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'player_metadata.csv')
 path_team_metadata = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'team_metadata.csv')
+path_team_codes = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'team_codes.csv')
 
 data = pd.read_csv(path_data)
 player_metadata = pd.read_csv(path_player_metadata)
 team_metadata = pd.read_csv(path_team_metadata)
+team_codes = pd.read_csv(path_team_codes)
+fixture_data = pd.read_csv('/home/john/Documents/projects/fpl-analystics-prediction/Data/2020-21/fixtures.csv')
 
 data['mean_total_points_any_3/pound'] = data['mean_total_points_any_3'] / (data['value'] / 10)
 data['mean_total_points_any_5/pound'] = data['mean_total_points_any_5'] / (data['value'] / 10)
@@ -190,7 +231,7 @@ app.layout = html.Div([
 # season_latest = player_metadata['season'].max()
 season_latest = 2020
 player_metadata_season = player_metadata[player_metadata['season'] == season_latest]
-
+round_next = 18
 
 player_names = []
 unique_ids = []
@@ -639,81 +680,121 @@ def render_content(tab):
         team_id = '5403039'
         team_picks = DataLoaderObj.scrape_team_information(email, password, team_id)
 
-        fixtures = pd.read_csv('/home/john/Documents/projects/fpl-analystics-prediction/Data/2020-21/fixtures.csv')
-
         font_size = '10px'
 
         player_1_id = team_picks['element'].iloc[0]
         player_1_captain = team_picks['is_captain'].iloc[0]
-        player_1_unique_id, player_1_player_form, player_1_team_unique_id, player_1_position = planner_process_player(data, player_1_id, season_latest)
-
-        # player_1_unique_id = determine_unique_id(data, player_1_id, season_latest)
-        # player_1_player_form = '{0:.2f}'.format(determine_player_form(data, player_1_unique_id))
-        # player_1_team_unique_id = determine_player_team_unique_id(data, player_1_unique_id)
-        # player_1_player_position = determine_player_position(data, player_1_unique_id)
+        player_1_value = '{0:.1f}'.format(team_picks['selling_price'].iloc[0]/10)
+        (player_1_unique_id, player_1_player_form, player_1_team_unique_id, player_1_team_id, player_1_position, player_1_team_code, player_1_player_name) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_id, season_latest, round_next)
 
         player_2_id = team_picks['element'].iloc[1]
         player_2_captain = team_picks['is_captain'].iloc[1]
-        player_2_unique_id, player_2_player_form, player_2_team_unique_id, player_2_position = planner_process_player(data, player_2_id, season_latest)
+        player_2_unique_id, player_2_player_form, player_2_team_unique_id, player_2_team_id, player_2_position, player_2_team_code, player_2_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_2_id, season_latest, round_next)
 
 
         player_3_id = team_picks['element'].iloc[2]
         player_3_captain = team_picks['is_captain'].iloc[2]
-        player_3_unique_id, player_3_player_form, player_3_team_unique_id, player_3_position = planner_process_player(data, player_3_id, season_latest)
+        player_3_unique_id, player_3_player_form, player_3_team_unique_id, player_3_team_id, player_3_position, player_3_team_code, player_3_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_3_id, season_latest, round_next)
 
         player_4_id = team_picks['element'].iloc[3]
         player_4_captain = team_picks['is_captain'].iloc[3]
-        player_4_unique_id, player_4_player_form, player_4_team_unique_id, player_4_position = planner_process_player(data, player_4_id, season_latest)
+        player_4_unique_id, player_4_player_form, player_4_team_unique_id, player_4_team_id, player_4_position, player_4_team_code, player_4_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_4_id, season_latest, round_next)
 
         player_5_id = team_picks['element'].iloc[4]
         player_5_captain = team_picks['is_captain'].iloc[4]
-        player_5_unique_id, player_5_player_form, player_5_team_unique_id, player_5_position = planner_process_player(data, player_5_id, season_latest)
+        player_5_unique_id, player_5_player_form, player_5_team_unique_id, player_5_team_id, player_5_position, player_5_team_code, player_5_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_5_id, season_latest, round_next)
 
         player_6_id = team_picks['element'].iloc[5]
         player_6_captain = team_picks['is_captain'].iloc[5]
-        player_6_unique_id, player_6_player_form, player_6_team_unique_id, player_6_position = planner_process_player(data, player_6_id, season_latest)
+        player_6_unique_id, player_6_player_form, player_6_team_unique_id, player_6_team_id, player_6_position, player_6_team_code, player_6_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_6_id, season_latest, round_next)
 
 
         player_7_id = team_picks['element'].iloc[6]
         player_7_captain = team_picks['is_captain'].iloc[6]
-        player_7_unique_id, player_7_player_form, player_7_team_unique_id, player_7_position = planner_process_player(data, player_7_id, season_latest)
+        player_7_unique_id, player_7_player_form, player_7_team_unique_id, player_7_team_id, player_7_position, player_7_team_code, player_7_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_7_id, season_latest, round_next)
 
 
         player_8_id = team_picks['element'].iloc[7]
         player_8_captain = team_picks['is_captain'].iloc[7]
-        player_8_unique_id, player_8_player_form, player_8_team_unique_id, player_8_position = planner_process_player(data, player_8_id, season_latest)
+        player_8_unique_id, player_8_player_form, player_8_team_unique_id, player_8_team_id, player_8_position, player_8_team_code, player_8_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_8_id, season_latest, round_next)
 
 
         player_9_id = team_picks['element'].iloc[8]
         player_9_captain = team_picks['is_captain'].iloc[8]
-        player_9_unique_id, player_9_player_form, player_9_team_unique_id, player_9_position = planner_process_player(data, player_9_id, season_latest)
+        player_9_unique_id, player_9_player_form, player_9_team_unique_id, player_9_team_id, player_9_position, player_9_team_code, player_9_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_9_id, season_latest, round_next)
 
 
         player_10_id = team_picks['element'].iloc[9]
         player_10_captain = team_picks['is_captain'].iloc[9]
-        player_10_unique_id, player_10_player_form, player_10_team_unique_id, player_10_position = planner_process_player(data, player_10_id, season_latest)
+        player_10_unique_id, player_10_player_form, player_10_team_unique_id, player_10_team_id, player_10_position, player_10_team_code, player_10_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_10_id, season_latest, round_next)
 
 
         player_11_id = team_picks['element'].iloc[10]
         player_11_captain = team_picks['is_captain'].iloc[10]
-        player_11_unique_id, player_11_player_form, player_11_team_unique_id, player_11_position = planner_process_player(data, player_11_id, season_latest)
+        player_11_unique_id, player_11_player_form, player_11_team_unique_id, player_11_team_id, player_11_position, player_11_team_code, player_11_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_11_id, season_latest, round_next)
 
         player_s1_id = team_picks['element'].iloc[11]
         player_s1_captain = team_picks['is_captain'].iloc[11]
-        player_s1_unique_id, player_s1_player_form, player_s1_team_unique_id, player_s1_position = planner_process_player(data, player_s1_id, season_latest)
+        player_s1_unique_id, player_s1_player_form, player_s1_team_unique_id, player_s1_team_id, player_s1_position, player_s1_team_code, player_s1_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_s1_id, season_latest, round_next)
 
         player_s2_id = team_picks['element'].iloc[12]
         player_s2_captain = team_picks['is_captain'].iloc[12]
-        player_s2_unique_id, player_s2_player_form, player_s2_team_unique_id, player_s2_position = planner_process_player(data, player_s2_id, season_latest)
+        player_s2_unique_id, player_s2_player_form, player_s2_team_unique_id, player_s2_team_id, player_s2_position, player_s2_team_code, player_s2_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_s2_id, season_latest, round_next)
 
         player_s3_id = team_picks['element'].iloc[13]
         player_s3_captain = team_picks['is_captain'].iloc[13]
-        player_s3_unique_id, player_s3_player_form, player_s3_team_unique_id, player_s3_position = planner_process_player(data, player_s3_id, season_latest)
+        player_s3_unique_id, player_s3_player_form, player_s3_team_unique_id, player_s3_team_id, player_s3_position, player_s3_team_code, player_s3_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_s3_id, season_latest, round_next)
 
         player_s4_id = team_picks['element'].iloc[14]
         player_s4_captain = team_picks['is_captain'].iloc[14]
-        player_s4_unique_id, player_s4_player_form, player_s4_team_unique_id, player_s4_position = planner_process_player(data, player_s4_id, season_latest)
+        player_s4_unique_id, player_s4_player_form, player_s4_team_unique_id, player_s4_team_id, player_s4_position, player_s4_team_code, player_s4_player_name = \
+            planner_process_player(data, team_codes, fixture_data, player_s4_id, season_latest, round_next)
 
+        team_names = [player_1_player_name,
+                      player_2_player_name,
+                      player_3_player_name,
+                      player_4_player_name,
+                      player_5_player_name,
+                      player_6_player_name,
+                      player_7_player_name,
+                      player_8_player_name,
+                      player_9_player_name,
+                      player_10_player_name,
+                      player_11_player_name,
+                      player_s1_player_name,
+                      player_s2_player_name,
+                      player_s3_player_name,
+                      player_s4_player_name]
+
+        team_unique_ids = [player_1_unique_id,
+                           player_2_unique_id,
+                           player_3_unique_id,
+                           player_4_unique_id,
+                           player_5_unique_id,
+                           player_6_unique_id,
+                           player_7_unique_id,
+                           player_8_unique_id,
+                           player_9_unique_id,
+                           player_10_unique_id,
+                           player_11_unique_id,
+                           player_s1_unique_id,
+                           player_s2_unique_id,
+                           player_s3_unique_id,
+                           player_s4_unique_id,]
 
         return (
             html.Div([html.Div([
@@ -723,12 +804,13 @@ def render_content(tab):
                     html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
                     html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
                     html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Team', id='team', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Agst.', id='Agst.', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Home/ Away', id='H_A', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Player Form', id='player_form', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Team Form', id='team_form', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Odds (win)', id='team_odds', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
                     html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
                     html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
 
@@ -739,16 +821,17 @@ def render_content(tab):
                     html.Div(children=player_1_position, id='player_1_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(dcc.Dropdown(
                                 id='player_1_name',
-                                options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
+                                options=[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)],
                                 value=player_1_unique_id,
                                 multi=False),
                             style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='CHE', id='player_1_team', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='ARS', id='player_1_against', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='H', id='player_1_H_A', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children=player_1_player_form, id='player_1_player_form', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_1_value, id='player_1_value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_1_team_code, id='player_1_team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children='ARS', id='player_1_against', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children='H', id='player_1_H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_1_player_form, id='player_1_player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(children='5.0', id='player_1_team_form', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-                    html.Div(children='5/1', id='player_1_team_odds', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children='5/1', id='player_1_team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
                     html.Div(
                         dcc.Checklist(
                             options=[
@@ -768,6 +851,40 @@ def render_content(tab):
                     , style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'})
 
                     # html.Div(children='1242', id='player_1_team_ICT', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': '8px', 'text-align': 'center'}),
+
+                ], style={'width': '100%','float': 'left'}),
+
+                # Player 1, 2nd game placeholder
+                html.Div([
+                    html.Div(children='1.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children=player_1_position, id='player_1_pos_l2', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='XXXXXXXXXX', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'color': 'white'}),
+                    html.Div(children='X.X', id='player_1_value_l2', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='XXX', id='player_1_team_l2', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='WBA', id='player_1_against_l2', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children='A', id='player_1_H_A_l2', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children=player_1_player_form, id='player_1_player_form_l2', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children='5.0', id='player_1_team_form_l2', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children='10/1', id='player_1_team_odds_l2', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children='', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                    html.Div(children='',style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'})
+
+                ], style={'width': '100%','float': 'left'}),
+
+                # Blank Line
+                html.Div([
+                    html.Div(children='1.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children=player_1_position, style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='XXXXXXXXXX', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'color': 'white'}),
+                    html.Div(children='X.X', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='XXX', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='WBA', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children=player_1_player_form, style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='5.0', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='10/1', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+                    html.Div(children='',style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'})
 
                 ], style={'width': '100%','float': 'left'}),
 
