@@ -200,8 +200,9 @@ def planner_process_player(data, team_codes, fixture_data, element_id, season, r
 
     return unique_id, player_form_list, team_unique_id, team_id, player_position, team_code, player_name, opposition, was_home, odds_win, n_matches
 
-def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_next, font_size):
+def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id):
 
+    round_process = round_curr + round_id
     player_id = team_picks['element'].iloc[i]
     player_captain = team_picks['is_captain'].iloc[i]
     if player_captain == True:
@@ -210,28 +211,26 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
         captain_value = ''
     player_value = '{0:.1f}'.format(team_picks['selling_price'].iloc[i]/10)
     (player_unique_id, player_form, player_team_unique_id, player_team_id, player_position, player_team_code, player_player_name, player_opposition, player_was_home, player_odds_win, n_matches) = \
-        planner_process_player(data, team_codes, fixture_data, player_id, season_latest, round_next)
-
-    # print(player_player_name)
+        planner_process_player(data, team_codes, fixture_data, player_id, season_latest, round_process)
 
     player_no = i + 1
 
     match_1 = html.Div([
         html.Div(children=str(player_no)+'.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-        html.Div(children=player_position, id='player_'+str(player_no)+'_1_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_position, id='player_'+str(round_id)+'_'+str(player_no)+'_1_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
         html.Div(dcc.Dropdown(
-                    id='player_'+str(player_no)+'_name',
+                    id='player_'+str(round_id)+'_'+str(player_no)+'_name',
                     options=[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)],
                     value=player_unique_id,
                     multi=False),
                 style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-        html.Div(children=player_value, id='player_'+str(player_no)+'_1_value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-        html.Div(children=player_team_code, id='player_'+str(player_no)+'_1_team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-        html.Div(children=player_opposition[0], id='player_'+str(player_no)+'_1_against', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-        html.Div(children=player_was_home[0], id='player_'+str(player_no)+'_1_H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-        html.Div(children=player_form[0], id='player_'+str(player_no)+'_1_player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-        html.Div(children='-', id='player_'+str(player_no)+'_1_team_form', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-        html.Div(children=player_odds_win[0], id='player_'+str(player_no)+'_1_team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_value, id='player_'+str(round_id)+'_'+str(player_no)+'_1_value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_team_code, id='player_'+str(round_id)+'_'+str(player_no)+'_1_team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_opposition[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_against', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_was_home[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_form[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children='-', id='player_'+str(round_id)+'_'+str(player_no)+'_1_team_form', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_odds_win[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
         html.Div(
             dcc.Checklist(
                 options=[
@@ -239,7 +238,7 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
                 ],
             value=[captain_value],
             style={'float': 'center'},
-            id='player_'+str(player_no)+'_cpt')
+            id='player_'+str(round_id)+'_'+str(player_no)+'_cpt')
         , style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
 
         html.Div(
@@ -248,32 +247,49 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
                     {'label': '', 'value': 'TRN'},
                 ],
             style={'float': 'center'},
-            id='player_'+str(player_no)+'_transfer')
+            id='player_'+str(round_id)+'_'+str(player_no)+'_transfer')
         , style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'})
 
     ], style={'width': '100%','float': 'left'}),
 
     # print(match_1)
 
-    if n_matches == 2:
-        # Player 1, 2nd game placeholder
-        match_2 = html.Div([
-            html.Div(children=str(player_no)+'.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
-            html.Div(children=player_position, id='player_'+str(player_no)+'_2_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
-            html.Div(children='XXXXXXXXXX', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'color': 'white'}),
-            html.Div(children='X.X', id='player_'+str(player_no)+'_2_value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
-            html.Div(children='XXX', id='player_'+str(player_no)+'_2_team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
-            html.Div(children=player_opposition[1], id='player_'+str(player_no)+'_2_against', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-            html.Div(children=player_was_home[1], id='player_'+str(player_no)+'_2_H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-            html.Div(children=player_form[1], id='player_'+str(player_no)+'_2_player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-            html.Div(children='-', id='player_'+str(player_no)+'_2_team_form_l2', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-            html.Div(children=player_odds_win[1], id='player_'+str(player_no)+'_2_team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-            html.Div(children='', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-            html.Div(children='',style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'})
+    # if n_matches == 2:
+    #     # Player 1, 2nd game placeholder
+    #     match_2 = html.Div([
+    #         html.Div(children=str(player_no)+'.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+    #         html.Div(children=player_position, id='player_'+str(round_id)+'_'+str(player_no)+'_2_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+    #         html.Div(children='XXXXXXXXXX', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'color': 'white'}),
+    #         html.Div(children='X.X', id='player_'+str(round_id)+'_'+str(player_no)+'_2_value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+    #         html.Div(children='XXX', id='player_'+str(round_id)+'_'+str(player_no)+'_2_team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+    #         html.Div(children=player_opposition[1], id='player_'+str(round_id)+'_'+str(player_no)+'_2_against', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+    #         html.Div(children=player_was_home[1], id='player_'+str(round_id)+'_'+str(player_no)+'_2_H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+    #         html.Div(children=player_form[1], id='player_'+str(round_id)+'_'+str(player_no)+'_2_player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+    #         html.Div(children='-', id='player_'+str(round_id)+'_'+str(player_no)+'_2_team_form_l2', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+    #         html.Div(children=player_odds_win[1], id='player_'+str(round_id)+'_'+str(player_no)+'_2_team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+    #         html.Div(children='', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+    #         html.Div(children='',style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'})
+    #
+    #     ], style={'width': '100%','float': 'left'}),
+    # else:
+    #     match_2 = [None]
 
-        ], style={'width': '100%','float': 'left'}),
-    else:
-        match_2 = [None]
+    # Player 1, 2nd game placeholder
+    match_2 = html.Div([
+        html.Div(children=str(player_no)+'.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+        html.Div(children=player_position, id='player_'+str(round_id)+'_'+str(player_no)+'_2_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+        html.Div(children='XXXXXXXXXX', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'color': 'white'}),
+        html.Div(children='X.X', id='player_'+str(round_id)+'_'+str(player_no)+'_2_value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+        html.Div(children='XXX', id='player_'+str(round_id)+'_'+str(player_no)+'_2_team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+        html.Div(children=player_opposition[1], id='player_'+str(round_id)+'_'+str(player_no)+'_2_against', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_was_home[1], id='player_'+str(round_id)+'_'+str(player_no)+'_2_H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_form[1], id='player_'+str(round_id)+'_'+str(player_no)+'_2_player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children='-', id='player_'+str(round_id)+'_'+str(player_no)+'_2_team_form_l2', style={'width': '8%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=player_odds_win[1], id='player_'+str(round_id)+'_'+str(player_no)+'_2_team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children='', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children='',style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'})
+
+    ], style={'width': '100%','float': 'left'}),
 
     # Blank Line
     blank = html.Div([
@@ -365,7 +381,8 @@ app.layout = html.Div([
 # season_latest = player_metadata['season'].max()
 season_latest = 2020
 player_metadata_season = player_metadata[player_metadata['season'] == season_latest]
-round_next = 18
+round_curr = 17
+round_next = round_curr + 1
 
 player_names = []
 unique_ids = []
@@ -936,21 +953,63 @@ def render_content(tab):
         team_unique_ids_df = pd.Series(team_unique_ids)
         team_unique_ids_json = team_unique_ids_df.to_json(date_format='iso', orient='split')
 
-        player_X_1 = []
-        player_X_2 = []
-        blanks = []
 
+        #Column 1 (GW+1)
+        player_1_X_1 = []
+        player_1_X_2 = []
+        blanks_1 = []
+
+        round_id = 1
         for i in range(0, len(team_names)):
-            player_1_div, player_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_next, font_size)
-            player_X_1.append(player_1_div)
-            player_X_2.append(player_2_div)
-            blanks.append(blank)
+            player_1_1_div, player_1_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id)
+            player_1_X_1.append(player_1_1_div)
+            player_1_X_2.append(player_1_2_div)
+            blanks_1.append(blank)
+
+
+        #Column 2 (GW+2)
+        player_2_X_1 = []
+        player_2_X_2 = []
+        blanks_2 = []
+
+        round_id = 2
+        for i in range(0, len(team_names)):
+            player_2_1_div, player_2_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id)
+            player_2_X_1.append(player_2_1_div)
+            player_2_X_2.append(player_2_2_div)
+            blanks_2.append(blank)
+
+
+        #Column 3 (GW+3)
+        player_3_X_1 = []
+        player_3_X_2 = []
+        blanks_3 = []
+
+        round_id = 3
+        for i in range(0, len(team_names)):
+            player_3_1_div, player_3_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id)
+            player_3_X_1.append(player_3_1_div)
+            player_3_X_2.append(player_3_2_div)
+            blanks_3.append(blank)
+
+
+        #Column 4 (GW+4)
+        player_4_X_1 = []
+        player_4_X_2 = []
+        blanks_4 = []
+
+        round_id = 4
+        for i in range(0, len(team_names)):
+            player_4_1_div, player_4_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id)
+            player_4_X_1.append(player_4_1_div)
+            player_4_X_2.append(player_4_2_div)
+            blanks_4.append(blank)
+
+
 
         return (
             html.Div([html.Div([
                 html.Div(children='GW+1'),
-
-
 
                 html.Div([
                     html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
@@ -968,290 +1027,538 @@ def render_content(tab):
 
                 ], style={'width': '100%','float': 'left'}),
 
-                player_X_1[0][0],
-                player_X_2[0][0],
-                blanks[0][0],
+                player_1_X_1[0][0],
+                player_1_X_2[0][0],
+                blanks_1[0][0],
 
-                player_X_1[1][0],
-                player_X_2[1][0],
-                blanks[1][0],
+                player_1_X_1[1][0],
+                player_1_X_2[1][0],
+                blanks_1[1][0],
 
-                player_X_1[2][0],
-                player_X_2[2][0],
-                blanks[2][0],
+                player_1_X_1[2][0],
+                player_1_X_2[2][0],
+                blanks_1[2][0],
 
-                player_X_1[3][0],
-                player_X_2[3][0],
-                blanks[3][0],
+                player_1_X_1[3][0],
+                player_1_X_2[3][0],
+                blanks_1[3][0],
 
-                player_X_1[4][0],
-                player_X_2[4][0],
-                blanks[4][0],
+                player_1_X_1[4][0],
+                player_1_X_2[4][0],
+                blanks_1[4][0],
 
-                player_X_1[5][0],
-                player_X_2[5][0],
-                blanks[5][0],
+                player_1_X_1[5][0],
+                player_1_X_2[5][0],
+                blanks_1[5][0],
 
-                player_X_1[6][0],
-                player_X_2[6][0],
-                blanks[6][0],
+                player_1_X_1[6][0],
+                player_1_X_2[6][0],
+                blanks_1[6][0],
 
-                player_X_1[7][0],
-                player_X_2[7][0],
-                blanks[7][0],
+                player_1_X_1[7][0],
+                player_1_X_2[7][0],
+                blanks_1[7][0],
 
-                player_X_1[8][0],
-                player_X_2[8][0],
-                blanks[8][0],
+                player_1_X_1[8][0],
+                player_1_X_2[8][0],
+                blanks_1[8][0],
 
-                player_X_1[9][0],
-                player_X_2[9][0],
-                blanks[9][0],
+                player_1_X_1[9][0],
+                player_1_X_2[9][0],
+                blanks_1[9][0],
 
-                player_X_1[10][0],
-                player_X_2[10][0],
-                blanks[10][0],
+                player_1_X_1[10][0],
+                player_1_X_2[10][0],
+                blanks_1[10][0],
 
-                player_X_1[11][0],
-                player_X_2[11][0],
-                blanks[11][0],
+                player_1_X_1[11][0],
+                player_1_X_2[11][0],
+                blanks_1[11][0],
 
-                player_X_1[12][0],
-                player_X_2[12][0],
-                blanks[12][0],
+                player_1_X_1[12][0],
+                player_1_X_2[12][0],
+                blanks_1[12][0],
 
-                player_X_1[13][0],
-                player_X_2[13][0],
-                blanks[13][0],
+                player_1_X_1[13][0],
+                player_1_X_2[13][0],
+                blanks_1[13][0],
 
-                player_X_1[14][0],
-                player_X_2[14][0],
-                blanks[14][0],
+                player_1_X_1[14][0],
+                player_1_X_2[14][0],
+                blanks_1[14][0],
 
-                html.Div(children=team_names_json, id='intermediate-team_names', style={'display': 'none'}),
+                html.Div(children=team_names_json, id='intermediate-team_names_gw1', style={'display': 'none'}),
 
-                html.Div(children=team_unique_ids_json, id='intermediate-team_unique_ids', style={'display': 'none'}),
+                html.Div(children=team_unique_ids_json, id='intermediate-team_unique_ids_gw1', style={'display': 'none'}),
 
             ])],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
 
             html.Div([html.Div([
                 html.Div(children='GW+2'),
-                html.Div(children='Data'),
+
+                html.Div([
+                    html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+
+                ], style={'width': '100%','float': 'left'}),
+
+                player_2_X_1[0][0],
+                player_2_X_2[0][0],
+                blanks_2[0][0],
+
+                player_2_X_1[1][0],
+                player_2_X_2[1][0],
+                blanks_2[1][0],
+
+                player_2_X_1[2][0],
+                player_2_X_2[2][0],
+                blanks_2[2][0],
+
+                player_2_X_1[3][0],
+                player_2_X_2[3][0],
+                blanks_2[3][0],
+
+                player_2_X_1[4][0],
+                player_2_X_2[4][0],
+                blanks_2[4][0],
+
+                player_2_X_1[5][0],
+                player_2_X_2[5][0],
+                blanks_2[5][0],
+
+                player_2_X_1[6][0],
+                player_2_X_2[6][0],
+                blanks_2[6][0],
+
+                player_2_X_1[7][0],
+                player_2_X_2[7][0],
+                blanks_2[7][0],
+
+                player_2_X_1[8][0],
+                player_2_X_2[8][0],
+                blanks_2[8][0],
+
+                player_2_X_1[9][0],
+                player_2_X_2[9][0],
+                blanks_2[9][0],
+
+                player_2_X_1[10][0],
+                player_2_X_2[10][0],
+                blanks_2[10][0],
+
+                player_2_X_1[11][0],
+                player_2_X_2[11][0],
+                blanks_2[11][0],
+
+                player_2_X_1[12][0],
+                player_2_X_2[12][0],
+                blanks_2[12][0],
+
+                player_2_X_1[13][0],
+                player_2_X_2[13][0],
+                blanks_2[13][0],
+
+                player_2_X_1[14][0],
+                player_2_X_2[14][0],
+                blanks_2[14][0],
+
+                html.Div(children=team_names_json, id='intermediate-team_names_gw2', style={'display': 'none'}),
+
+                html.Div(children=team_unique_ids_json, id='intermediate-team_unique_ids_gw2', style={'display': 'none'}),
+
             ])],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
 
             html.Div([html.Div([
                 html.Div(children='GW+3'),
-                html.Div(children='Data'),
+
+                html.Div([
+                    html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+
+                ], style={'width': '100%','float': 'left'}),
+
+                player_3_X_1[0][0],
+                player_3_X_2[0][0],
+                blanks_3[0][0],
+
+                player_3_X_1[1][0],
+                player_3_X_2[1][0],
+                blanks_3[1][0],
+
+                player_3_X_1[2][0],
+                player_3_X_2[2][0],
+                blanks_3[2][0],
+
+                player_3_X_1[3][0],
+                player_3_X_2[3][0],
+                blanks_3[3][0],
+
+                player_3_X_1[4][0],
+                player_3_X_2[4][0],
+                blanks_3[4][0],
+
+                player_3_X_1[5][0],
+                player_3_X_2[5][0],
+                blanks_3[5][0],
+
+                player_3_X_1[6][0],
+                player_3_X_2[6][0],
+                blanks_3[6][0],
+
+                player_3_X_1[7][0],
+                player_3_X_2[7][0],
+                blanks_3[7][0],
+
+                player_3_X_1[8][0],
+                player_3_X_2[8][0],
+                blanks_3[8][0],
+
+                player_3_X_1[9][0],
+                player_3_X_2[9][0],
+                blanks_3[9][0],
+
+                player_3_X_1[10][0],
+                player_3_X_2[10][0],
+                blanks_3[10][0],
+
+                player_3_X_1[11][0],
+                player_3_X_2[11][0],
+                blanks_3[11][0],
+
+                player_3_X_1[12][0],
+                player_3_X_2[12][0],
+                blanks_3[12][0],
+
+                player_3_X_1[13][0],
+                player_3_X_2[13][0],
+                blanks_3[13][0],
+
+                player_3_X_1[14][0],
+                player_3_X_2[14][0],
+                blanks_3[14][0],
+
+                html.Div(children=team_names_json, id='intermediate-team_names_gw3', style={'display': 'none'}),
+
+                html.Div(children=team_unique_ids_json, id='intermediate-team_unique_ids_gw3', style={'display': 'none'}),
+
             ])],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
 
             html.Div([html.Div([
                 html.Div(children='GW+4'),
-                html.Div(children='Data'),
+
+                html.Div([
+                    html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+
+                ], style={'width': '100%','float': 'left'}),
+
+                player_4_X_1[0][0],
+                player_4_X_2[0][0],
+                blanks_4[0][0],
+
+                player_4_X_1[1][0],
+                player_4_X_2[1][0],
+                blanks_4[1][0],
+
+                player_4_X_1[2][0],
+                player_4_X_2[2][0],
+                blanks_4[2][0],
+
+                player_4_X_1[3][0],
+                player_4_X_2[3][0],
+                blanks_4[3][0],
+
+                player_4_X_1[4][0],
+                player_4_X_2[4][0],
+                blanks_4[4][0],
+
+                player_4_X_1[5][0],
+                player_4_X_2[5][0],
+                blanks_4[5][0],
+
+                player_4_X_1[6][0],
+                player_4_X_2[6][0],
+                blanks_4[6][0],
+
+                player_4_X_1[7][0],
+                player_4_X_2[7][0],
+                blanks_4[7][0],
+
+                player_4_X_1[8][0],
+                player_4_X_2[8][0],
+                blanks_4[8][0],
+
+                player_4_X_1[9][0],
+                player_4_X_2[9][0],
+                blanks_4[9][0],
+
+                player_4_X_1[10][0],
+                player_4_X_2[10][0],
+                blanks_4[10][0],
+
+                player_4_X_1[11][0],
+                player_4_X_2[11][0],
+                blanks_4[11][0],
+
+                player_4_X_1[12][0],
+                player_4_X_2[12][0],
+                blanks_4[12][0],
+
+                player_4_X_1[13][0],
+                player_4_X_2[13][0],
+                blanks_4[13][0],
+
+                player_4_X_1[14][0],
+                player_4_X_2[14][0],
+                blanks_4[14][0],
+
+                html.Div(children=team_names_json, id='intermediate-team_names_gw4', style={'display': 'none'}),
+
+                html.Div(children=team_unique_ids_json, id='intermediate-team_unique_ids_gw4', style={'display': 'none'}),
+
             ])],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
             )
 
 
 @app.callback(
-    [Output('player_1_1_value', 'children'),
-     Output('player_1_1_pos', 'children'),
-     Output('player_1_1_team', 'children'),
-     Output('player_1_1_against', 'children'),
-     Output('player_1_1_H_A', 'children'),
-     Output('player_1_1_team_odds', 'children'),
-     Output('player_1_1_player_form', 'children'),
-     Output('player_1_2_against', 'children'),
-     Output('player_1_2_H_A', 'children'),
-     Output('player_1_2_team_odds', 'children'),
-     Output('player_1_2_player_form', 'children'),
-     Output('player_2_1_value', 'children'),
-     Output('player_2_1_pos', 'children'),
-     Output('player_2_1_team', 'children'),
-     Output('player_2_1_against', 'children'),
-     Output('player_2_1_H_A', 'children'),
-     Output('player_2_1_team_odds', 'children'),
-     Output('player_2_1_player_form', 'children'),
-     Output('player_2_2_against', 'children'),
-     Output('player_2_2_H_A', 'children'),
-     Output('player_2_2_team_odds', 'children'),
-     Output('player_2_2_player_form', 'children'),
-     Output('player_3_1_value', 'children'),
-     Output('player_3_1_pos', 'children'),
-     Output('player_3_1_team', 'children'),
-     Output('player_3_1_against', 'children'),
-     Output('player_3_1_H_A', 'children'),
-     Output('player_3_1_team_odds', 'children'),
-     Output('player_3_1_player_form', 'children'),
-     Output('player_3_2_against', 'children'),
-     Output('player_3_2_H_A', 'children'),
-     Output('player_3_2_team_odds', 'children'),
-     Output('player_3_2_player_form', 'children'),
-     Output('player_4_1_value', 'children'),
-     Output('player_4_1_pos', 'children'),
-     Output('player_4_1_team', 'children'),
-     Output('player_4_1_against', 'children'),
-     Output('player_4_1_H_A', 'children'),
-     Output('player_4_1_team_odds', 'children'),
-     Output('player_4_1_player_form', 'children'),
-     Output('player_4_2_against', 'children'),
-     Output('player_4_2_H_A', 'children'),
-     Output('player_4_2_team_odds', 'children'),
-     Output('player_4_2_player_form', 'children'),
-     Output('player_5_1_value', 'children'),
-     Output('player_5_1_pos', 'children'),
-     Output('player_5_1_team', 'children'),
-     Output('player_5_1_against', 'children'),
-     Output('player_5_1_H_A', 'children'),
-     Output('player_5_1_team_odds', 'children'),
-     Output('player_5_1_player_form', 'children'),
-     Output('player_5_2_against', 'children'),
-     Output('player_5_2_H_A', 'children'),
-     Output('player_5_2_team_odds', 'children'),
-     Output('player_5_2_player_form', 'children'),
-     Output('player_6_1_value', 'children'),
-     Output('player_6_1_pos', 'children'),
-     Output('player_6_1_team', 'children'),
-     Output('player_6_1_against', 'children'),
-     Output('player_6_1_H_A', 'children'),
-     Output('player_6_1_team_odds', 'children'),
-     Output('player_6_1_player_form', 'children'),
-     Output('player_6_2_against', 'children'),
-     Output('player_6_2_H_A', 'children'),
-     Output('player_6_2_team_odds', 'children'),
-     Output('player_6_2_player_form', 'children'),
-     Output('player_7_1_value', 'children'),
-     Output('player_7_1_pos', 'children'),
-     Output('player_7_1_team', 'children'),
-     Output('player_7_1_against', 'children'),
-     Output('player_7_1_H_A', 'children'),
-     Output('player_7_1_team_odds', 'children'),
-     Output('player_7_1_player_form', 'children'),
-     Output('player_7_2_against', 'children'),
-     Output('player_7_2_H_A', 'children'),
-     Output('player_7_2_team_odds', 'children'),
-     Output('player_7_2_player_form', 'children'),
-     Output('player_8_1_value', 'children'),
-     Output('player_8_1_pos', 'children'),
-     Output('player_8_1_team', 'children'),
-     Output('player_8_1_against', 'children'),
-     Output('player_8_1_H_A', 'children'),
-     Output('player_8_1_team_odds', 'children'),
-     Output('player_8_1_player_form', 'children'),
-     Output('player_8_2_against', 'children'),
-     Output('player_8_2_H_A', 'children'),
-     Output('player_8_2_team_odds', 'children'),
-     Output('player_8_2_player_form', 'children'),
-     Output('player_9_1_value', 'children'),
-     Output('player_9_1_pos', 'children'),
-     Output('player_9_1_team', 'children'),
-     Output('player_9_1_against', 'children'),
-     Output('player_9_1_H_A', 'children'),
-     Output('player_9_1_team_odds', 'children'),
-     Output('player_9_1_player_form', 'children'),
-     Output('player_9_2_against', 'children'),
-     Output('player_9_2_H_A', 'children'),
-     Output('player_9_2_team_odds', 'children'),
-     Output('player_9_2_player_form', 'children'),
-     Output('player_10_1_value', 'children'),
-     Output('player_10_1_pos', 'children'),
-     Output('player_10_1_team', 'children'),
-     Output('player_10_1_against', 'children'),
-     Output('player_10_1_H_A', 'children'),
-     Output('player_10_1_team_odds', 'children'),
-     Output('player_10_1_player_form', 'children'),
-     Output('player_10_2_against', 'children'),
-     Output('player_10_2_H_A', 'children'),
-     Output('player_10_2_team_odds', 'children'),
-     Output('player_10_2_player_form', 'children'),
-     Output('player_11_1_value', 'children'),
-     Output('player_11_1_pos', 'children'),
-     Output('player_11_1_team', 'children'),
-     Output('player_11_1_against', 'children'),
-     Output('player_11_1_H_A', 'children'),
-     Output('player_11_1_team_odds', 'children'),
-     Output('player_11_1_player_form', 'children'),
-     Output('player_11_2_against', 'children'),
-     Output('player_11_2_H_A', 'children'),
-     Output('player_11_2_team_odds', 'children'),
-     Output('player_11_2_player_form', 'children'),
-     Output('player_12_1_value', 'children'),
-     Output('player_12_1_pos', 'children'),
-     Output('player_12_1_team', 'children'),
-     Output('player_12_1_against', 'children'),
-     Output('player_12_1_H_A', 'children'),
-     Output('player_12_1_team_odds', 'children'),
-     Output('player_12_1_player_form', 'children'),
-     Output('player_12_2_against', 'children'),
-     Output('player_12_2_H_A', 'children'),
-     Output('player_12_2_team_odds', 'children'),
-     Output('player_12_2_player_form', 'children'),
-     Output('player_13_1_value', 'children'),
-     Output('player_13_1_pos', 'children'),
-     Output('player_13_1_team', 'children'),
-     Output('player_13_1_against', 'children'),
-     Output('player_13_1_H_A', 'children'),
-     Output('player_13_1_team_odds', 'children'),
-     Output('player_13_1_player_form', 'children'),
-     Output('player_13_2_against', 'children'),
-     Output('player_13_2_H_A', 'children'),
-     Output('player_13_2_team_odds', 'children'),
-     Output('player_13_2_player_form', 'children'),
-     Output('player_14_1_value', 'children'),
-     Output('player_14_1_pos', 'children'),
-     Output('player_14_1_team', 'children'),
-     Output('player_14_1_against', 'children'),
-     Output('player_14_1_H_A', 'children'),
-     Output('player_14_1_team_odds', 'children'),
-     Output('player_14_1_player_form', 'children'),
-     Output('player_14_2_against', 'children'),
-     Output('player_14_2_H_A', 'children'),
-     Output('player_14_2_team_odds', 'children'),
-     Output('player_14_2_player_form', 'children'),
-     Output('player_15_1_value', 'children'),
-     Output('player_15_1_pos', 'children'),
-     Output('player_15_1_team', 'children'),
-     Output('player_15_1_against', 'children'),
-     Output('player_15_1_H_A', 'children'),
-     Output('player_15_1_team_odds', 'children'),
-     Output('player_15_1_player_form', 'children'),
-     Output('player_15_2_against', 'children'),
-     Output('player_15_2_H_A', 'children'),
-     Output('player_15_2_team_odds', 'children'),
-     Output('player_15_2_player_form', 'children')],
-    [Input('player_1_name', 'value'),
-     Input('player_2_name', 'value'),
-     Input('player_3_name', 'value'),
-     Input('player_4_name', 'value'),
-     Input('player_5_name', 'value'),
-     Input('player_6_name', 'value'),
-     Input('player_7_name', 'value'),
-     Input('player_8_name', 'value'),
-     Input('player_9_name', 'value'),
-     Input('player_10_name', 'value'),
-     Input('player_11_name', 'value'),
-     Input('player_12_name', 'value'),
-     Input('player_13_name', 'value'),
-     Input('player_14_name', 'value'),
-     Input('player_15_name', 'value')],
-    [State('intermediate-team_names', 'children'),
-     State('intermediate-team_unique_ids', 'children')]
+    [Output('player_1_1_1_value', 'children'),
+     Output('player_1_1_1_pos', 'children'),
+     Output('player_1_1_1_team', 'children'),
+     Output('player_1_1_1_against', 'children'),
+     Output('player_1_1_1_H_A', 'children'),
+     Output('player_1_1_1_team_odds', 'children'),
+     Output('player_1_1_1_player_form', 'children'),
+     Output('player_1_1_2_against', 'children'),
+     Output('player_1_1_2_H_A', 'children'),
+     Output('player_1_1_2_team_odds', 'children'),
+     Output('player_1_1_2_player_form', 'children'),
+     Output('player_1_2_1_value', 'children'),
+     Output('player_1_2_1_pos', 'children'),
+     Output('player_1_2_1_team', 'children'),
+     Output('player_1_2_1_against', 'children'),
+     Output('player_1_2_1_H_A', 'children'),
+     Output('player_1_2_1_team_odds', 'children'),
+     Output('player_1_2_1_player_form', 'children'),
+     Output('player_1_2_2_against', 'children'),
+     Output('player_1_2_2_H_A', 'children'),
+     Output('player_1_2_2_team_odds', 'children'),
+     Output('player_1_2_2_player_form', 'children'),
+     Output('player_1_3_1_value', 'children'),
+     Output('player_1_3_1_pos', 'children'),
+     Output('player_1_3_1_team', 'children'),
+     Output('player_1_3_1_against', 'children'),
+     Output('player_1_3_1_H_A', 'children'),
+     Output('player_1_3_1_team_odds', 'children'),
+     Output('player_1_3_1_player_form', 'children'),
+     Output('player_1_3_2_against', 'children'),
+     Output('player_1_3_2_H_A', 'children'),
+     Output('player_1_3_2_team_odds', 'children'),
+     Output('player_1_3_2_player_form', 'children'),
+     Output('player_1_4_1_value', 'children'),
+     Output('player_1_4_1_pos', 'children'),
+     Output('player_1_4_1_team', 'children'),
+     Output('player_1_4_1_against', 'children'),
+     Output('player_1_4_1_H_A', 'children'),
+     Output('player_1_4_1_team_odds', 'children'),
+     Output('player_1_4_1_player_form', 'children'),
+     Output('player_1_4_2_against', 'children'),
+     Output('player_1_4_2_H_A', 'children'),
+     Output('player_1_4_2_team_odds', 'children'),
+     Output('player_1_4_2_player_form', 'children'),
+     Output('player_1_5_1_value', 'children'),
+     Output('player_1_5_1_pos', 'children'),
+     Output('player_1_5_1_team', 'children'),
+     Output('player_1_5_1_against', 'children'),
+     Output('player_1_5_1_H_A', 'children'),
+     Output('player_1_5_1_team_odds', 'children'),
+     Output('player_1_5_1_player_form', 'children'),
+     Output('player_1_5_2_against', 'children'),
+     Output('player_1_5_2_H_A', 'children'),
+     Output('player_1_5_2_team_odds', 'children'),
+     Output('player_1_5_2_player_form', 'children'),
+     Output('player_1_6_1_value', 'children'),
+     Output('player_1_6_1_pos', 'children'),
+     Output('player_1_6_1_team', 'children'),
+     Output('player_1_6_1_against', 'children'),
+     Output('player_1_6_1_H_A', 'children'),
+     Output('player_1_6_1_team_odds', 'children'),
+     Output('player_1_6_1_player_form', 'children'),
+     Output('player_1_6_2_against', 'children'),
+     Output('player_1_6_2_H_A', 'children'),
+     Output('player_1_6_2_team_odds', 'children'),
+     Output('player_1_6_2_player_form', 'children'),
+     Output('player_1_7_1_value', 'children'),
+     Output('player_1_7_1_pos', 'children'),
+     Output('player_1_7_1_team', 'children'),
+     Output('player_1_7_1_against', 'children'),
+     Output('player_1_7_1_H_A', 'children'),
+     Output('player_1_7_1_team_odds', 'children'),
+     Output('player_1_7_1_player_form', 'children'),
+     Output('player_1_7_2_against', 'children'),
+     Output('player_1_7_2_H_A', 'children'),
+     Output('player_1_7_2_team_odds', 'children'),
+     Output('player_1_7_2_player_form', 'children'),
+     Output('player_1_8_1_value', 'children'),
+     Output('player_1_8_1_pos', 'children'),
+     Output('player_1_8_1_team', 'children'),
+     Output('player_1_8_1_against', 'children'),
+     Output('player_1_8_1_H_A', 'children'),
+     Output('player_1_8_1_team_odds', 'children'),
+     Output('player_1_8_1_player_form', 'children'),
+     Output('player_1_8_2_against', 'children'),
+     Output('player_1_8_2_H_A', 'children'),
+     Output('player_1_8_2_team_odds', 'children'),
+     Output('player_1_8_2_player_form', 'children'),
+     Output('player_1_9_1_value', 'children'),
+     Output('player_1_9_1_pos', 'children'),
+     Output('player_1_9_1_team', 'children'),
+     Output('player_1_9_1_against', 'children'),
+     Output('player_1_9_1_H_A', 'children'),
+     Output('player_1_9_1_team_odds', 'children'),
+     Output('player_1_9_1_player_form', 'children'),
+     Output('player_1_9_2_against', 'children'),
+     Output('player_1_9_2_H_A', 'children'),
+     Output('player_1_9_2_team_odds', 'children'),
+     Output('player_1_9_2_player_form', 'children'),
+     Output('player_1_10_1_value', 'children'),
+     Output('player_1_10_1_pos', 'children'),
+     Output('player_1_10_1_team', 'children'),
+     Output('player_1_10_1_against', 'children'),
+     Output('player_1_10_1_H_A', 'children'),
+     Output('player_1_10_1_team_odds', 'children'),
+     Output('player_1_10_1_player_form', 'children'),
+     Output('player_1_10_2_against', 'children'),
+     Output('player_1_10_2_H_A', 'children'),
+     Output('player_1_10_2_team_odds', 'children'),
+     Output('player_1_10_2_player_form', 'children'),
+     Output('player_1_11_1_value', 'children'),
+     Output('player_1_11_1_pos', 'children'),
+     Output('player_1_11_1_team', 'children'),
+     Output('player_1_11_1_against', 'children'),
+     Output('player_1_11_1_H_A', 'children'),
+     Output('player_1_11_1_team_odds', 'children'),
+     Output('player_1_11_1_player_form', 'children'),
+     Output('player_1_11_2_against', 'children'),
+     Output('player_1_11_2_H_A', 'children'),
+     Output('player_1_11_2_team_odds', 'children'),
+     Output('player_1_11_2_player_form', 'children'),
+     Output('player_1_12_1_value', 'children'),
+     Output('player_1_12_1_pos', 'children'),
+     Output('player_1_12_1_team', 'children'),
+     Output('player_1_12_1_against', 'children'),
+     Output('player_1_12_1_H_A', 'children'),
+     Output('player_1_12_1_team_odds', 'children'),
+     Output('player_1_12_1_player_form', 'children'),
+     Output('player_1_12_2_against', 'children'),
+     Output('player_1_12_2_H_A', 'children'),
+     Output('player_1_12_2_team_odds', 'children'),
+     Output('player_1_12_2_player_form', 'children'),
+     Output('player_1_13_1_value', 'children'),
+     Output('player_1_13_1_pos', 'children'),
+     Output('player_1_13_1_team', 'children'),
+     Output('player_1_13_1_against', 'children'),
+     Output('player_1_13_1_H_A', 'children'),
+     Output('player_1_13_1_team_odds', 'children'),
+     Output('player_1_13_1_player_form', 'children'),
+     Output('player_1_13_2_against', 'children'),
+     Output('player_1_13_2_H_A', 'children'),
+     Output('player_1_13_2_team_odds', 'children'),
+     Output('player_1_13_2_player_form', 'children'),
+     Output('player_1_14_1_value', 'children'),
+     Output('player_1_14_1_pos', 'children'),
+     Output('player_1_14_1_team', 'children'),
+     Output('player_1_14_1_against', 'children'),
+     Output('player_1_14_1_H_A', 'children'),
+     Output('player_1_14_1_team_odds', 'children'),
+     Output('player_1_14_1_player_form', 'children'),
+     Output('player_1_14_2_against', 'children'),
+     Output('player_1_14_2_H_A', 'children'),
+     Output('player_1_14_2_team_odds', 'children'),
+     Output('player_1_14_2_player_form', 'children'),
+     Output('player_1_15_1_value', 'children'),
+     Output('player_1_15_1_pos', 'children'),
+     Output('player_1_15_1_team', 'children'),
+     Output('player_1_15_1_against', 'children'),
+     Output('player_1_15_1_H_A', 'children'),
+     Output('player_1_15_1_team_odds', 'children'),
+     Output('player_1_15_1_player_form', 'children'),
+     Output('player_1_15_2_against', 'children'),
+     Output('player_1_15_2_H_A', 'children'),
+     Output('player_1_15_2_team_odds', 'children'),
+     Output('player_1_15_2_player_form', 'children'),
+     Output('player_2_1_name', 'options'),
+     Output('player_2_1_name', 'value'),
+     Output('intermediate-team_names_gw2', 'children'),
+     Output('intermediate-team_unique_ids_gw2', 'children')],
+    [Input('player_1_1_name', 'value'),
+     Input('player_1_2_name', 'value'),
+     Input('player_1_3_name', 'value'),
+     Input('player_1_4_name', 'value'),
+     Input('player_1_5_name', 'value'),
+     Input('player_1_6_name', 'value'),
+     Input('player_1_7_name', 'value'),
+     Input('player_1_8_name', 'value'),
+     Input('player_1_9_name', 'value'),
+     Input('player_1_10_name', 'value'),
+     Input('player_1_11_name', 'value'),
+     Input('player_1_12_name', 'value'),
+     Input('player_1_13_name', 'value'),
+     Input('player_1_14_name', 'value'),
+     Input('player_1_15_name', 'value')],
+    [State('intermediate-team_names_gw1', 'children'),
+     State('intermediate-team_unique_ids_gw1', 'children'),
+     State('intermediate-team_names_gw2', 'children'),
+     State('intermediate-team_unique_ids_gw2', 'children')]
 )
-def update_player_data(player_1_unique_id,
-                       player_2_unique_id,
-                       player_3_unique_id,
-                       player_4_unique_id,
-                       player_5_unique_id,
-                       player_6_unique_id,
-                       player_7_unique_id,
-                       player_8_unique_id,
-                       player_9_unique_id,
-                       player_10_unique_id,
-                       player_11_unique_id,
-                       player_12_unique_id,
-                       player_13_unique_id,
-                       player_14_unique_id,
-                       player_15_unique_id,
-                       team_names_json,
-                       team_unique_ids_json):
+def update_player_data_gw1(player_1_1_unique_id,
+                            player_1_2_unique_id,
+                            player_1_3_unique_id,
+                            player_1_4_unique_id,
+                            player_1_5_unique_id,
+                            player_1_6_unique_id,
+                            player_1_7_unique_id,
+                            player_1_8_unique_id,
+                            player_1_9_unique_id,
+                            player_1_10_unique_id,
+                            player_1_11_unique_id,
+                            player_1_12_unique_id,
+                            player_1_13_unique_id,
+                            player_1_14_unique_id,
+                            player_1_15_unique_id,
+                            team_names_json_1,
+                            team_unique_ids_json_1,
+                            team_names_json_2,
+                            team_unique_ids_json_2):
 
     email = 'speeder1987@gmail.com'
     password = 'Footb@ll2020'
@@ -1259,383 +1566,983 @@ def update_player_data(player_1_unique_id,
     team_picks = DataLoaderObj.scrape_team_information(email, password, team_id)
 
     data_2020 = data[data['season']==2020]
-    team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
 
-    # Player 1
-    player_1_id = determine_element_id(data, player_1_unique_id, 2020)
-    (player_1_unique_id, player_1_player_form, player_1_team_unique_id, player_1_team_id, player_1_position, player_1_team_code, player_1_player_name, player_1_opposition, player_1_was_home, player_1_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_1_id, season_latest, round_next)
+    team_unique_ids_1 = pd.read_json(team_unique_ids_json_1, orient='split', typ='series')
+    team_names_1 = pd.read_json(team_names_json_1, orient='split', typ='series')
 
-    if int(player_1_unique_id) in team_unique_ids.values:
-        player_1_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_id]['selling_price'].values[0]/10)
+    team_unique_ids_2 = pd.read_json(team_unique_ids_json_2, orient='split', typ='series')
+    team_names_2 = pd.read_json(team_names_json_2, orient='split', typ='series')
+
+    gw_curr = 17
+
+    gw_plus1 = gw_curr + 1
+    gw_plus2 = gw_curr + 2
+    gw_plus3 = gw_curr + 3
+    gw_plus4 = gw_curr + 4
+
+    #GW + 1
+    player_1_1_id = determine_element_id(data, player_1_1_unique_id, 2020)
+    (player_1_1_unique_id, player_1_1_player_form, player_1_1_team_unique_id, player_1_1_team_id, player_1_1_position, player_1_1_team_code, player_1_1_player_name, player_1_1_opposition, player_1_1_was_home, player_1_1_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_1_id, season_latest, gw_plus1)
+
+    if int(player_1_1_unique_id) in team_unique_ids_1.values:
+        player_1_1_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_1_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_1_unique_id)]['round'].max()
-        player_1_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_1_unique_id)]['round'].max()
+        player_1_1_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_1_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 2
-    player_2_id = determine_element_id(data, player_2_unique_id, 2020)
-    (player_2_unique_id, player_2_player_form, player_2_team_unique_id, player_2_team_id, player_2_position, player_2_team_code, player_2_player_name, player_2_opposition, player_2_was_home, player_2_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_2_id, season_latest, round_next)
+    player_1_2_id = determine_element_id(data, player_1_2_unique_id, 2020)
+    (player_1_2_unique_id, player_1_2_player_form, player_1_2_team_unique_id, player_1_2_team_id, player_1_2_position, player_1_2_team_code, player_1_2_player_name, player_1_2_opposition, player_1_2_was_home, player_1_2_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_2_id, season_latest, gw_plus1)
 
-    if int(player_2_unique_id) in team_unique_ids.values:
-        player_2_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_id]['selling_price'].values[0]/10)
+    if int(player_1_2_unique_id) in team_unique_ids_1.values:
+        player_1_2_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_2_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_2_unique_id)]['round'].max()
-        player_2_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_2_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_2_unique_id)]['round'].max()
+        player_1_2_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_2_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 3
-    player_3_id = determine_element_id(data, player_3_unique_id, 2020)
-    (player_3_unique_id, player_3_player_form, player_3_team_unique_id, player_3_team_id, player_3_position, player_3_team_code, player_3_player_name, player_3_opposition, player_3_was_home, player_3_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_3_id, season_latest, round_next)
+    player_1_3_id = determine_element_id(data, player_1_3_unique_id, 2020)
+    (player_1_3_unique_id, player_1_3_player_form, player_1_3_team_unique_id, player_1_3_team_id, player_1_3_position, player_1_3_team_code, player_1_3_player_name, player_1_3_opposition, player_1_3_was_home, player_1_3_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_3_id, season_latest, gw_plus1)
 
-    if int(player_3_unique_id) in team_unique_ids.values:
-        player_3_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_3_id]['selling_price'].values[0]/10)
+    if int(player_1_3_unique_id) in team_unique_ids_1.values:
+        player_1_3_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_3_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_3_unique_id)]['round'].max()
-        player_3_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_3_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_3_unique_id)]['round'].max()
+        player_1_3_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_3_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 4
-    player_4_id = determine_element_id(data, player_4_unique_id, 2020)
-    (player_4_unique_id, player_4_player_form, player_4_team_unique_id, player_4_team_id, player_4_position, player_4_team_code, player_4_player_name, player_4_opposition, player_4_was_home, player_4_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_4_id, season_latest, round_next)
+    player_1_4_id = determine_element_id(data, player_1_4_unique_id, 2020)
+    (player_1_4_unique_id, player_1_4_player_form, player_1_4_team_unique_id, player_1_4_team_id, player_1_4_position, player_1_4_team_code, player_1_4_player_name, player_1_4_opposition, player_1_4_was_home, player_1_4_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_4_id, season_latest, gw_plus1)
 
-    if int(player_4_unique_id) in team_unique_ids.values:
-        player_4_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_id]['selling_price'].values[0]/10)
+    if int(player_1_4_unique_id) in team_unique_ids_1.values:
+        player_1_4_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_4_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_4_unique_id)]['round'].max()
-        player_4_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_4_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_4_unique_id)]['round'].max()
+        player_1_4_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_4_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 5
-    player_5_id = determine_element_id(data, player_5_unique_id, 2020)
-    (player_5_unique_id, player_5_player_form, player_5_team_unique_id, player_5_team_id, player_5_position, player_5_team_code, player_5_player_name, player_5_opposition, player_5_was_home, player_5_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_5_id, season_latest, round_next)
+    player_1_5_id = determine_element_id(data, player_1_5_unique_id, 2020)
+    (player_1_5_unique_id, player_1_5_player_form, player_1_5_team_unique_id, player_1_5_team_id, player_1_5_position, player_1_5_team_code, player_1_5_player_name, player_1_5_opposition, player_1_5_was_home, player_1_5_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_5_id, season_latest, gw_plus1)
 
-    if int(player_5_unique_id) in team_unique_ids.values:
-        player_5_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_5_id]['selling_price'].values[0]/10)
+    if int(player_1_5_unique_id) in team_unique_ids_1.values:
+        player_1_5_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_5_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_5_unique_id)]['round'].max()
-        player_5_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_5_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_5_unique_id)]['round'].max()
+        player_1_5_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_5_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 6
-    player_6_id = determine_element_id(data, player_6_unique_id, 2020)
-    (player_6_unique_id, player_6_player_form, player_6_team_unique_id, player_6_team_id, player_6_position, player_6_team_code, player_6_player_name, player_6_opposition, player_6_was_home, player_6_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_6_id, season_latest, round_next)
+    player_1_6_id = determine_element_id(data, player_1_6_unique_id, 2020)
+    (player_1_6_unique_id, player_1_6_player_form, player_1_6_team_unique_id, player_1_6_team_id, player_1_6_position, player_1_6_team_code, player_1_6_player_name, player_1_6_opposition, player_1_6_was_home, player_1_6_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_6_id, season_latest, gw_plus1)
 
-    if int(player_6_unique_id) in team_unique_ids.values:
-        player_6_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_6_id]['selling_price'].values[0]/10)
+    if int(player_1_6_unique_id) in team_unique_ids_1.values:
+        player_1_6_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_6_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_6_unique_id)]['round'].max()
-        player_6_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_6_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_6_unique_id)]['round'].max()
+        player_1_6_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_6_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 7
-    player_7_id = determine_element_id(data, player_7_unique_id, 2020)
-    (player_7_unique_id, player_7_player_form, player_7_team_unique_id, player_7_team_id, player_7_position, player_7_team_code, player_7_player_name, player_7_opposition, player_7_was_home, player_7_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_7_id, season_latest, round_next)
+    player_1_7_id = determine_element_id(data, player_1_7_unique_id, 2020)
+    (player_1_7_unique_id, player_1_7_player_form, player_1_7_team_unique_id, player_1_7_team_id, player_1_7_position, player_1_7_team_code, player_1_7_player_name, player_1_7_opposition, player_1_7_was_home, player_1_7_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_7_id, season_latest, gw_plus1)
 
-    if int(player_7_unique_id) in team_unique_ids.values:
-        player_7_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_7_id]['selling_price'].values[0]/10)
+    if int(player_1_7_unique_id) in team_unique_ids_1.values:
+        player_1_7_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_7_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_7_unique_id)]['round'].max()
-        player_7_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_7_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_7_unique_id)]['round'].max()
+        player_1_7_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_7_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 8
-    player_8_id = determine_element_id(data, player_8_unique_id, 2020)
-    (player_8_unique_id, player_8_player_form, player_8_team_unique_id, player_8_team_id, player_8_position, player_8_team_code, player_8_player_name, player_8_opposition, player_8_was_home, player_8_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_8_id, season_latest, round_next)
+    player_1_8_id = determine_element_id(data, player_1_8_unique_id, 2020)
+    (player_1_8_unique_id, player_1_8_player_form, player_1_8_team_unique_id, player_1_8_team_id, player_1_8_position, player_1_8_team_code, player_1_8_player_name, player_1_8_opposition, player_1_8_was_home, player_1_8_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_8_id, season_latest, gw_plus1)
 
-    if int(player_8_unique_id) in team_unique_ids.values:
-        player_8_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_8_id]['selling_price'].values[0]/10)
+    if int(player_1_8_unique_id) in team_unique_ids_1.values:
+        player_1_8_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_8_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_8_unique_id)]['round'].max()
-        player_8_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_8_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_8_unique_id)]['round'].max()
+        player_1_8_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_8_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 9
-    player_9_id = determine_element_id(data, player_9_unique_id, 2020)
-    (player_9_unique_id, player_9_player_form, player_9_team_unique_id, player_9_team_id, player_9_position, player_9_team_code, player_9_player_name, player_9_opposition, player_9_was_home, player_9_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_9_id, season_latest, round_next)
+    player_1_9_id = determine_element_id(data, player_1_9_unique_id, 2020)
+    (player_1_9_unique_id, player_1_9_player_form, player_1_9_team_unique_id, player_1_9_team_id, player_1_9_position, player_1_9_team_code, player_1_9_player_name, player_1_9_opposition, player_1_9_was_home, player_1_9_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_9_id, season_latest, gw_plus1)
 
-    if int(player_9_unique_id) in team_unique_ids.values:
-        player_9_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_9_id]['selling_price'].values[0]/10)
+    if int(player_1_9_unique_id) in team_unique_ids_1.values:
+        player_1_9_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_9_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_9_unique_id)]['round'].max()
-        player_9_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_9_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_9_unique_id)]['round'].max()
+        player_1_9_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_9_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 10
-    player_10_id = determine_element_id(data, player_10_unique_id, 2020)
-    (player_10_unique_id, player_10_player_form, player_10_team_unique_id, player_10_team_id, player_10_position, player_10_team_code, player_10_player_name, player_10_opposition, player_10_was_home, player_10_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_10_id, season_latest, round_next)
+    player_1_10_id = determine_element_id(data, player_1_10_unique_id, 2020)
+    (player_1_10_unique_id, player_1_10_player_form, player_1_10_team_unique_id, player_1_10_team_id, player_1_10_position, player_1_10_team_code, player_1_10_player_name, player_1_10_opposition, player_1_10_was_home, player_1_10_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_10_id, season_latest, gw_plus1)
 
-    if int(player_10_unique_id) in team_unique_ids.values:
-        player_10_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_10_id]['selling_price'].values[0]/10)
+    if int(player_1_10_unique_id) in team_unique_ids_1.values:
+        player_1_10_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_10_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_10_unique_id)]['round'].max()
-        player_10_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_10_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_10_unique_id)]['round'].max()
+        player_1_10_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_10_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 11
-    player_11_id = determine_element_id(data, player_11_unique_id, 2020)
-    (player_11_unique_id, player_11_player_form, player_11_team_unique_id, player_11_team_id, player_11_position, player_11_team_code, player_11_player_name, player_11_opposition, player_11_was_home, player_11_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_11_id, season_latest, round_next)
+    player_1_11_id = determine_element_id(data, player_1_11_unique_id, 2020)
+    (player_1_11_unique_id, player_1_11_player_form, player_1_11_team_unique_id, player_1_11_team_id, player_1_11_position, player_1_11_team_code, player_1_11_player_name, player_1_11_opposition, player_1_11_was_home, player_1_11_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_11_id, season_latest, gw_plus1)
 
-    if int(player_11_unique_id) in team_unique_ids.values:
-        player_11_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_11_id]['selling_price'].values[0]/10)
+    if int(player_1_11_unique_id) in team_unique_ids_1.values:
+        player_1_11_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_11_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_11_unique_id)]['round'].max()
-        player_11_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_11_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_11_unique_id)]['round'].max()
+        player_1_11_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_11_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 12
-    player_12_id = determine_element_id(data, player_12_unique_id, 2020)
-    (player_12_unique_id, player_12_player_form, player_12_team_unique_id, player_12_team_id, player_12_position, player_12_team_code, player_12_player_name, player_12_opposition, player_12_was_home, player_12_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_12_id, season_latest, round_next)
+    player_1_12_id = determine_element_id(data, player_1_12_unique_id, 2020)
+    (player_1_12_unique_id, player_1_12_player_form, player_1_12_team_unique_id, player_1_12_team_id, player_1_12_position, player_1_12_team_code, player_1_12_player_name, player_1_12_opposition, player_1_12_was_home, player_1_12_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_12_id, season_latest, gw_plus1)
 
-    if int(player_12_unique_id) in team_unique_ids.values:
-        player_12_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_12_id]['selling_price'].values[0]/10)
+    if int(player_1_12_unique_id) in team_unique_ids_1.values:
+        player_1_12_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_12_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_12_unique_id)]['round'].max()
-        player_12_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_12_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_12_unique_id)]['round'].max()
+        player_1_12_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_12_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 13
-    player_13_id = determine_element_id(data, player_13_unique_id, 2020)
-    (player_13_unique_id, player_13_player_form, player_13_team_unique_id, player_13_team_id, player_13_position, player_13_team_code, player_13_player_name, player_13_opposition, player_13_was_home, player_13_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_13_id, season_latest, round_next)
+    player_1_13_id = determine_element_id(data, player_1_13_unique_id, 2020)
+    (player_1_13_unique_id, player_1_13_player_form, player_1_13_team_unique_id, player_1_13_team_id, player_1_13_position, player_1_13_team_code, player_1_13_player_name, player_1_13_opposition, player_1_13_was_home, player_1_13_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_13_id, season_latest, gw_plus1)
 
-    if int(player_13_unique_id) in team_unique_ids.values:
-        player_13_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_13_id]['selling_price'].values[0]/10)
+    if int(player_1_13_unique_id) in team_unique_ids_1.values:
+        player_1_13_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_13_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_13_unique_id)]['round'].max()
-        player_13_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_13_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_13_unique_id)]['round'].max()
+        player_1_13_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_13_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 14
-    player_14_id = determine_element_id(data, player_14_unique_id, 2020)
-    (player_14_unique_id, player_14_player_form, player_14_team_unique_id, player_14_team_id, player_14_position, player_14_team_code, player_14_player_name, player_14_opposition, player_14_was_home, player_14_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_14_id, season_latest, round_next)
+    player_1_14_id = determine_element_id(data, player_1_14_unique_id, 2020)
+    (player_1_14_unique_id, player_1_14_player_form, player_1_14_team_unique_id, player_1_14_team_id, player_1_14_position, player_1_14_team_code, player_1_14_player_name, player_1_14_opposition, player_1_14_was_home, player_1_14_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_14_id, season_latest, gw_plus1)
 
-    if int(player_14_unique_id) in team_unique_ids.values:
-        player_14_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_14_id]['selling_price'].values[0]/10)
+    if int(player_1_14_unique_id) in team_unique_ids_1.values:
+        player_1_14_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_14_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_14_unique_id)]['round'].max()
-        player_14_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_14_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_14_unique_id)]['round'].max()
+        player_1_14_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_14_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
     # Player 15
-    player_15_id = determine_element_id(data, player_15_unique_id, 2020)
-    (player_15_unique_id, player_15_player_form, player_15_team_unique_id, player_15_team_id, player_15_position, player_15_team_code, player_15_player_name, player_15_opposition, player_15_was_home, player_15_odds_win, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_15_id, season_latest, round_next)
+    player_1_15_id = determine_element_id(data, player_1_15_unique_id, 2020)
+    (player_1_15_unique_id, player_1_15_player_form, player_1_15_team_unique_id, player_1_15_team_id, player_1_15_position, player_1_15_team_code, player_1_15_player_name, player_1_15_opposition, player_1_15_was_home, player_1_15_odds_win, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, player_1_15_id, season_latest, gw_plus1)
 
-    if int(player_15_unique_id) in team_unique_ids.values:
-        player_15_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_15_id]['selling_price'].values[0]/10)
+    if int(player_1_15_unique_id) in team_unique_ids_1.values:
+        player_1_15_value = '{0:.1f}'.format(team_picks[team_picks['element']==player_1_15_id]['selling_price'].values[0]/10)
     else:
-        round_player_max = data_2020[(data_2020['unique_id']==player_15_unique_id)]['round'].max()
-        player_15_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_15_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+        round_player_max = data_2020[(data_2020['unique_id']==player_1_15_unique_id)]['round'].max()
+        player_1_15_value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==player_1_15_unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
 
 
-    return (player_1_value, player_1_position, player_1_team_code, player_1_opposition[0], player_1_was_home[0], player_1_odds_win[0], player_1_player_form[0], player_1_opposition[1], player_1_was_home[1], player_1_odds_win[1], player_1_player_form[1],
-            player_2_value, player_2_position, player_2_team_code, player_2_opposition[0], player_2_was_home[0], player_2_odds_win[0], player_2_player_form[0], player_2_opposition[1], player_2_was_home[1], player_2_odds_win[1], player_2_player_form[1],
-            player_3_value, player_3_position, player_3_team_code, player_3_opposition[0], player_3_was_home[0], player_3_odds_win[0], player_3_player_form[0], player_3_opposition[1], player_3_was_home[1], player_3_odds_win[1], player_3_player_form[1],
-            player_4_value, player_4_position, player_4_team_code, player_4_opposition[0], player_4_was_home[0], player_4_odds_win[0], player_4_player_form[0], player_4_opposition[1], player_4_was_home[1], player_4_odds_win[1], player_4_player_form[1],
-            player_5_value, player_5_position, player_5_team_code, player_5_opposition[0], player_5_was_home[0], player_5_odds_win[0], player_5_player_form[0], player_5_opposition[1], player_5_was_home[1], player_5_odds_win[1], player_5_player_form[1],
-            player_6_value, player_6_position, player_6_team_code, player_6_opposition[0], player_6_was_home[0], player_6_odds_win[0], player_6_player_form[0], player_6_opposition[1], player_6_was_home[1], player_6_odds_win[1], player_6_player_form[1],
-            player_7_value, player_7_position, player_7_team_code, player_7_opposition[0], player_7_was_home[0], player_7_odds_win[0], player_7_player_form[0], player_7_opposition[1], player_7_was_home[1], player_7_odds_win[1], player_7_player_form[1],
-            player_8_value, player_8_position, player_8_team_code, player_8_opposition[0], player_8_was_home[0], player_8_odds_win[0], player_8_player_form[0], player_8_opposition[1], player_8_was_home[1], player_8_odds_win[1], player_8_player_form[1],
-            player_9_value, player_9_position, player_9_team_code, player_9_opposition[0], player_9_was_home[0], player_9_odds_win[0], player_9_player_form[0], player_9_opposition[1], player_9_was_home[1], player_9_odds_win[1], player_9_player_form[1],
-            player_10_value, player_10_position, player_10_team_code, player_10_opposition[0], player_10_was_home[0], player_10_odds_win[0], player_10_player_form[0], player_10_opposition[1], player_10_was_home[1], player_10_odds_win[1], player_10_player_form[1],
-            player_11_value, player_11_position, player_11_team_code, player_11_opposition[0], player_11_was_home[0], player_11_odds_win[0], player_11_player_form[0], player_11_opposition[1], player_11_was_home[1], player_11_odds_win[1], player_11_player_form[1],
-            player_12_value, player_12_position, player_12_team_code, player_12_opposition[0], player_12_was_home[0], player_12_odds_win[0], player_12_player_form[0], player_12_opposition[1], player_12_was_home[1], player_12_odds_win[1], player_12_player_form[1],
-            player_13_value, player_13_position, player_13_team_code, player_13_opposition[0], player_13_was_home[0], player_13_odds_win[0], player_13_player_form[0], player_13_opposition[1], player_13_was_home[1], player_13_odds_win[1], player_13_player_form[1],
-            player_14_value, player_14_position, player_14_team_code, player_14_opposition[0], player_14_was_home[0], player_14_odds_win[0], player_14_player_form[0], player_14_opposition[1], player_14_was_home[1], player_14_odds_win[1], player_14_player_form[1],
-            player_15_value, player_15_position, player_15_team_code, player_15_opposition[0], player_15_was_home[0], player_15_odds_win[0], player_15_player_form[0], player_15_opposition[1], player_15_was_home[1], player_15_odds_win[1], player_15_player_form[1])
+
+    #GW + 2
+    player_2_1_value = player_1_1_unique_id
+
+    if player_2_1_value not in team_unique_ids_2.unique():
+        team_names_2.iloc[0] = player_1_1_player_name
+        team_unique_ids_2.iloc[0] = player_1_1_unique_id
+
+    player_2_1_option = [{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_2)]
+
+    team_names_2_json = team_names_2.to_json(date_format='iso', orient='split')
+    team_unique_ids_2_json = team_unique_ids_2.to_json(date_format='iso', orient='split')
+
+
+    return (player_1_1_value, player_1_1_position, player_1_1_team_code, player_1_1_opposition[0], player_1_1_was_home[0], player_1_1_odds_win[0], player_1_1_player_form[0], player_1_1_opposition[1], player_1_1_was_home[1], player_1_1_odds_win[1], player_1_1_player_form[1],
+            player_1_2_value, player_1_2_position, player_1_2_team_code, player_1_2_opposition[0], player_1_2_was_home[0], player_1_2_odds_win[0], player_1_2_player_form[0], player_1_2_opposition[1], player_1_2_was_home[1], player_1_2_odds_win[1], player_1_2_player_form[1],
+            player_1_3_value, player_1_3_position, player_1_3_team_code, player_1_3_opposition[0], player_1_3_was_home[0], player_1_3_odds_win[0], player_1_3_player_form[0], player_1_3_opposition[1], player_1_3_was_home[1], player_1_3_odds_win[1], player_1_3_player_form[1],
+            player_1_4_value, player_1_4_position, player_1_4_team_code, player_1_4_opposition[0], player_1_4_was_home[0], player_1_4_odds_win[0], player_1_4_player_form[0], player_1_4_opposition[1], player_1_4_was_home[1], player_1_4_odds_win[1], player_1_4_player_form[1],
+            player_1_5_value, player_1_5_position, player_1_5_team_code, player_1_5_opposition[0], player_1_5_was_home[0], player_1_5_odds_win[0], player_1_5_player_form[0], player_1_5_opposition[1], player_1_5_was_home[1], player_1_5_odds_win[1], player_1_5_player_form[1],
+            player_1_6_value, player_1_6_position, player_1_6_team_code, player_1_6_opposition[0], player_1_6_was_home[0], player_1_6_odds_win[0], player_1_6_player_form[0], player_1_6_opposition[1], player_1_6_was_home[1], player_1_6_odds_win[1], player_1_6_player_form[1],
+            player_1_7_value, player_1_7_position, player_1_7_team_code, player_1_7_opposition[0], player_1_7_was_home[0], player_1_7_odds_win[0], player_1_7_player_form[0], player_1_7_opposition[1], player_1_7_was_home[1], player_1_7_odds_win[1], player_1_7_player_form[1],
+            player_1_8_value, player_1_8_position, player_1_8_team_code, player_1_8_opposition[0], player_1_8_was_home[0], player_1_8_odds_win[0], player_1_8_player_form[0], player_1_8_opposition[1], player_1_8_was_home[1], player_1_8_odds_win[1], player_1_8_player_form[1],
+            player_1_9_value, player_1_9_position, player_1_9_team_code, player_1_9_opposition[0], player_1_9_was_home[0], player_1_9_odds_win[0], player_1_9_player_form[0], player_1_9_opposition[1], player_1_9_was_home[1], player_1_9_odds_win[1], player_1_9_player_form[1],
+            player_1_10_value, player_1_10_position, player_1_10_team_code, player_1_10_opposition[0], player_1_10_was_home[0], player_1_10_odds_win[0], player_1_10_player_form[0], player_1_10_opposition[1], player_1_10_was_home[1], player_1_10_odds_win[1], player_1_10_player_form[1],
+            player_1_11_value, player_1_11_position, player_1_11_team_code, player_1_11_opposition[0], player_1_11_was_home[0], player_1_11_odds_win[0], player_1_11_player_form[0], player_1_11_opposition[1], player_1_11_was_home[1], player_1_11_odds_win[1], player_1_11_player_form[1],
+            player_1_12_value, player_1_12_position, player_1_12_team_code, player_1_12_opposition[0], player_1_12_was_home[0], player_1_12_odds_win[0], player_1_12_player_form[0], player_1_12_opposition[1], player_1_12_was_home[1], player_1_12_odds_win[1], player_1_12_player_form[1],
+            player_1_13_value, player_1_13_position, player_1_13_team_code, player_1_13_opposition[0], player_1_13_was_home[0], player_1_13_odds_win[0], player_1_13_player_form[0], player_1_13_opposition[1], player_1_13_was_home[1], player_1_13_odds_win[1], player_1_13_player_form[1],
+            player_1_14_value, player_1_14_position, player_1_14_team_code, player_1_14_opposition[0], player_1_14_was_home[0], player_1_14_odds_win[0], player_1_14_player_form[0], player_1_14_opposition[1], player_1_14_was_home[1], player_1_14_odds_win[1], player_1_14_player_form[1],
+            player_1_15_value, player_1_15_position, player_1_15_team_code, player_1_15_opposition[0], player_1_15_was_home[0], player_1_15_odds_win[0], player_1_15_player_form[0], player_1_15_opposition[1], player_1_15_was_home[1], player_1_15_odds_win[1], player_1_15_player_form[1],
+            player_2_1_option, player_2_1_value, team_names_2_json, team_unique_ids_2_json)
 
 @app.callback(
-    [Output('player_1_name', 'options'),
-     Output('player_2_name', 'options'),
-     Output('player_3_name', 'options'),
-     Output('player_4_name', 'options'),
-     Output('player_5_name', 'options'),
-     Output('player_6_name', 'options'),
-     Output('player_7_name', 'options'),
-     Output('player_8_name', 'options'),
-     Output('player_9_name', 'options'),
-     Output('player_10_name', 'options'),
-     Output('player_11_name', 'options'),
-     Output('player_12_name', 'options'),
-     Output('player_13_name', 'options'),
-     Output('player_14_name', 'options'),
-     Output('player_15_name', 'options')],
-    [Input('player_1_transfer', 'value'),
-     Input('player_2_transfer', 'value'),
-     Input('player_3_transfer', 'value'),
-     Input('player_4_transfer', 'value'),
-     Input('player_5_transfer', 'value'),
-     Input('player_6_transfer', 'value'),
-     Input('player_7_transfer', 'value'),
-     Input('player_8_transfer', 'value'),
-     Input('player_9_transfer', 'value'),
-     Input('player_10_transfer', 'value'),
-     Input('player_11_transfer', 'value'),
-     Input('player_12_transfer', 'value'),
-     Input('player_12_transfer', 'value'),
-     Input('player_14_transfer', 'value'),
-     Input('player_15_transfer', 'value')],
-    [State('intermediate-team_names', 'children'),
-     State('intermediate-team_unique_ids', 'children')],
+    [Output('player_1_1_name', 'options'),
+     Output('player_1_2_name', 'options'),
+     Output('player_1_3_name', 'options'),
+     Output('player_1_4_name', 'options'),
+     Output('player_1_5_name', 'options'),
+     Output('player_1_6_name', 'options'),
+     Output('player_1_7_name', 'options'),
+     Output('player_1_8_name', 'options'),
+     Output('player_1_9_name', 'options'),
+     Output('player_1_10_name', 'options'),
+     Output('player_1_11_name', 'options'),
+     Output('player_1_12_name', 'options'),
+     Output('player_1_13_name', 'options'),
+     Output('player_1_14_name', 'options'),
+     Output('player_1_15_name', 'options'),
+     Output('player_2_1_name', 'options'),
+     Output('player_2_2_name', 'options'),
+     Output('player_2_3_name', 'options'),
+     Output('player_2_4_name', 'options'),
+     Output('player_2_5_name', 'options'),
+     Output('player_2_6_name', 'options'),
+     Output('player_2_7_name', 'options'),
+     Output('player_2_8_name', 'options'),
+     Output('player_2_9_name', 'options'),
+     Output('player_2_10_name', 'options'),
+     Output('player_2_11_name', 'options'),
+     Output('player_2_12_name', 'options'),
+     Output('player_2_13_name', 'options'),
+     Output('player_2_14_name', 'options'),
+     Output('player_2_15_name', 'options'),
+     Output('player_3_1_name', 'options'),
+     Output('player_3_2_name', 'options'),
+     Output('player_3_3_name', 'options'),
+     Output('player_3_4_name', 'options'),
+     Output('player_3_5_name', 'options'),
+     Output('player_3_6_name', 'options'),
+     Output('player_3_7_name', 'options'),
+     Output('player_3_8_name', 'options'),
+     Output('player_3_9_name', 'options'),
+     Output('player_3_10_name', 'options'),
+     Output('player_3_11_name', 'options'),
+     Output('player_3_12_name', 'options'),
+     Output('player_3_13_name', 'options'),
+     Output('player_3_14_name', 'options'),
+     Output('player_3_15_name', 'options'),
+     Output('player_4_1_name', 'options'),
+     Output('player_4_2_name', 'options'),
+     Output('player_4_3_name', 'options'),
+     Output('player_4_4_name', 'options'),
+     Output('player_4_5_name', 'options'),
+     Output('player_4_6_name', 'options'),
+     Output('player_4_7_name', 'options'),
+     Output('player_4_8_name', 'options'),
+     Output('player_4_9_name', 'options'),
+     Output('player_4_10_name', 'options'),
+     Output('player_4_11_name', 'options'),
+     Output('player_4_12_name', 'options'),
+     Output('player_4_13_name', 'options'),
+     Output('player_4_14_name', 'options'),
+     Output('player_4_15_name', 'options')],
+    [Input('player_1_1_transfer', 'value'),
+     Input('player_1_2_transfer', 'value'),
+     Input('player_1_3_transfer', 'value'),
+     Input('player_1_4_transfer', 'value'),
+     Input('player_1_5_transfer', 'value'),
+     Input('player_1_6_transfer', 'value'),
+     Input('player_1_7_transfer', 'value'),
+     Input('player_1_8_transfer', 'value'),
+     Input('player_1_9_transfer', 'value'),
+     Input('player_1_10_transfer', 'value'),
+     Input('player_1_11_transfer', 'value'),
+     Input('player_1_12_transfer', 'value'),
+     Input('player_1_13_transfer', 'value'),
+     Input('player_1_14_transfer', 'value'),
+     Input('player_1_15_transfer', 'value'),
+     Input('player_2_1_transfer', 'value'),
+     Input('player_2_2_transfer', 'value'),
+     Input('player_2_3_transfer', 'value'),
+     Input('player_2_4_transfer', 'value'),
+     Input('player_2_5_transfer', 'value'),
+     Input('player_2_6_transfer', 'value'),
+     Input('player_2_7_transfer', 'value'),
+     Input('player_2_8_transfer', 'value'),
+     Input('player_2_9_transfer', 'value'),
+     Input('player_2_10_transfer', 'value'),
+     Input('player_2_11_transfer', 'value'),
+     Input('player_2_12_transfer', 'value'),
+     Input('player_2_13_transfer', 'value'),
+     Input('player_2_14_transfer', 'value'),
+     Input('player_2_15_transfer', 'value'),
+     Input('player_3_1_transfer', 'value'),
+     Input('player_3_2_transfer', 'value'),
+     Input('player_3_3_transfer', 'value'),
+     Input('player_3_4_transfer', 'value'),
+     Input('player_3_5_transfer', 'value'),
+     Input('player_3_6_transfer', 'value'),
+     Input('player_3_7_transfer', 'value'),
+     Input('player_3_8_transfer', 'value'),
+     Input('player_3_9_transfer', 'value'),
+     Input('player_3_10_transfer', 'value'),
+     Input('player_3_11_transfer', 'value'),
+     Input('player_3_12_transfer', 'value'),
+     Input('player_3_13_transfer', 'value'),
+     Input('player_3_14_transfer', 'value'),
+     Input('player_3_15_transfer', 'value'),
+     Input('player_4_1_transfer', 'value'),
+     Input('player_4_2_transfer', 'value'),
+     Input('player_4_3_transfer', 'value'),
+     Input('player_4_4_transfer', 'value'),
+     Input('player_4_5_transfer', 'value'),
+     Input('player_4_6_transfer', 'value'),
+     Input('player_4_7_transfer', 'value'),
+     Input('player_4_8_transfer', 'value'),
+     Input('player_4_9_transfer', 'value'),
+     Input('player_4_10_transfer', 'value'),
+     Input('player_4_11_transfer', 'value'),
+     Input('player_4_12_transfer', 'value'),
+     Input('player_4_13_transfer', 'value'),
+     Input('player_4_14_transfer', 'value'),
+     Input('player_4_15_transfer', 'value')],
+    [State('intermediate-team_names_gw1', 'children'),
+     State('intermediate-team_unique_ids_gw1', 'children'),
+     State('intermediate-team_names_gw2', 'children'),
+     State('intermediate-team_unique_ids_gw2', 'children'),
+     State('intermediate-team_names_gw3', 'children'),
+     State('intermediate-team_unique_ids_gw3', 'children'),
+     State('intermediate-team_names_gw4', 'children'),
+     State('intermediate-team_unique_ids_gw4', 'children')],
 )
-def select_transfers(player_1_transfer_tick,
-                     player_2_transfer_tick,
-                     player_3_transfer_tick,
-                     player_4_transfer_tick,
-                     player_5_transfer_tick,
-                     player_6_transfer_tick,
-                     player_7_transfer_tick,
-                     player_8_transfer_tick,
-                     player_9_transfer_tick,
-                     player_10_transfer_tick,
-                     player_11_transfer_tick,
-                     player_s1_transfer_tick,
-                     player_s2_transfer_tick,
-                     player_s3_transfer_tick,
-                     player_s4_transfer_tick,
-                     team_names_json,
-                     team_unique_ids_json):
+def select_transfers_gw1(player_1_1_transfer_tick,
+                         player_1_2_transfer_tick,
+                         player_1_3_transfer_tick,
+                         player_1_4_transfer_tick,
+                         player_1_5_transfer_tick,
+                         player_1_6_transfer_tick,
+                         player_1_7_transfer_tick,
+                         player_1_8_transfer_tick,
+                         player_1_9_transfer_tick,
+                         player_1_10_transfer_tick,
+                         player_1_11_transfer_tick,
+                         player_1_s1_transfer_tick,
+                         player_1_s2_transfer_tick,
+                         player_1_s3_transfer_tick,
+                         player_1_s4_transfer_tick,
+                         player_2_1_transfer_tick,
+                         player_2_2_transfer_tick,
+                         player_2_3_transfer_tick,
+                         player_2_4_transfer_tick,
+                         player_2_5_transfer_tick,
+                         player_2_6_transfer_tick,
+                         player_2_7_transfer_tick,
+                         player_2_8_transfer_tick,
+                         player_2_9_transfer_tick,
+                         player_2_10_transfer_tick,
+                         player_2_11_transfer_tick,
+                         player_2_s1_transfer_tick,
+                         player_2_s2_transfer_tick,
+                         player_2_s3_transfer_tick,
+                         player_2_s4_transfer_tick,
+                         player_3_1_transfer_tick,
+                         player_3_2_transfer_tick,
+                         player_3_3_transfer_tick,
+                         player_3_4_transfer_tick,
+                         player_3_5_transfer_tick,
+                         player_3_6_transfer_tick,
+                         player_3_7_transfer_tick,
+                         player_3_8_transfer_tick,
+                         player_3_9_transfer_tick,
+                         player_3_10_transfer_tick,
+                         player_3_11_transfer_tick,
+                         player_3_s1_transfer_tick,
+                         player_3_s2_transfer_tick,
+                         player_3_s3_transfer_tick,
+                         player_3_s4_transfer_tick,
+                         player_4_1_transfer_tick,
+                         player_4_2_transfer_tick,
+                         player_4_3_transfer_tick,
+                         player_4_4_transfer_tick,
+                         player_4_5_transfer_tick,
+                         player_4_6_transfer_tick,
+                         player_4_7_transfer_tick,
+                         player_4_8_transfer_tick,
+                         player_4_9_transfer_tick,
+                         player_4_10_transfer_tick,
+                         player_4_11_transfer_tick,
+                         player_4_s1_transfer_tick,
+                         player_4_s2_transfer_tick,
+                         player_4_s3_transfer_tick,
+                         player_4_s4_transfer_tick,
+                         team_names_json_1,
+                         team_unique_ids_json_1,
+                         team_names_json_2,
+                         team_unique_ids_json_2,
+                         team_names_json_3,
+                         team_unique_ids_json_3,
+                         team_names_json_4,
+                         team_unique_ids_json_4):
 
     players_2020_names = data[data['season']==2020]['name'].unique()
     players_2020_unique_ids = data[data['season']==2020]['unique_id'].unique()
 
-    team_names = pd.read_json(team_names_json, orient='split', typ='series')
-    team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+    #GW + 1
+    team_names_1 = pd.read_json(team_names_json_1, orient='split', typ='series')
+    team_unique_ids_1 = pd.read_json(team_unique_ids_json_1, orient='split', typ='series')
 
-    if player_1_transfer_tick != None:
-        if len(player_1_transfer_tick) > 0 and player_1_transfer_tick != None:
-            player_1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_1_transfer_tick != None:
+        if len(player_1_1_transfer_tick) > 0:
+            player_1_1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_1_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
-    else:
-        player_1_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_1_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_2_transfer_tick != None:
-        if len(player_2_transfer_tick) > 0:
-            player_2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    else:
+        player_1_1_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
+
+    if player_1_2_transfer_tick != None:
+        if len(player_1_2_transfer_tick) > 0:
+            player_1_2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_2_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_2_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_2_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_2_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_3_transfer_tick != None:
-        if len(player_3_transfer_tick) > 0:
-            player_3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_3_transfer_tick != None:
+        if len(player_1_3_transfer_tick) > 0:
+            player_1_3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_3_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_3_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_3_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_3_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_4_transfer_tick != None:
-        if len(player_4_transfer_tick) > 0:
-            player_4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_4_transfer_tick != None:
+        if len(player_1_4_transfer_tick) > 0:
+            player_1_4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_4_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_4_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_4_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_4_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_5_transfer_tick != None:
-        if len(player_5_transfer_tick) > 0:
-            player_5_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_5_transfer_tick != None:
+        if len(player_1_5_transfer_tick) > 0:
+            player_1_5_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_5_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_5_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_5_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_5_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_6_transfer_tick != None:
-        if len(player_6_transfer_tick) > 0:
-            player_6_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_6_transfer_tick != None:
+        if len(player_1_6_transfer_tick) > 0:
+            player_1_6_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_6_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_6_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_6_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_6_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_7_transfer_tick != None:
-        if len(player_7_transfer_tick) > 0:
-            player_7_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_7_transfer_tick != None:
+        if len(player_1_7_transfer_tick) > 0:
+            player_1_7_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_7_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_7_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_7_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_7_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_8_transfer_tick != None:
-        if len(player_8_transfer_tick) > 0:
-            player_8_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_8_transfer_tick != None:
+        if len(player_1_8_transfer_tick) > 0:
+            player_1_8_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_8_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_8_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_8_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_8_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_9_transfer_tick != None:
-        if len(player_9_transfer_tick) > 0:
-            player_9_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_9_transfer_tick != None:
+        if len(player_1_9_transfer_tick) > 0:
+            player_1_9_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_9_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_9_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_9_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_9_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_10_transfer_tick != None:
-        if len(player_10_transfer_tick) > 0:
-            player_10_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_10_transfer_tick != None:
+        if len(player_1_10_transfer_tick) > 0:
+            player_1_10_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_10_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_10_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_10_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_10_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_11_transfer_tick != None:
-        if len(player_11_transfer_tick) > 0:
-            player_11_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_11_transfer_tick != None:
+        if len(player_1_11_transfer_tick) > 0:
+            player_1_11_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_11_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_11_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_11_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_11_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_s1_transfer_tick != None:
-        if len(player_s1_transfer_tick) > 0:
-            player_s1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_s1_transfer_tick != None:
+        if len(player_1_s1_transfer_tick) > 0:
+            player_1_s1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_s1_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_s1_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_s1_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_s1_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_s2_transfer_tick != None:
-        if len(player_s2_transfer_tick) > 0:
-            player_s2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_s2_transfer_tick != None:
+        if len(player_1_s2_transfer_tick) > 0:
+            player_1_s2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_s2_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_s2_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_s2_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_s2_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_s3_transfer_tick != None:
-        if len(player_s3_transfer_tick) > 0:
-            player_s3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_s3_transfer_tick != None:
+        if len(player_1_s3_transfer_tick) > 0:
+            player_1_s3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_s3_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_s3_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_s3_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_s3_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    if player_s4_transfer_tick != None:
-        if len(player_s4_transfer_tick) > 0:
-            player_s4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+    if player_1_s4_transfer_tick != None:
+        if len(player_1_s4_transfer_tick) > 0:
+            player_1_s4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
         else:
-            player_s4_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+            player_1_s4_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
     else:
-        player_s4_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+        player_1_s4_options = [[{'label': name, 'value': team_unique_ids_1[i]} for i, name in enumerate(team_names_1)]]
 
-    return (player_1_options[0],
-            player_2_options[0],
-            player_3_options[0],
-            player_4_options[0],
-            player_5_options[0],
-            player_6_options[0],
-            player_7_options[0],
-            player_8_options[0],
-            player_9_options[0],
-            player_10_options[0],
-            player_11_options[0],
-            player_s1_options[0],
-            player_s2_options[0],
-            player_s3_options[0],
-            player_s4_options[0])
+
+
+    #GW + 2
+    team_names_2 = pd.read_json(team_names_json_2, orient='split', typ='series')
+    team_unique_ids_2 = pd.read_json(team_unique_ids_json_2, orient='split', typ='series')
+
+    if player_2_1_transfer_tick != None:
+        if len(player_2_1_transfer_tick) > 0:
+            player_2_1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_1_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    else:
+        player_2_1_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_2_transfer_tick != None:
+        if len(player_2_2_transfer_tick) > 0:
+            player_2_2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_2_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_2_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_3_transfer_tick != None:
+        if len(player_2_3_transfer_tick) > 0:
+            player_2_3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_3_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_3_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_4_transfer_tick != None:
+        if len(player_2_4_transfer_tick) > 0:
+            player_2_4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_4_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_4_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_5_transfer_tick != None:
+        if len(player_2_5_transfer_tick) > 0:
+            player_2_5_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_5_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_5_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_6_transfer_tick != None:
+        if len(player_2_6_transfer_tick) > 0:
+            player_2_6_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_6_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_6_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_7_transfer_tick != None:
+        if len(player_2_7_transfer_tick) > 0:
+            player_2_7_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_7_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_7_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_8_transfer_tick != None:
+        if len(player_2_8_transfer_tick) > 0:
+            player_2_8_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_8_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_8_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_9_transfer_tick != None:
+        if len(player_2_9_transfer_tick) > 0:
+            player_2_9_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_9_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_9_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_10_transfer_tick != None:
+        if len(player_2_10_transfer_tick) > 0:
+            player_2_10_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_10_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_10_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_11_transfer_tick != None:
+        if len(player_2_11_transfer_tick) > 0:
+            player_2_11_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_11_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_11_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_s1_transfer_tick != None:
+        if len(player_2_s1_transfer_tick) > 0:
+            player_2_s1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_s1_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_s1_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_s2_transfer_tick != None:
+        if len(player_2_s2_transfer_tick) > 0:
+            player_2_s2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_s2_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_s2_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_s3_transfer_tick != None:
+        if len(player_2_s3_transfer_tick) > 0:
+            player_2_s3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_s3_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_s3_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+    if player_2_s4_transfer_tick != None:
+        if len(player_2_s4_transfer_tick) > 0:
+            player_2_s4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_2_s4_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+    else:
+        player_2_s4_options = [[{'label': name, 'value': team_unique_ids_2[i]} for i, name in enumerate(team_names_2)]]
+
+
+    #GW + 3
+    team_names_3 = pd.read_json(team_names_json_3, orient='split', typ='series')
+    team_unique_ids_3 = pd.read_json(team_unique_ids_json_3, orient='split', typ='series')
+
+    if player_3_1_transfer_tick != None:
+        if len(player_3_1_transfer_tick) > 0:
+            player_3_1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_1_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    else:
+        player_3_1_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_2_transfer_tick != None:
+        if len(player_3_2_transfer_tick) > 0:
+            player_3_2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_2_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_2_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_3_transfer_tick != None:
+        if len(player_3_3_transfer_tick) > 0:
+            player_3_3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_3_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_3_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_4_transfer_tick != None:
+        if len(player_3_4_transfer_tick) > 0:
+            player_3_4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_4_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_4_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_5_transfer_tick != None:
+        if len(player_3_5_transfer_tick) > 0:
+            player_3_5_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_5_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_5_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_6_transfer_tick != None:
+        if len(player_3_6_transfer_tick) > 0:
+            player_3_6_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_6_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_6_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_7_transfer_tick != None:
+        if len(player_3_7_transfer_tick) > 0:
+            player_3_7_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_7_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_7_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_8_transfer_tick != None:
+        if len(player_3_8_transfer_tick) > 0:
+            player_3_8_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_8_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_8_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_9_transfer_tick != None:
+        if len(player_3_9_transfer_tick) > 0:
+            player_3_9_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_9_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_9_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_10_transfer_tick != None:
+        if len(player_3_10_transfer_tick) > 0:
+            player_3_10_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_10_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_10_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_11_transfer_tick != None:
+        if len(player_3_11_transfer_tick) > 0:
+            player_3_11_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_11_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_11_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_s1_transfer_tick != None:
+        if len(player_3_s1_transfer_tick) > 0:
+            player_3_s1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_s1_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_s1_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_s2_transfer_tick != None:
+        if len(player_3_s2_transfer_tick) > 0:
+            player_3_s2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_s2_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_s2_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_s3_transfer_tick != None:
+        if len(player_3_s3_transfer_tick) > 0:
+            player_3_s3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_s3_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_s3_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+    if player_3_s4_transfer_tick != None:
+        if len(player_3_s4_transfer_tick) > 0:
+            player_3_s4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_3_s4_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+    else:
+        player_3_s4_options = [[{'label': name, 'value': team_unique_ids_3[i]} for i, name in enumerate(team_names_3)]]
+
+
+    #GW + 4
+    team_names_4 = pd.read_json(team_names_json_4, orient='split', typ='series')
+    team_unique_ids_4 = pd.read_json(team_unique_ids_json_4, orient='split', typ='series')
+
+    if player_4_1_transfer_tick != None:
+        if len(player_4_1_transfer_tick) > 0:
+            player_4_1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_1_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    else:
+        player_4_1_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_2_transfer_tick != None:
+        if len(player_4_2_transfer_tick) > 0:
+            player_4_2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_2_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_2_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_3_transfer_tick != None:
+        if len(player_4_3_transfer_tick) > 0:
+            player_4_3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_3_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_3_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_4_transfer_tick != None:
+        if len(player_4_4_transfer_tick) > 0:
+            player_4_4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_4_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_4_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_5_transfer_tick != None:
+        if len(player_4_5_transfer_tick) > 0:
+            player_4_5_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_5_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_5_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_6_transfer_tick != None:
+        if len(player_4_6_transfer_tick) > 0:
+            player_4_6_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_6_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_6_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_7_transfer_tick != None:
+        if len(player_4_7_transfer_tick) > 0:
+            player_4_7_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_7_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_7_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_8_transfer_tick != None:
+        if len(player_4_8_transfer_tick) > 0:
+            player_4_8_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_8_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_8_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_9_transfer_tick != None:
+        if len(player_4_9_transfer_tick) > 0:
+            player_4_9_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_9_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_9_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_10_transfer_tick != None:
+        if len(player_4_10_transfer_tick) > 0:
+            player_4_10_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_10_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_10_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_11_transfer_tick != None:
+        if len(player_4_11_transfer_tick) > 0:
+            player_4_11_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_11_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_11_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_s1_transfer_tick != None:
+        if len(player_4_s1_transfer_tick) > 0:
+            player_4_s1_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_s1_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_s1_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_s2_transfer_tick != None:
+        if len(player_4_s2_transfer_tick) > 0:
+            player_4_s2_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_s2_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_s2_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_s3_transfer_tick != None:
+        if len(player_4_s3_transfer_tick) > 0:
+            player_4_s3_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_s3_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_s3_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    if player_4_s4_transfer_tick != None:
+        if len(player_4_s4_transfer_tick) > 0:
+            player_4_s4_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+        else:
+            player_4_s4_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+    else:
+        player_4_s4_options = [[{'label': name, 'value': team_unique_ids_4[i]} for i, name in enumerate(team_names_4)]]
+
+    return (player_1_1_options[0],
+            player_1_2_options[0],
+            player_1_3_options[0],
+            player_1_4_options[0],
+            player_1_5_options[0],
+            player_1_6_options[0],
+            player_1_7_options[0],
+            player_1_8_options[0],
+            player_1_9_options[0],
+            player_1_10_options[0],
+            player_1_11_options[0],
+            player_1_s1_options[0],
+            player_1_s2_options[0],
+            player_1_s3_options[0],
+            player_1_s4_options[0],
+            player_2_1_options[0],
+            player_2_2_options[0],
+            player_2_3_options[0],
+            player_2_4_options[0],
+            player_2_5_options[0],
+            player_2_6_options[0],
+            player_2_7_options[0],
+            player_2_8_options[0],
+            player_2_9_options[0],
+            player_2_10_options[0],
+            player_2_11_options[0],
+            player_2_s1_options[0],
+            player_2_s2_options[0],
+            player_2_s3_options[0],
+            player_2_s4_options[0],
+            player_3_1_options[0],
+            player_3_2_options[0],
+            player_3_3_options[0],
+            player_3_4_options[0],
+            player_3_5_options[0],
+            player_3_6_options[0],
+            player_3_7_options[0],
+            player_3_8_options[0],
+            player_3_9_options[0],
+            player_3_10_options[0],
+            player_3_11_options[0],
+            player_3_s1_options[0],
+            player_3_s2_options[0],
+            player_3_s3_options[0],
+            player_3_s4_options[0],
+            player_4_1_options[0],
+            player_4_2_options[0],
+            player_4_3_options[0],
+            player_4_4_options[0],
+            player_4_5_options[0],
+            player_4_6_options[0],
+            player_4_7_options[0],
+            player_4_8_options[0],
+            player_4_9_options[0],
+            player_4_10_options[0],
+            player_4_11_options[0],
+            player_4_s1_options[0],
+            player_4_s2_options[0],
+            player_4_s3_options[0],
+            player_4_s4_options[0])
 
 @app.callback(
     [Output('IPA_indicator_form', 'figure'),
