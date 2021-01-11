@@ -353,12 +353,13 @@ path_data = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Proce
 path_player_metadata = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'player_metadata.csv')
 path_team_metadata = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'team_metadata.csv')
 path_team_codes = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'team_codes.csv')
+path_fixtures = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Data', '2020-21','fixtures.csv')
 
 data = pd.read_csv(path_data)
 player_metadata = pd.read_csv(path_player_metadata)
 team_metadata = pd.read_csv(path_team_metadata)
 team_codes = pd.read_csv(path_team_codes)
-fixture_data = pd.read_csv('/home/john/Documents/projects/fpl-analystics-prediction/Data/2020-21/fixtures.csv')
+fixture_data = pd.read_csv(path_fixtures)
 
 data['mean_total_points_any_3/pound'] = data['mean_total_points_any_3'] / (data['value'] / 10)
 data['mean_total_points_any_5/pound'] = data['mean_total_points_any_5'] / (data['value'] / 10)
@@ -1399,8 +1400,8 @@ def render_content(tab):
      Output('intermediate-team_unique_ids_gw1', 'children'),
      Output('intermediate-team_names_gw2', 'children'),
      Output('intermediate-team_unique_ids_gw2', 'children'),
-     Output('player_3_1_1_against', 'style'),
-     Output('player_3_1_2_against', 'style')],
+     Output('player_1_1_1_against', 'style'),
+     Output('player_1_1_2_against', 'style')],
     [Input('player_1_1_name', 'value')],
     [State('intermediate-team_names_gw1', 'children'),
      State('intermediate-team_unique_ids_gw1', 'children'),
@@ -1490,8 +1491,8 @@ def update_player_data_gw1_p1(player_unique_id,
      Output('intermediate-team_unique_ids_gw2', 'children'),
      Output('intermediate-team_names_gw3', 'children'),
      Output('intermediate-team_unique_ids_gw3', 'children'),
-     Output('player_3_1_1_against', 'style'),
-     Output('player_3_1_2_against', 'style')],
+     Output('player_2_1_1_against', 'style'),
+     Output('player_2_1_2_against', 'style')],
     [Input('player_2_1_name', 'value')],
     [State('intermediate-team_names_gw2', 'children'),
      State('intermediate-team_unique_ids_gw2', 'children'),
@@ -1665,8 +1666,8 @@ def update_player_data_gw3_p1(player_unique_id,
      Output('player_4_1_2_player_form', 'children'),
      Output('intermediate-team_names_gw4', 'children'),
      Output('intermediate-team_unique_ids_gw4', 'children'),
-     Output('player_3_1_1_against', 'style'),
-     Output('player_3_1_2_against', 'style')],
+     Output('player_4_1_1_against', 'style'),
+     Output('player_4_1_2_against', 'style')],
     [Input('player_4_1_name', 'value')],
     [State('intermediate-team_names_gw4', 'children'),
      State('intermediate-team_unique_ids_gw4', 'children'),
