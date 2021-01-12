@@ -1,4 +1,5 @@
 import DataLoaderHistoric as DLH
+import DataLoader as DL
 import pandas as pd
 import os.path as path
 
@@ -14,6 +15,9 @@ filename_team_metadata = 'team_metadata.csv'
 ###### Create DataLoader object ######
 
 DataLoader = DLH.DataLoaderHistoric()
+DataLoaderFixt = DL.DataLoader()
+fixtures = DataLoaderFixt.scrape_fixtures()
+fixtures.to_csv(path.join('/home/john/Documents/projects/fpl-analystics-prediction/Data/2020-21', 'fixtures.csv'), index=False)
 
 seasons = [2016,
            2017,
