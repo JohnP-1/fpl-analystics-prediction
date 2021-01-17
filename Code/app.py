@@ -11,7 +11,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
 import requests
-
+from flask_caching import Cache
+import os
+import functools
 
 def find_unique_id(data, first_name, second_name, season):
     """
@@ -235,7 +237,6 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
                 style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
         html.Div(children=player_value, id='player_'+str(round_id)+'_'+str(player_no)+'_1_value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
         html.Div(children=player_team_code, id='player_'+str(round_id)+'_'+str(player_no)+'_1_team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
-        # html.Div(children=player_opposition[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_against', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'background-color': fixture_diff_colour(fixture_diff[0])}),
         html.Div(children=player_opposition[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_against', style=player_opposition_style(font_size, fixture_diff[0])),
         html.Div(children=player_was_home[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
         html.Div(children=player_form[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
@@ -355,71 +356,30 @@ def calculate_player_points(player_form_1, player_form_2, player_cpt):
     return total_points
 
 
+def calculate_team_points(player_form_g1,
+                          player_form_g2,
+                          player_cpt):
 
-def calculate_transfer_points(transfer_free,
-                              player_1_trn,
-                              player_2_trn,
-                              player_3_trn,
-                              player_4_trn,
-                              player_5_trn,
-                              player_6_trn,
-                              player_7_trn,
-                              player_8_trn,
-                              player_9_trn,
-                              player_10_trn,
-                              player_11_trn,
-                              player_12_trn,
-                              player_13_trn,
-                              player_14_trn,
-                              player_15_trn,
+    player_points = []
+
+    for i in range(len(player_form_g1)):
+        player_points.append(calculate_player_points(player_form_g1[i], player_form_g2[i], player_cpt[i]))
+
+    points_first_team = '{0:.1f}'.format(np.sum(player_points[:11]))
+    points_subs = '{0:.1f}'.format(np.sum(player_points[11:]))
+
+    return points_first_team, points_subs
+
+
+def calculate_transfer_points(player_trn_list,
+                              transfer_free,
                               wildcard):
 
     total_transfers = 0
 
-    if player_1_trn is not None:
-        total_transfers += 1
-
-    if player_2_trn is not None:
-        total_transfers += 1
-
-    if player_3_trn is not None:
-        total_transfers += 1
-
-    if player_4_trn is not None:
-        total_transfers += 1
-
-    if player_5_trn is not None:
-        total_transfers += 1
-
-    if player_6_trn is not None:
-        total_transfers += 1
-
-    if player_7_trn is not None:
-        total_transfers += 1
-
-    if player_8_trn is not None:
-        total_transfers += 1
-
-    if player_9_trn is not None:
-        total_transfers += 1
-
-    if player_10_trn is not None:
-        total_transfers += 1
-
-    if player_11_trn is not None:
-        total_transfers += 1
-
-    if player_12_trn is not None:
-        total_transfers += 1
-
-    if player_13_trn is not None:
-        total_transfers += 1
-
-    if player_14_trn is not None:
-        total_transfers += 1
-
-    if player_15_trn is not None:
-        total_transfers += 1
+    for player_trn in player_trn_list:
+        if player_trn is not None:
+            total_transfers += 1
 
     transfer_points = (total_transfers - int(transfer_free)) * -4
 
@@ -433,21 +393,19 @@ def calculate_transfer_points(transfer_free,
     return transfer_points
 
 
+def calculate_team_cost(player_value_list):
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+    team_value = 0
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+    for player_value in player_value_list:
+        team_value += float(player_value)
 
-styles = {
-    'pre': {
-        'border': 'thin lightgrey solid',
-        'overflowX': 'scroll'
-    }
-}
+    return team_value
 
-########################################
-####### Load Data ######################
-########################################
+
+######################################################################################################################
+################################################ Load Data ###########################################################
+######################################################################################################################
 
 path_data = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'player_database.csv')
 path_player_metadata = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'player_metadata.csv')
@@ -489,7 +447,28 @@ labels_league_standings = data_league_standings.columns
 league_ids = ['1217918', '1218670']
 league_names = ['The league of Leith', 'The old office Vs no AI']
 
-app.config['suppress_callback_exceptions'] = True
+
+######################################################################################################################
+################################################ Layout Function #####################################################
+######################################################################################################################
+
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+styles = {
+    'pre': {
+        'border': 'thin lightgrey solid',
+        'overflowX': 'scroll'
+    }
+}
+cache = Cache(app.server, config={
+    # try 'filesystem' if you don't want to setup redis
+    'CACHE_TYPE': 'redis',
+    'CACHE_REDIS_URL': os.environ.get('REDIS_URL', '')
+})
+
+app.config.suppress_callback_exceptions = True
 
 app.layout = html.Div([
     dcc.Tabs(id='tabs-example', value='Planner', children=[
@@ -502,12 +481,14 @@ app.layout = html.Div([
 ])
 
 
+timeout = 300
+
 # Get list of player names and associated unique id's
 
-# season_latest = player_metadata['season'].max()
-season_latest = 2020
+season_latest = player_metadata['season'].max()
+# season_latest = 2020
 player_metadata_season = player_metadata[player_metadata['season'] == season_latest]
-round_curr = 17
+round_curr = 18
 round_next = round_curr + 1
 
 player_names = []
@@ -527,8 +508,11 @@ font_size = '10px'
 font_size_summary = '20px'
 font_size_heading = '40px'
 
+# @cache.memoize(timeout=timeout)
+
 @app.callback(Output('tabs-example-content', 'children'),
               Input('tabs-example', 'value'))
+@functools.lru_cache()
 def render_content(tab):
     if tab == 'APA':
         return (html.Div([
@@ -1668,6 +1652,10 @@ def render_content(tab):
             )
 
 
+######################################################################################################################
+################################################ Callbacks ###########################################################
+######################################################################################################################
+
 @app.callback(
     [Output('gw1-expected-points', 'children'),
      Output('gw1-transfer-points', 'children'),
@@ -1748,6 +1736,21 @@ def render_content(tab):
      State('player_1_14_transfer', 'value'),
      State('player_1_15_transfer', 'value'),
      State('gw1-tokens', 'value'),
+     State('player_1_1_1_value', 'children'),
+     State('player_1_2_1_value', 'children'),
+     State('player_1_3_1_value', 'children'),
+     State('player_1_4_1_value', 'children'),
+     State('player_1_5_1_value', 'children'),
+     State('player_1_6_1_value', 'children'),
+     State('player_1_7_1_value', 'children'),
+     State('player_1_8_1_value', 'children'),
+     State('player_1_9_1_value', 'children'),
+     State('player_1_10_1_value', 'children'),
+     State('player_1_11_1_value', 'children'),
+     State('player_1_12_1_value', 'children'),
+     State('player_1_13_1_value', 'children'),
+     State('player_1_14_1_value', 'children'),
+     State('player_1_15_1_value', 'children'),
      State('player_2_1_1_player_form', 'children'),
      State('player_2_2_1_player_form', 'children'),
      State('player_2_3_1_player_form', 'children'),
@@ -1810,6 +1813,21 @@ def render_content(tab):
      State('player_2_14_transfer', 'value'),
      State('player_2_15_transfer', 'value'),
      State('gw2-tokens', 'value'),
+     State('player_2_1_1_value', 'children'),
+     State('player_2_2_1_value', 'children'),
+     State('player_2_3_1_value', 'children'),
+     State('player_2_4_1_value', 'children'),
+     State('player_2_5_1_value', 'children'),
+     State('player_2_6_1_value', 'children'),
+     State('player_2_7_1_value', 'children'),
+     State('player_2_8_1_value', 'children'),
+     State('player_2_9_1_value', 'children'),
+     State('player_2_10_1_value', 'children'),
+     State('player_2_11_1_value', 'children'),
+     State('player_2_12_1_value', 'children'),
+     State('player_2_13_1_value', 'children'),
+     State('player_2_14_1_value', 'children'),
+     State('player_2_15_1_value', 'children'),
      State('player_3_1_1_player_form', 'children'),
      State('player_3_2_1_player_form', 'children'),
      State('player_3_3_1_player_form', 'children'),
@@ -1872,6 +1890,21 @@ def render_content(tab):
      State('player_3_14_transfer', 'value'),
      State('player_3_15_transfer', 'value'),
      State('gw3-tokens', 'value'),
+     State('player_3_1_1_value', 'children'),
+     State('player_3_2_1_value', 'children'),
+     State('player_3_3_1_value', 'children'),
+     State('player_3_4_1_value', 'children'),
+     State('player_3_5_1_value', 'children'),
+     State('player_3_6_1_value', 'children'),
+     State('player_3_7_1_value', 'children'),
+     State('player_3_8_1_value', 'children'),
+     State('player_3_9_1_value', 'children'),
+     State('player_3_10_1_value', 'children'),
+     State('player_3_11_1_value', 'children'),
+     State('player_3_12_1_value', 'children'),
+     State('player_3_13_1_value', 'children'),
+     State('player_3_14_1_value', 'children'),
+     State('player_3_15_1_value', 'children'),
      State('player_4_1_1_player_form', 'children'),
      State('player_4_2_1_player_form', 'children'),
      State('player_4_3_1_player_form', 'children'),
@@ -1933,448 +1966,474 @@ def render_content(tab):
      State('player_4_13_transfer', 'value'),
      State('player_4_14_transfer', 'value'),
      State('player_4_15_transfer', 'value'),
-     State('gw4-tokens', 'value'),]
+     State('gw4-tokens', 'value'),
+     State('player_4_1_1_value', 'children'),
+     State('player_4_2_1_value', 'children'),
+     State('player_4_3_1_value', 'children'),
+     State('player_4_4_1_value', 'children'),
+     State('player_4_5_1_value', 'children'),
+     State('player_4_6_1_value', 'children'),
+     State('player_4_7_1_value', 'children'),
+     State('player_4_8_1_value', 'children'),
+     State('player_4_9_1_value', 'children'),
+     State('player_4_10_1_value', 'children'),
+     State('player_4_11_1_value', 'children'),
+     State('player_4_12_1_value', 'children'),
+     State('player_4_13_1_value', 'children'),
+     State('player_4_14_1_value', 'children'),
+     State('player_4_15_1_value', 'children')], prevent_initial_call=True
 )
 def compute_button(n_clicks,
-                   player_1_1_1_form,
-                  player_1_1_2_form,
-                  player_1_1_3_form,
-                  player_1_1_4_form,
-                  player_1_1_5_form,
-                  player_1_1_6_form,
-                  player_1_1_7_form,
-                  player_1_1_8_form,
-                  player_1_1_9_form,
-                  player_1_1_10_form,
-                  player_1_1_11_form,
-                  player_1_1_12_form,
-                  player_1_1_13_form,
-                  player_1_1_14_form,
-                  player_1_1_15_form,
-                  player_1_2_1_form,
-                  player_1_2_2_form,
-                  player_1_2_3_form,
-                  player_1_2_4_form,
-                  player_1_2_5_form,
-                  player_1_2_6_form,
-                  player_1_2_7_form,
-                  player_1_2_8_form,
-                  player_1_2_9_form,
-                  player_1_2_10_form,
-                  player_1_2_11_form,
-                  player_1_2_12_form,
-                  player_1_2_13_form,
-                  player_1_2_14_form,
-                  player_1_2_15_form,
-                  player_1_1_cpt,
-                  player_1_2_cpt,
-                  player_1_3_cpt,
-                  player_1_4_cpt,
-                  player_1_5_cpt,
-                  player_1_6_cpt,
-                  player_1_7_cpt,
-                  player_1_8_cpt,
-                  player_1_9_cpt,
-                  player_1_10_cpt,
-                  player_1_11_cpt,
-                  player_1_12_cpt,
-                  player_1_13_cpt,
-                  player_1_14_cpt,
-                  player_1_15_cpt,
-                  player_1_free_trn,
-                  player_1_1_trn,
-                   player_1_2_trn,
-                   player_1_3_trn,
-                   player_1_4_trn,
-                   player_1_5_trn,
-                   player_1_6_trn,
-                   player_1_7_trn,
-                   player_1_8_trn,
-                   player_1_9_trn,
-                   player_1_10_trn,
-                   player_1_11_trn,
-                   player_1_12_trn,
-                   player_1_13_trn,
-                   player_1_14_trn,
-                   player_1_15_trn,
-                   gw1_tokens,
-                   player_2_1_1_form,
-                  player_2_1_2_form,
-                  player_2_1_3_form,
-                  player_2_1_4_form,
-                  player_2_1_5_form,
-                  player_2_1_6_form,
-                  player_2_1_7_form,
-                  player_2_1_8_form,
-                  player_2_1_9_form,
-                  player_2_1_10_form,
-                  player_2_1_11_form,
-                  player_2_1_12_form,
-                  player_2_1_13_form,
-                  player_2_1_14_form,
-                  player_2_1_15_form,
-                  player_2_2_1_form,
-                  player_2_2_2_form,
-                  player_2_2_3_form,
-                  player_2_2_4_form,
-                  player_2_2_5_form,
-                  player_2_2_6_form,
-                  player_2_2_7_form,
-                  player_2_2_8_form,
-                  player_2_2_9_form,
-                  player_2_2_10_form,
-                  player_2_2_11_form,
-                  player_2_2_12_form,
-                  player_2_2_13_form,
-                  player_2_2_14_form,
-                  player_2_2_15_form,
-                  player_2_1_cpt,
-                  player_2_2_cpt,
-                  player_2_3_cpt,
-                  player_2_4_cpt,
-                  player_2_5_cpt,
-                  player_2_6_cpt,
-                  player_2_7_cpt,
-                  player_2_8_cpt,
-                  player_2_9_cpt,
-                  player_2_10_cpt,
-                  player_2_11_cpt,
-                  player_2_12_cpt,
-                  player_2_13_cpt,
-                  player_2_14_cpt,
-                  player_2_15_cpt,
-                  player_2_free_trn,
-                  player_2_1_trn,
-                   player_2_2_trn,
-                   player_2_3_trn,
-                   player_2_4_trn,
-                   player_2_5_trn,
-                   player_2_6_trn,
-                   player_2_7_trn,
-                   player_2_8_trn,
-                   player_2_9_trn,
-                   player_2_10_trn,
-                   player_2_11_trn,
-                   player_2_12_trn,
-                   player_2_13_trn,
-                   player_2_14_trn,
-                   player_2_15_trn,
-                   gw2_tokens,
-                   player_3_1_1_form,
-                  player_3_1_2_form,
-                  player_3_1_3_form,
-                  player_3_1_4_form,
-                  player_3_1_5_form,
-                  player_3_1_6_form,
-                  player_3_1_7_form,
-                  player_3_1_8_form,
-                  player_3_1_9_form,
-                  player_3_1_10_form,
-                  player_3_1_11_form,
-                  player_3_1_12_form,
-                  player_3_1_13_form,
-                  player_3_1_14_form,
-                  player_3_1_15_form,
-                  player_3_2_1_form,
-                  player_3_2_2_form,
-                  player_3_2_3_form,
-                  player_3_2_4_form,
-                  player_3_2_5_form,
-                  player_3_2_6_form,
-                  player_3_2_7_form,
-                  player_3_2_8_form,
-                  player_3_2_9_form,
-                  player_3_2_10_form,
-                  player_3_2_11_form,
-                  player_3_2_12_form,
-                  player_3_2_13_form,
-                  player_3_2_14_form,
-                  player_3_2_15_form,
-                  player_3_1_cpt,
-                  player_3_2_cpt,
-                  player_3_3_cpt,
-                  player_3_4_cpt,
-                  player_3_5_cpt,
-                  player_3_6_cpt,
-                  player_3_7_cpt,
-                  player_3_8_cpt,
-                  player_3_9_cpt,
-                  player_3_10_cpt,
-                  player_3_11_cpt,
-                  player_3_12_cpt,
-                  player_3_13_cpt,
-                  player_3_14_cpt,
-                  player_3_15_cpt,
-                  player_3_free_trn,
-                  player_3_1_trn,
-                   player_3_2_trn,
-                   player_3_3_trn,
-                   player_3_4_trn,
-                   player_3_5_trn,
-                   player_3_6_trn,
-                   player_3_7_trn,
-                   player_3_8_trn,
-                   player_3_9_trn,
-                   player_3_10_trn,
-                   player_3_11_trn,
-                   player_3_12_trn,
-                   player_3_13_trn,
-                   player_3_14_trn,
-                   player_3_15_trn,
-                   gw3_tokens,
-                   player_4_1_1_form,
-                  player_4_1_2_form,
-                  player_4_1_3_form,
-                  player_4_1_4_form,
-                  player_4_1_5_form,
-                  player_4_1_6_form,
-                  player_4_1_7_form,
-                  player_4_1_8_form,
-                  player_4_1_9_form,
-                  player_4_1_10_form,
-                  player_4_1_11_form,
-                  player_4_1_12_form,
-                  player_4_1_13_form,
-                  player_4_1_14_form,
-                  player_4_1_15_form,
-                  player_4_2_1_form,
-                  player_4_2_2_form,
-                  player_4_2_3_form,
-                  player_4_2_4_form,
-                  player_4_2_5_form,
-                  player_4_2_6_form,
-                  player_4_2_7_form,
-                  player_4_2_8_form,
-                  player_4_2_9_form,
-                  player_4_2_10_form,
-                  player_4_2_11_form,
-                  player_4_2_12_form,
-                  player_4_2_13_form,
-                  player_4_2_14_form,
-                  player_4_2_15_form,
-                  player_4_1_cpt,
-                  player_4_2_cpt,
-                  player_4_3_cpt,
-                  player_4_4_cpt,
-                  player_4_5_cpt,
-                  player_4_6_cpt,
-                  player_4_7_cpt,
-                  player_4_8_cpt,
-                  player_4_9_cpt,
-                  player_4_10_cpt,
-                  player_4_11_cpt,
-                  player_4_12_cpt,
-                  player_4_13_cpt,
-                  player_4_14_cpt,
-                  player_4_15_cpt,
-                  player_4_free_trn,
-                  player_4_1_trn,
-                   player_4_2_trn,
-                   player_4_3_trn,
-                   player_4_4_trn,
-                   player_4_5_trn,
-                   player_4_6_trn,
-                   player_4_7_trn,
-                   player_4_8_trn,
-                   player_4_9_trn,
-                   player_4_10_trn,
-                   player_4_11_trn,
-                   player_4_12_trn,
-                   player_4_13_trn,
-                   player_4_14_trn,
-                   player_4_15_trn,
-                   gw4_tokens):
+                    player_1_1_1_form,
+                    player_1_1_2_form,
+                    player_1_1_3_form,
+                    player_1_1_4_form,
+                    player_1_1_5_form,
+                    player_1_1_6_form,
+                    player_1_1_7_form,
+                    player_1_1_8_form,
+                    player_1_1_9_form,
+                    player_1_1_10_form,
+                    player_1_1_11_form,
+                    player_1_1_12_form,
+                    player_1_1_13_form,
+                    player_1_1_14_form,
+                    player_1_1_15_form,
+                    player_1_2_1_form,
+                    player_1_2_2_form,
+                    player_1_2_3_form,
+                    player_1_2_4_form,
+                    player_1_2_5_form,
+                    player_1_2_6_form,
+                    player_1_2_7_form,
+                    player_1_2_8_form,
+                    player_1_2_9_form,
+                    player_1_2_10_form,
+                    player_1_2_11_form,
+                    player_1_2_12_form,
+                    player_1_2_13_form,
+                    player_1_2_14_form,
+                    player_1_2_15_form,
+                    player_1_1_cpt,
+                    player_1_2_cpt,
+                    player_1_3_cpt,
+                    player_1_4_cpt,
+                    player_1_5_cpt,
+                    player_1_6_cpt,
+                    player_1_7_cpt,
+                    player_1_8_cpt,
+                    player_1_9_cpt,
+                    player_1_10_cpt,
+                    player_1_11_cpt,
+                    player_1_12_cpt,
+                    player_1_13_cpt,
+                    player_1_14_cpt,
+                    player_1_15_cpt,
+                    player_1_free_trn,
+                    player_1_1_trn,
+                    player_1_2_trn,
+                    player_1_3_trn,
+                    player_1_4_trn,
+                    player_1_5_trn,
+                    player_1_6_trn,
+                    player_1_7_trn,
+                    player_1_8_trn,
+                    player_1_9_trn,
+                    player_1_10_trn,
+                    player_1_11_trn,
+                    player_1_12_trn,
+                    player_1_13_trn,
+                    player_1_14_trn,
+                    player_1_15_trn,
+                    gw1_tokens,
+                    player_1_1_value,
+                    player_1_2_value,
+                    player_1_3_value,
+                    player_1_4_value,
+                    player_1_5_value,
+                    player_1_6_value,
+                    player_1_7_value,
+                    player_1_8_value,
+                    player_1_9_value,
+                    player_1_10_value,
+                    player_1_11_value,
+                    player_1_12_value,
+                    player_1_13_value,
+                    player_1_14_value,
+                    player_1_15_value,
+                    player_2_1_1_form,
+                    player_2_1_2_form,
+                    player_2_1_3_form,
+                    player_2_1_4_form,
+                    player_2_1_5_form,
+                    player_2_1_6_form,
+                    player_2_1_7_form,
+                    player_2_1_8_form,
+                    player_2_1_9_form,
+                    player_2_1_10_form,
+                    player_2_1_11_form,
+                    player_2_1_12_form,
+                    player_2_1_13_form,
+                    player_2_1_14_form,
+                    player_2_1_15_form,
+                    player_2_2_1_form,
+                    player_2_2_2_form,
+                    player_2_2_3_form,
+                    player_2_2_4_form,
+                    player_2_2_5_form,
+                    player_2_2_6_form,
+                    player_2_2_7_form,
+                    player_2_2_8_form,
+                    player_2_2_9_form,
+                    player_2_2_10_form,
+                    player_2_2_11_form,
+                    player_2_2_12_form,
+                    player_2_2_13_form,
+                    player_2_2_14_form,
+                    player_2_2_15_form,
+                    player_2_1_cpt,
+                    player_2_2_cpt,
+                    player_2_3_cpt,
+                    player_2_4_cpt,
+                    player_2_5_cpt,
+                    player_2_6_cpt,
+                    player_2_7_cpt,
+                    player_2_8_cpt,
+                    player_2_9_cpt,
+                    player_2_10_cpt,
+                    player_2_11_cpt,
+                    player_2_12_cpt,
+                    player_2_13_cpt,
+                    player_2_14_cpt,
+                    player_2_15_cpt,
+                    player_2_free_trn,
+                    player_2_1_trn,
+                    player_2_2_trn,
+                    player_2_3_trn,
+                    player_2_4_trn,
+                    player_2_5_trn,
+                    player_2_6_trn,
+                    player_2_7_trn,
+                    player_2_8_trn,
+                    player_2_9_trn,
+                    player_2_10_trn,
+                    player_2_11_trn,
+                    player_2_12_trn,
+                    player_2_13_trn,
+                    player_2_14_trn,
+                    player_2_15_trn,
+                    gw2_tokens,
+                    player_2_1_value,
+                    player_2_2_value,
+                    player_2_3_value,
+                    player_2_4_value,
+                    player_2_5_value,
+                    player_2_6_value,
+                    player_2_7_value,
+                    player_2_8_value,
+                    player_2_9_value,
+                    player_2_10_value,
+                    player_2_11_value,
+                    player_2_12_value,
+                    player_2_13_value,
+                    player_2_14_value,
+                    player_2_15_value,
+                    player_3_1_1_form,
+                    player_3_1_2_form,
+                    player_3_1_3_form,
+                    player_3_1_4_form,
+                    player_3_1_5_form,
+                    player_3_1_6_form,
+                    player_3_1_7_form,
+                    player_3_1_8_form,
+                    player_3_1_9_form,
+                    player_3_1_10_form,
+                    player_3_1_11_form,
+                    player_3_1_12_form,
+                    player_3_1_13_form,
+                    player_3_1_14_form,
+                    player_3_1_15_form,
+                    player_3_2_1_form,
+                    player_3_2_2_form,
+                    player_3_2_3_form,
+                    player_3_2_4_form,
+                    player_3_2_5_form,
+                    player_3_2_6_form,
+                    player_3_2_7_form,
+                    player_3_2_8_form,
+                    player_3_2_9_form,
+                    player_3_2_10_form,
+                    player_3_2_11_form,
+                    player_3_2_12_form,
+                    player_3_2_13_form,
+                    player_3_2_14_form,
+                    player_3_2_15_form,
+                    player_3_1_cpt,
+                    player_3_2_cpt,
+                    player_3_3_cpt,
+                    player_3_4_cpt,
+                    player_3_5_cpt,
+                    player_3_6_cpt,
+                    player_3_7_cpt,
+                    player_3_8_cpt,
+                    player_3_9_cpt,
+                    player_3_10_cpt,
+                    player_3_11_cpt,
+                    player_3_12_cpt,
+                    player_3_13_cpt,
+                    player_3_14_cpt,
+                    player_3_15_cpt,
+                    player_3_free_trn,
+                    player_3_1_trn,
+                    player_3_2_trn,
+                    player_3_3_trn,
+                    player_3_4_trn,
+                    player_3_5_trn,
+                    player_3_6_trn,
+                    player_3_7_trn,
+                    player_3_8_trn,
+                    player_3_9_trn,
+                    player_3_10_trn,
+                    player_3_11_trn,
+                    player_3_12_trn,
+                    player_3_13_trn,
+                    player_3_14_trn,
+                    player_3_15_trn,
+                    gw3_tokens,
+                    player_3_1_value,
+                    player_3_2_value,
+                    player_3_3_value,
+                    player_3_4_value,
+                    player_3_5_value,
+                    player_3_6_value,
+                    player_3_7_value,
+                    player_3_8_value,
+                    player_3_9_value,
+                    player_3_10_value,
+                    player_3_11_value,
+                    player_3_12_value,
+                    player_3_13_value,
+                    player_3_14_value,
+                    player_3_15_value,
+                    player_4_1_1_form,
+                    player_4_1_2_form,
+                    player_4_1_3_form,
+                    player_4_1_4_form,
+                    player_4_1_5_form,
+                    player_4_1_6_form,
+                    player_4_1_7_form,
+                    player_4_1_8_form,
+                    player_4_1_9_form,
+                    player_4_1_10_form,
+                    player_4_1_11_form,
+                    player_4_1_12_form,
+                    player_4_1_13_form,
+                    player_4_1_14_form,
+                    player_4_1_15_form,
+                    player_4_2_1_form,
+                    player_4_2_2_form,
+                    player_4_2_3_form,
+                    player_4_2_4_form,
+                    player_4_2_5_form,
+                    player_4_2_6_form,
+                    player_4_2_7_form,
+                    player_4_2_8_form,
+                    player_4_2_9_form,
+                    player_4_2_10_form,
+                    player_4_2_11_form,
+                    player_4_2_12_form,
+                    player_4_2_13_form,
+                    player_4_2_14_form,
+                    player_4_2_15_form,
+                    player_4_1_cpt,
+                    player_4_2_cpt,
+                    player_4_3_cpt,
+                    player_4_4_cpt,
+                    player_4_5_cpt,
+                    player_4_6_cpt,
+                    player_4_7_cpt,
+                    player_4_8_cpt,
+                    player_4_9_cpt,
+                    player_4_10_cpt,
+                    player_4_11_cpt,
+                    player_4_12_cpt,
+                    player_4_13_cpt,
+                    player_4_14_cpt,
+                    player_4_15_cpt,
+                    player_4_free_trn,
+                    player_4_1_trn,
+                    player_4_2_trn,
+                    player_4_3_trn,
+                    player_4_4_trn,
+                    player_4_5_trn,
+                    player_4_6_trn,
+                    player_4_7_trn,
+                    player_4_8_trn,
+                    player_4_9_trn,
+                    player_4_10_trn,
+                    player_4_11_trn,
+                    player_4_12_trn,
+                    player_4_13_trn,
+                    player_4_14_trn,
+                    player_4_15_trn,
+                    gw4_tokens,
+                    player_4_1_value,
+                    player_4_2_value,
+                    player_4_3_value,
+                    player_4_4_value,
+                    player_4_5_value,
+                    player_4_6_value,
+                    player_4_7_value,
+                    player_4_8_value,
+                    player_4_9_value,
+                    player_4_10_value,
+                    player_4_11_value,
+                    player_4_12_value,
+                    player_4_13_value,
+                    player_4_14_value,
+                    player_4_15_value):
+
+
+    # Combine variables into lists
+
+    player_trn_gw1 = [player_1_1_trn, player_1_2_trn, player_1_3_trn, player_1_4_trn, player_1_5_trn, player_1_6_trn,
+                      player_1_7_trn, player_1_8_trn, player_1_9_trn, player_1_10_trn, player_1_11_trn, player_1_12_trn,
+                      player_1_13_trn, player_1_14_trn, player_1_15_trn]
+
+    player_trn_gw2 = [player_2_1_trn, player_2_2_trn, player_2_3_trn, player_2_4_trn, player_2_5_trn, player_2_6_trn,
+                      player_2_7_trn, player_2_8_trn, player_2_9_trn, player_2_10_trn, player_2_11_trn, player_2_12_trn,
+                      player_2_13_trn, player_2_14_trn, player_2_15_trn]
+
+    player_trn_gw3 = [player_3_1_trn, player_3_2_trn, player_3_3_trn, player_3_4_trn, player_3_5_trn, player_3_6_trn,
+                      player_3_7_trn, player_3_8_trn, player_3_9_trn, player_3_10_trn, player_3_11_trn, player_3_12_trn,
+                      player_3_13_trn, player_3_14_trn, player_3_15_trn]
+
+    player_trn_gw4 = [player_4_1_trn, player_4_2_trn, player_4_3_trn, player_4_4_trn, player_4_5_trn, player_4_6_trn,
+                      player_4_7_trn, player_4_8_trn, player_4_9_trn, player_4_10_trn, player_4_11_trn, player_4_12_trn,
+                      player_4_13_trn, player_4_14_trn, player_4_15_trn]
+
+
+    player_form_gw1_g1 = [player_1_1_1_form, player_1_1_2_form, player_1_1_3_form, player_1_1_4_form, player_1_1_5_form,
+                          player_1_1_6_form, player_1_1_7_form, player_1_1_8_form, player_1_1_9_form, player_1_1_10_form,
+                          player_1_1_11_form, player_1_1_12_form, player_1_1_13_form, player_1_1_14_form,
+                          player_1_1_15_form]
+
+    player_form_gw1_g2 = [player_1_2_1_form, player_1_2_2_form, player_1_2_3_form, player_1_2_4_form, player_1_2_5_form,
+                          player_1_2_6_form, player_1_2_7_form, player_1_2_8_form, player_1_2_9_form, player_1_2_10_form,
+                          player_1_2_11_form, player_1_2_12_form, player_1_2_13_form, player_1_2_14_form,
+                          player_1_2_15_form]
+
+    player_cpt_gw1 = [player_1_1_cpt, player_1_2_cpt, player_1_3_cpt, player_1_4_cpt, player_1_5_cpt, player_1_6_cpt,
+                      player_1_7_cpt, player_1_8_cpt, player_1_9_cpt, player_1_10_cpt, player_1_11_cpt, player_1_12_cpt,
+                      player_1_13_cpt, player_1_14_cpt, player_1_15_cpt]
+
+    player_form_gw2_g1 = [player_2_1_1_form, player_2_1_2_form, player_2_1_3_form, player_2_1_4_form, player_2_1_5_form,
+                          player_2_1_6_form, player_2_1_7_form, player_2_1_8_form, player_2_1_9_form, player_2_1_10_form,
+                          player_2_1_11_form, player_2_1_12_form, player_2_1_13_form, player_2_1_14_form,
+                          player_2_1_15_form]
+
+    player_form_gw2_g2 = [player_2_2_1_form, player_2_2_2_form, player_2_2_3_form, player_2_2_4_form, player_2_2_5_form,
+                          player_2_2_6_form, player_2_2_7_form, player_2_2_8_form, player_2_2_9_form, player_2_2_10_form,
+                          player_2_2_11_form, player_2_2_12_form, player_2_2_13_form, player_2_2_14_form,
+                          player_2_2_15_form]
+
+    player_cpt_gw2 = [player_2_1_cpt, player_2_2_cpt, player_2_3_cpt, player_2_4_cpt, player_2_5_cpt, player_2_6_cpt,
+                      player_2_7_cpt, player_2_8_cpt, player_2_9_cpt, player_2_10_cpt, player_2_11_cpt, player_2_12_cpt,
+                      player_2_13_cpt, player_2_14_cpt, player_2_15_cpt]
+
+    player_form_gw3_g1 = [player_3_1_1_form, player_3_1_2_form, player_3_1_3_form, player_3_1_4_form, player_3_1_5_form,
+                          player_3_1_6_form, player_3_1_7_form, player_3_1_8_form, player_3_1_9_form, player_3_1_10_form,
+                          player_3_1_11_form, player_3_1_12_form, player_3_1_13_form, player_3_1_14_form,
+                          player_3_1_15_form]
+
+    player_form_gw3_g2 = [player_3_2_1_form, player_3_2_2_form, player_3_2_3_form, player_3_2_4_form, player_3_2_5_form,
+                          player_3_2_6_form, player_3_2_7_form, player_3_2_8_form, player_3_2_9_form, player_3_2_10_form,
+                          player_3_2_11_form, player_3_2_12_form, player_3_2_13_form, player_3_2_14_form,
+                          player_3_2_15_form]
+
+    player_cpt_gw3 = [player_3_1_cpt, player_3_2_cpt, player_3_3_cpt, player_3_4_cpt, player_3_5_cpt, player_3_6_cpt,
+                      player_3_7_cpt, player_3_8_cpt, player_3_9_cpt, player_3_10_cpt, player_3_11_cpt, player_3_12_cpt,
+                      player_3_13_cpt, player_3_14_cpt, player_3_15_cpt]
+
+    player_form_gw4_g1 = [player_4_1_1_form, player_4_1_2_form, player_4_1_3_form, player_4_1_4_form, player_4_1_5_form,
+                          player_4_1_6_form, player_4_1_7_form, player_4_1_8_form, player_4_1_9_form, player_4_1_10_form,
+                          player_4_1_11_form, player_4_1_12_form, player_4_1_13_form, player_4_1_14_form,
+                          player_4_1_15_form]
+
+    player_form_gw4_g2 = [player_4_2_1_form, player_4_2_2_form, player_4_2_3_form, player_4_2_4_form, player_4_2_5_form,
+                          player_4_2_6_form, player_4_2_7_form, player_4_2_8_form, player_4_2_9_form, player_4_2_10_form,
+                          player_4_2_11_form, player_4_2_12_form, player_4_2_13_form, player_4_2_14_form,
+                          player_4_2_15_form]
+
+    player_cpt_gw4 = [player_4_1_cpt, player_4_2_cpt, player_4_3_cpt, player_4_4_cpt, player_4_5_cpt, player_4_6_cpt,
+                      player_4_7_cpt, player_4_8_cpt, player_4_9_cpt, player_4_10_cpt, player_4_11_cpt, player_4_12_cpt,
+                      player_4_13_cpt, player_4_14_cpt, player_4_15_cpt]
+
+
+    player_value_gw1 = [player_1_1_value, player_1_2_value, player_1_3_value, player_1_4_value, player_1_5_value, player_1_6_value,
+                      player_1_7_value, player_1_8_value, player_1_9_value, player_1_10_value, player_1_11_value, player_1_12_value,
+                      player_1_13_value, player_1_14_value, player_1_15_value]
+
+    player_value_gw2 = [player_2_1_value, player_2_2_value, player_2_3_value, player_2_4_value, player_2_5_value, player_2_6_value,
+                      player_2_7_value, player_2_8_value, player_2_9_value, player_2_10_value, player_2_11_value, player_2_12_value,
+                      player_2_13_value, player_2_14_value, player_2_15_value]
+
+    player_value_gw3 = [player_3_1_value, player_3_2_value, player_3_3_value, player_3_4_value, player_3_5_value, player_3_6_value,
+                      player_3_7_value, player_3_8_value, player_3_9_value, player_3_10_value, player_3_11_value, player_3_12_value,
+                      player_3_13_value, player_3_14_value, player_3_15_value]
+
+    player_value_gw4 = [player_4_1_value, player_4_2_value, player_4_3_value, player_4_4_value, player_4_5_value, player_4_6_value,
+                      player_4_7_value, player_4_8_value, player_4_9_value, player_4_10_value, player_4_11_value, player_4_12_value,
+                      player_4_13_value, player_4_14_value, player_4_15_value]
+
 
 
     # Gameweek 1
+    gw_1_expected_first_team, gw_1_expected_bench = calculate_team_points(player_form_gw1_g1, player_form_gw1_g2, player_cpt_gw1)
 
-    player_1_1_total = calculate_player_points(player_1_1_1_form, player_1_2_1_form, player_1_1_cpt)
-    player_1_2_total = calculate_player_points(player_1_1_2_form, player_1_2_2_form, player_1_2_cpt)
-    player_1_3_total = calculate_player_points(player_1_1_3_form, player_1_2_3_form, player_1_3_cpt)
-    player_1_4_total = calculate_player_points(player_1_1_4_form, player_1_2_4_form, player_1_4_cpt)
-    player_1_5_total = calculate_player_points(player_1_1_5_form, player_1_2_5_form, player_1_5_cpt)
-    player_1_6_total = calculate_player_points(player_1_1_6_form, player_1_2_6_form, player_1_6_cpt)
-    player_1_7_total = calculate_player_points(player_1_1_7_form, player_1_2_7_form, player_1_7_cpt)
-    player_1_8_total = calculate_player_points(player_1_1_8_form, player_1_2_8_form, player_1_8_cpt)
-    player_1_9_total = calculate_player_points(player_1_1_9_form, player_1_2_9_form, player_1_9_cpt)
-    player_1_10_total = calculate_player_points(player_1_1_10_form, player_1_2_10_form, player_1_10_cpt)
-    player_1_11_total = calculate_player_points(player_1_1_11_form, player_1_2_11_form, player_1_11_cpt)
-    player_1_12_total = calculate_player_points(player_1_1_12_form, player_1_2_12_form, player_1_12_cpt)
-    player_1_13_total = calculate_player_points(player_1_1_13_form, player_1_2_13_form, player_1_13_cpt)
-    player_1_14_total = calculate_player_points(player_1_1_14_form, player_1_2_14_form, player_1_14_cpt)
-    player_1_15_total = calculate_player_points(player_1_1_15_form, player_1_2_15_form, player_1_15_cpt)
+    gw_1_transfers = calculate_transfer_points(player_trn_gw1, player_1_free_trn, gw1_tokens)
 
-    gw_1_expected = player_1_1_total + player_1_2_total + player_1_3_total + player_1_4_total + player_1_5_total + player_1_6_total + \
-        player_1_7_total + player_1_8_total + player_1_9_total + player_1_10_total + player_1_11_total + player_1_12_total + \
-        player_1_13_total + player_1_14_total + player_1_15_total
-
-    gw_1_expected = '{0:.1f}'.format(gw_1_expected)
-
-    gw_1_transfers = calculate_transfer_points(player_1_free_trn,
-                                                  player_1_1_trn,
-                                                  player_1_2_trn,
-                                                  player_1_3_trn,
-                                                  player_1_4_trn,
-                                                  player_1_5_trn,
-                                                  player_1_6_trn,
-                                                  player_1_7_trn,
-                                                  player_1_8_trn,
-                                                  player_1_9_trn,
-                                                  player_1_10_trn,
-                                                  player_1_11_trn,
-                                                  player_1_12_trn,
-                                                  player_1_13_trn,
-                                                  player_1_14_trn,
-                                                  player_1_15_trn,
-                                                  gw1_tokens)
-
-    gw_1_final = '{0:.1f}'.format(float(gw_1_expected) + gw_1_transfers)
+    gw_1_final = '{0:.1f}'.format(float(gw_1_expected_first_team) + gw_1_transfers)
 
     gw_1_cumulative = gw_1_final
 
 
+
+
     # Gameweek 2
-    player_2_1_total = calculate_player_points(player_2_1_1_form, player_2_2_1_form, player_2_1_cpt)
-    player_2_2_total = calculate_player_points(player_2_1_2_form, player_2_2_2_form, player_2_2_cpt)
-    player_2_3_total = calculate_player_points(player_2_1_3_form, player_2_2_3_form, player_2_3_cpt)
-    player_2_4_total = calculate_player_points(player_2_1_4_form, player_2_2_4_form, player_2_4_cpt)
-    player_2_5_total = calculate_player_points(player_2_1_5_form, player_2_2_5_form, player_2_5_cpt)
-    player_2_6_total = calculate_player_points(player_2_1_6_form, player_2_2_6_form, player_2_6_cpt)
-    player_2_7_total = calculate_player_points(player_2_1_7_form, player_2_2_7_form, player_2_7_cpt)
-    player_2_8_total = calculate_player_points(player_2_1_8_form, player_2_2_8_form, player_2_8_cpt)
-    player_2_9_total = calculate_player_points(player_2_1_9_form, player_2_2_9_form, player_2_9_cpt)
-    player_2_10_total = calculate_player_points(player_2_1_10_form, player_2_2_10_form, player_2_10_cpt)
-    player_2_11_total = calculate_player_points(player_2_1_11_form, player_2_2_11_form, player_2_11_cpt)
-    player_2_12_total = calculate_player_points(player_2_1_12_form, player_2_2_12_form, player_2_12_cpt)
-    player_2_13_total = calculate_player_points(player_2_1_13_form, player_2_2_13_form, player_2_13_cpt)
-    player_2_14_total = calculate_player_points(player_2_1_14_form, player_2_2_14_form, player_2_14_cpt)
-    player_2_15_total = calculate_player_points(player_2_1_15_form, player_2_2_15_form, player_2_15_cpt)
+    gw_2_expected_first_team, gw_2_expected_bench = calculate_team_points(player_form_gw2_g1, player_form_gw2_g2, player_cpt_gw2)
 
-    gw_2_expected = player_2_1_total + player_2_2_total + player_2_3_total + player_2_4_total + player_2_5_total + player_2_6_total + \
-        player_2_7_total + player_2_8_total + player_2_9_total + player_2_10_total + player_2_11_total + player_2_12_total + \
-        player_2_13_total + player_2_14_total + player_2_15_total
+    gw_2_transfers = calculate_transfer_points(player_trn_gw2, player_2_free_trn, gw2_tokens)
 
-    gw_2_expected = '{0:.1f}'.format(gw_2_expected)
-
-    gw_2_transfers = calculate_transfer_points(player_2_free_trn,
-                                                  player_2_1_trn,
-                                                  player_2_2_trn,
-                                                  player_2_3_trn,
-                                                  player_2_4_trn,
-                                                  player_2_5_trn,
-                                                  player_2_6_trn,
-                                                  player_2_7_trn,
-                                                  player_2_8_trn,
-                                                  player_2_9_trn,
-                                                  player_2_10_trn,
-                                                  player_2_11_trn,
-                                                  player_2_12_trn,
-                                                  player_2_13_trn,
-                                                  player_2_14_trn,
-                                                  player_2_15_trn,
-                                                  gw2_tokens)
-
-    gw_2_final = '{0:.1f}'.format(float(gw_2_expected) + gw_2_transfers)
+    gw_2_final = '{0:.1f}'.format(float(gw_2_expected_first_team) + gw_2_transfers)
 
     gw_2_cumulative = '{0:.1f}'.format(float(gw_1_cumulative) + float(gw_2_final))
 
 
     # Gameweek 3
-    player_3_1_total = calculate_player_points(player_3_1_1_form, player_3_2_1_form, player_3_1_cpt)
-    player_3_2_total = calculate_player_points(player_3_1_2_form, player_3_2_2_form, player_3_2_cpt)
-    player_3_3_total = calculate_player_points(player_3_1_3_form, player_3_2_3_form, player_3_3_cpt)
-    player_3_4_total = calculate_player_points(player_3_1_4_form, player_3_2_4_form, player_3_4_cpt)
-    player_3_5_total = calculate_player_points(player_3_1_5_form, player_3_2_5_form, player_3_5_cpt)
-    player_3_6_total = calculate_player_points(player_3_1_6_form, player_3_2_6_form, player_3_6_cpt)
-    player_3_7_total = calculate_player_points(player_3_1_7_form, player_3_2_7_form, player_3_7_cpt)
-    player_3_8_total = calculate_player_points(player_3_1_8_form, player_3_2_8_form, player_3_8_cpt)
-    player_3_9_total = calculate_player_points(player_3_1_9_form, player_3_2_9_form, player_3_9_cpt)
-    player_3_10_total = calculate_player_points(player_3_1_10_form, player_3_2_10_form, player_3_10_cpt)
-    player_3_11_total = calculate_player_points(player_3_1_11_form, player_3_2_11_form, player_3_11_cpt)
-    player_3_12_total = calculate_player_points(player_3_1_12_form, player_3_2_12_form, player_3_12_cpt)
-    player_3_13_total = calculate_player_points(player_3_1_13_form, player_3_2_13_form, player_3_13_cpt)
-    player_3_14_total = calculate_player_points(player_3_1_14_form, player_3_2_14_form, player_3_14_cpt)
-    player_3_15_total = calculate_player_points(player_3_1_15_form, player_3_2_15_form, player_3_15_cpt)
+    gw_3_expected_first_team, gw_3_expected_bench = calculate_team_points(player_form_gw3_g1, player_form_gw3_g2, player_cpt_gw3)
 
-    gw_3_expected = player_3_1_total + player_3_2_total + player_3_3_total + player_3_4_total + player_3_5_total + player_3_6_total + \
-        player_3_7_total + player_3_8_total + player_3_9_total + player_3_10_total + player_3_11_total + player_3_12_total + \
-        player_3_13_total + player_3_14_total + player_3_15_total
+    gw_3_transfers = calculate_transfer_points(player_trn_gw3, player_3_free_trn, gw3_tokens)
 
-    gw_3_expected = '{0:.1f}'.format(gw_3_expected)
-
-    gw_3_transfers = calculate_transfer_points(player_3_free_trn,
-                                                  player_3_1_trn,
-                                                  player_3_2_trn,
-                                                  player_3_3_trn,
-                                                  player_3_4_trn,
-                                                  player_3_5_trn,
-                                                  player_3_6_trn,
-                                                  player_3_7_trn,
-                                                  player_3_8_trn,
-                                                  player_3_9_trn,
-                                                  player_3_10_trn,
-                                                  player_3_11_trn,
-                                                  player_3_12_trn,
-                                                  player_3_13_trn,
-                                                  player_3_14_trn,
-                                                  player_3_15_trn,
-                                                  gw3_tokens)
-
-    gw_3_final = '{0:.1f}'.format(float(gw_3_expected) + gw_3_transfers)
+    gw_3_final = '{0:.1f}'.format(float(gw_3_expected_first_team) + gw_3_transfers)
 
     gw_3_cumulative = '{0:.1f}'.format(float(gw_2_cumulative) + float(gw_3_final))
 
 
     # Gameweek 4
-    player_4_1_total = calculate_player_points(player_4_1_1_form, player_4_2_1_form, player_4_1_cpt)
-    player_4_2_total = calculate_player_points(player_4_1_2_form, player_4_2_2_form, player_4_2_cpt)
-    player_4_3_total = calculate_player_points(player_4_1_3_form, player_4_2_3_form, player_4_3_cpt)
-    player_4_4_total = calculate_player_points(player_4_1_4_form, player_4_2_4_form, player_4_4_cpt)
-    player_4_5_total = calculate_player_points(player_4_1_5_form, player_4_2_5_form, player_4_5_cpt)
-    player_4_6_total = calculate_player_points(player_4_1_6_form, player_4_2_6_form, player_4_6_cpt)
-    player_4_7_total = calculate_player_points(player_4_1_7_form, player_4_2_7_form, player_4_7_cpt)
-    player_4_8_total = calculate_player_points(player_4_1_8_form, player_4_2_8_form, player_4_8_cpt)
-    player_4_9_total = calculate_player_points(player_4_1_9_form, player_4_2_9_form, player_4_9_cpt)
-    player_4_10_total = calculate_player_points(player_4_1_10_form, player_4_2_10_form, player_4_10_cpt)
-    player_4_11_total = calculate_player_points(player_4_1_11_form, player_4_2_11_form, player_4_11_cpt)
-    player_4_12_total = calculate_player_points(player_4_1_12_form, player_4_2_12_form, player_4_12_cpt)
-    player_4_13_total = calculate_player_points(player_4_1_13_form, player_4_2_13_form, player_4_13_cpt)
-    player_4_14_total = calculate_player_points(player_4_1_14_form, player_4_2_14_form, player_4_14_cpt)
-    player_4_15_total = calculate_player_points(player_4_1_15_form, player_4_2_15_form, player_4_15_cpt)
+    gw_4_expected_first_team, gw_4_expected_bench = calculate_team_points(player_form_gw4_g1, player_form_gw4_g2, player_cpt_gw4)
 
-    gw_4_expected = player_4_1_total + player_4_2_total + player_4_3_total + player_4_4_total + player_4_5_total + player_4_6_total + \
-        player_4_7_total + player_4_8_total + player_4_9_total + player_4_10_total + player_4_11_total + player_4_12_total + \
-        player_4_13_total + player_4_14_total + player_4_15_total
+    gw_4_transfers = calculate_transfer_points(player_trn_gw4, player_4_free_trn, gw4_tokens)
 
-    gw_4_expected = '{0:.1f}'.format(gw_4_expected)
-
-    gw_4_transfers = calculate_transfer_points(player_4_free_trn,
-                                                  player_4_1_trn,
-                                                  player_4_2_trn,
-                                                  player_4_3_trn,
-                                                  player_4_4_trn,
-                                                  player_4_5_trn,
-                                                  player_4_6_trn,
-                                                  player_4_7_trn,
-                                                  player_4_8_trn,
-                                                  player_4_9_trn,
-                                                  player_4_10_trn,
-                                                  player_4_11_trn,
-                                                  player_4_12_trn,
-                                                  player_4_13_trn,
-                                                  player_4_14_trn,
-                                                  player_4_15_trn,
-                                                  gw4_tokens)
-
-    gw_4_final = '{0:.1f}'.format(float(gw_4_expected) + gw_4_transfers)
+    gw_4_final = '{0:.1f}'.format(float(gw_4_expected_first_team) + gw_4_transfers)
 
     gw_4_cumulative = '{0:.1f}'.format(float(gw_3_cumulative) + float(gw_4_final))
 
 
-    return gw_1_expected, gw_1_transfers, gw_1_final, gw_1_cumulative, \
-           gw_2_expected, gw_2_transfers, gw_2_final, gw_2_cumulative, \
-           gw_3_expected, gw_3_transfers, gw_3_final, gw_3_cumulative, \
-           gw_4_expected, gw_4_transfers, gw_4_final, gw_4_cumulative,
+    return gw_1_expected_first_team, gw_1_transfers, gw_1_final, gw_1_cumulative, \
+           gw_2_expected_first_team, gw_2_transfers, gw_2_final, gw_2_cumulative, \
+           gw_3_expected_first_team, gw_3_transfers, gw_3_final, gw_3_cumulative, \
+           gw_4_expected_first_team, gw_4_transfers, gw_4_final, gw_4_cumulative,
 
 
 @app.callback(
@@ -6369,7 +6428,7 @@ def update_player_data_gw3_p14(player_unique_id,
      State('round_current', 'children'),
      State('team_data', 'children')]
 )
-def update_player_data_gw3_p1(player_unique_id,
+def update_player_data_gw3_p15(player_unique_id,
                                 team_names_json,
                                 team_unique_ids_json,
                                 team_names_json_next,
@@ -10331,4 +10390,4 @@ def update_aggregate_figure_ycol_error(fig_yaxis_column,
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
