@@ -15,8 +15,8 @@ gw,scraped,parsed
 14,True,True
 15,True,True
 16,True,True
-17,False,False
-18,False,False
+17,True,True
+18,True,True
 19,False,False
 20,False,False
 21,False,False
