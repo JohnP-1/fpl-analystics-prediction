@@ -1721,6 +1721,27 @@ class DataLoader(DLH.DataLoaderHistoric):
         return team_picks
 
 
+    def scrape_transfer_information(self, email, password, team_id):
+
+        session = requests.session()
+        url = 'https://users.premierleague.com/accounts/login/'
+
+        payload = {
+            'password': password,
+            'login': email,
+            'redirect_uri': 'https://fantasy.premierleague.com/a/login',
+            'app': 'plfpl-web'
+        }
+
+        session.post(url, data=payload)
+
+        response = session.get('https://fantasy.premierleague.com/api/my-team/' + str(team_id)).json()
+
+        transfers = pd.Series(response['transfers'])
+
+        return transfers
+
+
 
 
 

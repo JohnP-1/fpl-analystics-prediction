@@ -1,0 +1,17 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Brighton,3,2020,21,16,17,1,1,13,0,0,1,0,1,2,7,7,True,Arsenal
+Arsenal,1,2020,1,16,13,3,21,17,1,0,0,1,0,6,2,8,False,Brighton
+Burnley,4,2020,3,16,16,15,29,20,1,0,0,1,0,4,4,7,True,Sheffield Utd
+Sheffield Utd,15,2020,29,16,20,4,3,16,0,0,1,0,1,0,2,14,False,Burnley
+Chelsea,5,2020,4,16,6,2,27,5,0,1,0,1,1,7,5,4,True,Aston Villa
+Aston Villa,2,2020,27,16,5,5,4,6,0,1,0,1,1,8,2,4,False,Chelsea
+Crystal Palace,6,2020,5,16,15,9,8,3,0,1,0,1,1,5,4,7,True,Leicester
+Leicester,9,2020,8,16,3,6,5,15,0,1,0,1,1,9,2,5,False,Crystal Palace
+Man Utd,13,2020,11,16,2,20,26,12,1,0,0,1,0,9,3,3,True,Wolves
+Wolves,20,2020,26,16,12,13,11,2,0,0,1,0,1,6,3,7,False,Man Utd
+Newcastle,14,2020,23,16,14,11,9,1,0,1,0,0,0,5,4,6,True,Liverpool
+Liverpool,11,2020,9,16,1,14,23,14,0,1,0,0,0,9,6,1,False,Newcastle
+Southampton,16,2020,13,16,9,19,20,10,0,1,0,0,0,7,5,4,True,West Ham
+West Ham,19,2020,20,16,10,16,13,9,0,1,0,0,0,6,5,5,False,Southampton
+West Brom,18,2020,19,16,19,10,30,11,0,0,1,0,5,1,5,10,True,Leeds
+Leeds,10,2020,30,16,11,18,19,19,1,0,0,5,0,7,2,7,False,West Brom

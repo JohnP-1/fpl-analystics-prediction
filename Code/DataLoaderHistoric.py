@@ -2094,8 +2094,6 @@ class DataLoaderHistoric():
                 away_team_id = fixture_data['team_a'].iloc[i]
                 event = fixture_data['event'].iloc[i]
 
-
-
             if event > event_max:
                 event = event_max
 
