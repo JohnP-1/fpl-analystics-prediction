@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Arsenal,1,2020,1,4,4,15,29,19,1,0,0,2,1,3,0,1,True,Sheffield Utd
+Sheffield Utd,15,2020,29,4,19,1,1,4,0,0,1,1,2,0,0,4,False,Arsenal
+Aston Villa,2,2020,27,4,2,11,9,5,1,0,0,7,2,3,0,0,True,Liverpool
+Liverpool,11,2020,9,4,5,2,27,2,0,0,1,2,7,3,0,1,False,Aston Villa
+Chelsea,5,2020,4,4,7,6,5,12,1,0,0,4,0,2,1,1,True,Crystal Palace
+Crystal Palace,6,2020,5,4,12,5,4,7,0,0,1,0,4,2,0,2,False,Chelsea
+Everton,7,2020,6,4,1,3,21,15,1,0,0,4,2,4,0,0,True,Brighton
+Brighton,3,2020,21,4,15,7,6,1,0,0,1,2,4,1,0,3,False,Everton
+Leeds,10,2020,30,4,8,12,10,14,0,1,0,1,1,2,1,1,True,Man City
+Man City,12,2020,10,4,14,10,30,8,0,1,0,1,1,1,1,1,False,Leeds
+Leicester,9,2020,8,4,3,19,20,10,0,0,1,0,3,3,0,1,True,West Ham
+West Ham,19,2020,20,4,10,9,8,3,1,0,0,3,0,2,0,2,False,Leicester
+Man Utd,13,2020,11,4,16,17,17,6,0,0,1,1,6,1,0,2,True,Spurs
+Spurs,17,2020,17,4,6,13,11,16,1,0,0,6,1,2,1,1,False,Man Utd
+Newcastle,14,2020,23,4,9,4,3,18,1,0,0,3,1,2,1,1,True,Burnley
+Burnley,4,2020,3,4,18,14,23,9,0,0,1,1,3,0,0,3,False,Newcastle
+Southampton,16,2020,13,4,11,18,19,17,1,0,0,2,0,2,0,2,True,West Brom
+West Brom,18,2020,19,4,17,16,13,11,0,0,1,0,2,0,1,3,False,Southampton
+Wolves,20,2020,26,4,13,8,25,20,1,0,0,1,0,2,0,2,True,Fulham
+Fulham,8,2020,25,4,20,20,26,13,0,0,1,0,1,0,0,4,False,Wolves

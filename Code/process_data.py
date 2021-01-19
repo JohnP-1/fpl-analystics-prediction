@@ -415,14 +415,14 @@ seasons = [2016,
            2019,
            2020]
 
-# for season in seasons:
-#     DataLoader.process_fixtures_season(season, path_processed)
-#
-# DataLoader.process_team_stats_init(seasons,
-#                                 path_processed)
-#
-# DataLoader.process_team_stats(seasons,
-#                             path_processed)
+for season in seasons:
+    DataLoader.process_fixtures_season(season, path_processed)
+
+DataLoader.process_team_stats_init(seasons,
+                                path_processed)
+
+DataLoader.process_team_stats(seasons,
+                            path_processed)
 
 for season in seasons:
     DataLoader.process_fixture_odds(path_processed,

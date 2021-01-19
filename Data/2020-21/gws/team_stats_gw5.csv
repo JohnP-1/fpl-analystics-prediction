@@ -1,0 +1,21 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Chelsea,5,2020,4,5,8,16,13,12,0,1,0,3,3,2,2,1,True,Southampton
+Southampton,16,2020,13,5,12,5,4,8,0,1,0,3,3,2,1,2,False,Chelsea
+Crystal Palace,6,2020,5,5,14,3,21,16,0,1,0,1,1,2,1,2,True,Brighton
+Brighton,3,2020,21,5,16,6,5,14,0,1,0,1,1,1,1,3,False,Crystal Palace
+Everton,7,2020,6,5,1,11,9,3,0,1,0,2,2,4,1,0,True,Liverpool
+Liverpool,11,2020,9,5,3,7,6,1,0,1,0,2,2,3,1,1,False,Everton
+Leeds,10,2020,30,5,10,20,26,6,0,0,1,0,1,2,1,2,True,Wolves
+Wolves,20,2020,26,5,6,10,30,10,1,0,0,1,0,3,0,2,False,Leeds
+Leicester,9,2020,8,5,4,2,27,2,0,0,1,0,1,3,0,2,True,Aston Villa
+Aston Villa,2,2020,27,5,2,9,8,4,1,0,0,1,0,4,0,0,False,Leicester
+Man City,12,2020,10,5,11,1,1,5,1,0,0,1,0,2,1,1,True,Arsenal
+Arsenal,1,2020,1,5,5,12,10,11,0,0,1,0,1,3,0,2,False,Man City
+Newcastle,14,2020,23,5,13,13,11,15,0,0,1,1,4,2,1,2,True,Man Utd
+Man Utd,13,2020,11,5,15,14,23,13,1,0,0,4,1,2,0,2,False,Newcastle
+Sheffield Utd,15,2020,29,5,19,8,25,20,0,1,0,1,1,0,1,4,True,Fulham
+Fulham,8,2020,25,5,20,15,29,19,0,1,0,1,1,0,1,4,False,Sheffield Utd
+Spurs,17,2020,17,5,7,19,20,9,0,1,0,3,3,2,2,1,True,West Ham
+West Ham,19,2020,20,5,9,17,17,7,0,1,0,3,3,2,1,2,False,Spurs
+West Brom,18,2020,19,5,17,4,3,18,0,1,0,0,0,0,2,3,True,Burnley
+Burnley,4,2020,3,5,18,18,19,17,0,1,0,0,0,0,1,3,False,West Brom
