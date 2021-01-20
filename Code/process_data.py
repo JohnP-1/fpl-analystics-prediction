@@ -415,6 +415,8 @@ seasons = [2016,
            2019,
            2020]
 
+# seasons = [2020]
+
 for season in seasons:
     DataLoader.process_fixtures_season(season, path_processed)
 

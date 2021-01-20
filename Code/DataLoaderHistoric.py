@@ -2069,8 +2069,6 @@ class DataLoaderHistoric():
         team_stats = pd.read_csv(path.join(path_processed, filename_team_stats))
         fixture_data = pd.read_csv(path.join(path_season, filename_fixture))
 
-        # print(fixture_data)
-
         fixture_data['home_odds_win_' + str(results_window)] = 0
         fixture_data['home_odds_draw_' + str(results_window)] = 0
         fixture_data['home_odds_loss_' + str(results_window)] = 0
@@ -2079,7 +2077,7 @@ class DataLoaderHistoric():
         fixture_data['away_odds_draw_' + str(results_window)] = 0
         fixture_data['away_odds_loss_' + str(results_window)] = 0
 
-        event_max = team_stats[team_stats['season']==season]['round'].max()
+        # event_max = team_stats[team_stats['season']==season]['round'].max()
 
         for i in range(fixture_data.shape[0]):
             columns = fixture_data.columns
@@ -2094,24 +2092,25 @@ class DataLoaderHistoric():
                 away_team_id = fixture_data['team_a'].iloc[i]
                 event = fixture_data['event'].iloc[i]
 
-            if event > event_max:
-                event = event_max
+            home_team_event_max = team_stats[(team_stats['season']==season) & (team_stats['team_id']==home_team_id)]['round'].max()
+            away_team_event_max = team_stats[(team_stats['season']==season) & (team_stats['team_id']==away_team_id)]['round'].max()
 
-            # print(event)
+            if event >= home_team_event_max:
+                home_team_event = home_team_event_max
+            else:
+                home_team_event = event
+
+            if event >= away_team_event_max:
+                away_team_event = away_team_event_max
+            else:
+                away_team_event = event
 
             home_team_column = 'team_results_home'
             away_team_column = 'team_results_away'
 
-            # print(event, home_team_id, away_team_id)
-
             if event > 0:
-                # print(season, i, event, home_team_id, away_team_id)
-
-                data_home = team_stats[(team_stats['team_id']==home_team_id) & (team_stats['season']==season) & (team_stats['round']==event) & (team_stats['was_home']==True)]
-                data_away = team_stats[(team_stats['team_id']==away_team_id) & (team_stats['season']==season) & (team_stats['round']==event) & (team_stats['was_home']==False)]
-
-                # if data_home.shape[0] > 1:
-                #     data_home = data_home
+                data_home = team_stats[(team_stats['team_id']==home_team_id) & (team_stats['season']==season) & (team_stats['round']==home_team_event)]
+                data_away = team_stats[(team_stats['team_id']==away_team_id) & (team_stats['season']==season) & (team_stats['round']==away_team_event)]
 
                 if data_home.shape[0] > 0 and data_away.shape[0] > 0:
                     home_results = json.loads(data_home[home_team_column].values[0])
@@ -2126,8 +2125,6 @@ class DataLoaderHistoric():
                         away_results = np.array(away_results[-results_window-1:-1])
                     else:
                         away_results = np.array(away_results[:-1])
-
-                    # print(home_results)
 
                     home_wins = home_results[home_results==2].shape[0]
                     home_draws = home_results[home_results==1].shape[0]

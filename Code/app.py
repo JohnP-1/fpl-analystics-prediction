@@ -482,7 +482,7 @@ timeout = 300
 season_latest = player_metadata['season'].max()
 # season_latest = 2020
 player_metadata_season = player_metadata[player_metadata['season'] == season_latest]
-round_curr = 18
+round_curr = 19
 round_next = round_curr + 1
 
 player_names = []
@@ -1124,7 +1124,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='Free transfers:', style={'width': '50%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    dcc.Input(value=str(transfers['limit']), type='text', id='gw1_free_transfer', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                    dcc.Input(value=str(transfers['limit']), type='text', id='gw1_free_transfer', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
                 ], style={'width': '100%','float': 'left'}),
 
                 html.Div([
@@ -1276,7 +1276,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='Free transfers:', style={'width': '50%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    dcc.Input(value='1', type='text', id='gw2_free_transfer', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                    dcc.Input(value='1', type='text', id='gw2_free_transfer', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
                 ], style={'width': '100%','float': 'left'}),
 
                 html.Div([
@@ -1425,7 +1425,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='Free transfers:', style={'width': '50%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    dcc.Input(value='1', type='text', id='gw3_free_transfer', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                    dcc.Input(value='1', type='text', id='gw3_free_transfer', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
                 ], style={'width': '100%','float': 'left'}),
 
                 html.Div([
@@ -1574,7 +1574,7 @@ def render_content(tab):
 
                 html.Div([
                     html.Div(children='Free transfers:', style={'width': '50%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    dcc.Input(value='1', type='text', id='gw4_free_transfer', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                    dcc.Input(value='1', type='text', id='gw4_free_transfer', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
                 ], style={'width': '100%','float': 'left'}),
 
                 html.Div([

@@ -1,0 +1,13 @@
+team_name,team_id,season,team_unique_id,round,position,team_id_against,team_unique_id_against,against_position,win,draw,loss,team_score,team_concede,total_wins,total_draws,total_losses,was_home,against_team_name
+Spurs,17,2020,17,18,6,8,25,18,0,1,0,1,1,8,6,3,True,Fulham
+Fulham,8,2020,25,18,18,17,17,6,0,1,0,1,1,2,6,8,False,Spurs
+Arsenal,1,2020,1,18,11,6,5,13,0,1,0,0,0,7,3,8,True,Crystal Palace
+Crystal Palace,6,2020,5,18,13,1,1,11,0,1,0,0,0,6,5,7,False,Arsenal
+Sheffield Utd,15,2020,29,18,20,14,23,15,1,0,0,1,0,1,2,15,True,Newcastle
+Newcastle,14,2020,23,18,15,15,29,20,0,0,1,0,1,5,4,8,False,Sheffield Utd
+Wolves,20,2020,26,18,14,7,6,5,0,0,1,1,2,6,4,8,True,Everton
+Everton,7,2020,6,18,5,20,26,14,1,0,0,2,1,10,2,5,False,Wolves
+Man City,12,2020,10,18,3,3,21,17,1,0,0,1,0,9,5,2,True,Brighton
+Brighton,3,2020,21,18,17,12,10,3,0,0,1,0,1,2,8,8,False,Man City
+Burnley,4,2020,3,18,16,13,11,1,0,0,1,0,1,4,4,8,True,Man Utd
+Man Utd,13,2020,11,18,1,4,3,16,1,0,0,1,0,11,3,3,False,Burnley
