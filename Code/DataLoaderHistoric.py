@@ -1805,7 +1805,6 @@ class DataLoaderHistoric():
         data = data.sort_values(by='round')
         data_index = data.index
 
-
         data['team_prob_win_all_' + str(results_window)] = 0
         data['team_prob_win_home_' + str(results_window)] = 0
         data['team_prob_win_away_' + str(results_window)] = 0
@@ -1871,7 +1870,6 @@ class DataLoaderHistoric():
         return data
 
     def process_team_score(self, data, results_window=5):
-
 
 
         data = data.sort_values(by='round')
@@ -2154,11 +2152,56 @@ class DataLoaderHistoric():
         fixture_data.to_csv(path.join(path_season, filename_fixture), index=False)
 
 
-    def odds(self):
-        pass
+    def process_team_form(self, path_processed,
+                             filename_team_stats,
+                             results_window=5):
 
-    def form(self):
-        pass
+        data = pd.read_csv(path.join(path_processed, filename_team_stats))
+
+        data = data.sort_values(by=['season', 'round'])
+
+        if ('team_form_all_' + str(results_window)) not in data.columns:
+            data['team_form_all_' + str(results_window)] = 0
+        if ('team_form_home_' + str(results_window)) not in data.columns:
+            data['team_form_home_' + str(results_window)] = 0
+        if ('team_form_away_' + str(results_window)) not in data.columns:
+            data['team_form_away_' + str(results_window)] = 0
+
+        for i in range(data.shape[0]):
+
+            results_all = data['team_results_all'].iloc[i]
+            results_home = data['team_results_home'].iloc[i]
+            results_away = data['team_results_away'].iloc[i]
+
+            if len(results_all) > 2:
+                results_all = json.loads(results_all)
+            else:
+                results_all = [0]
+
+            if len(results_all) >= results_window:
+                results_all = results_all[-results_window:]
+
+            if len(results_home) > 2:
+                results_home = json.loads(results_home)
+            else:
+                results_home = [0]
+
+            if len(results_home) >= results_window:
+                results_home = results_home[-results_window:]
+
+            if len(results_away) > 2:
+                results_away = json.loads(results_away)
+            else:
+                results_away = [0]
+
+            if len(results_away) >= results_window:
+                results_away = results_away[-results_window:]
+
+            data['team_form_all_' + str(results_window)].iloc[i] = np.mean(results_all)/2
+            data['team_form_home_' + str(results_window)].iloc[i] = np.mean(results_home)/2
+            data['team_form_away_' + str(results_window)].iloc[i] = np.mean(results_away)/2
+
+        data.to_csv(path.join(path_processed, filename_team_stats), index=False)
 
 
 

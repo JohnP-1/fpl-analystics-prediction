@@ -140,6 +140,26 @@ def determine_player_team_id(team_codes, team_unique_id):
 
     return team_id
 
+def determine_player_team_form(team_stats, team_unique_id):
+
+    team_form = team_stats[team_stats['team_unique_id']==team_unique_id]
+    max_round = team_form['round'].max()
+
+    team_form = team_form[team_form['round']==max_round]
+
+    max_matches = -1
+    max_match_idx = 0
+
+    for i in range(team_form.shape[0]):
+        matches = team_form['win'].iloc[i] + team_form['draw'].iloc[i] + team_form['loss'].iloc[i]
+        if matches > max_matches:
+            max_matches = matches
+            max_match_idx = i
+
+    team_form = team_form['team_form_all_5'].iloc[max_match_idx]
+
+    return team_form
+
 def determine_player_fixtures(fixture_data, team_codes, team_id, round_next):
 
     fixture_data = fixture_data[fixture_data['event']==round_next]
@@ -183,10 +203,11 @@ def determine_player_fixtures(fixture_data, team_codes, team_id, round_next):
     return opposition, was_home, odds_win, fixture_diff
 
 
-def planner_process_player(data, team_codes, fixture_data, element_id, season, round_next):
+def planner_process_player(data, team_codes, fixture_data, team_stats, element_id, season, round_next):
     unique_id = determine_unique_id(data, element_id, season)
     player_form = '{0:.2f}'.format(determine_player_form(data, unique_id))
     team_unique_id = determine_player_team_unique_id(data, unique_id)
+    team_form = determine_player_team_form(team_stats, team_unique_id)
     team_id = determine_player_team_id(team_codes, team_unique_id)
     player_position = determine_player_position(data, unique_id)
     team_code = determine_player_team_code(team_codes, team_unique_id)
@@ -207,9 +228,9 @@ def planner_process_player(data, team_codes, fixture_data, element_id, season, r
         player_form_list.append(player_form)
         n_matches = 2
 
-    return unique_id, player_form_list, team_unique_id, team_id, player_position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, n_matches
+    return unique_id, player_form_list, team_unique_id, team_id, player_position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches
 
-def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id):
+def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, team_stats, season_latest, round_curr, font_size, round_id):
 
     round_process = round_curr + round_id
     player_id = team_picks['element'].iloc[i]
@@ -219,8 +240,8 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
     else:
         captain_value = ''
     player_value = '{0:.1f}'.format(team_picks['selling_price'].iloc[i]/10)
-    (player_unique_id, player_form, player_team_unique_id, player_team_id, player_position, player_team_code, player_player_name, player_opposition, player_was_home, player_odds_win, fixture_diff, n_matches) = \
-        planner_process_player(data, team_codes, fixture_data, player_id, season_latest, round_process)
+    (player_unique_id, player_form, player_team_unique_id, player_team_id, player_position, player_team_code, player_player_name, player_opposition, player_was_home, player_odds_win, fixture_diff, team_form, n_matches) = \
+        planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, round_process)
 
     player_no = i + 1
 
@@ -238,7 +259,7 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
         html.Div(children=player_opposition[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_against', style=style_colour(font_size, fixture_diff[0], '7%')),
         html.Div(children=player_was_home[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_H_A', style=style_colour(font_size, fixture_diff[0], '7%')),
         html.Div(children=player_form[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_player_form', style=style_colour(font_size, fixture_diff[0], '7%')),
-        html.Div(children='-', id='player_'+str(round_id)+'_'+str(player_no)+'_1_team_form', style=style_colour(font_size, fixture_diff[0], '8%')),
+        html.Div(children=team_form, id='player_'+str(round_id)+'_'+str(player_no)+'_1_team_form', style=style_colour(font_size, fixture_diff[0], '8%')),
         html.Div(children=player_odds_win[0], id='player_'+str(round_id)+'_'+str(player_no)+'_1_team_odds', style=style_colour(font_size, fixture_diff[0], '5%')),
         html.Div(
             dcc.Checklist(
@@ -396,6 +417,7 @@ path_data = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Proce
 path_player_metadata = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'player_metadata.csv')
 path_team_metadata = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'team_metadata.csv')
 path_team_codes = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'team_codes.csv')
+path_team_stats = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'team_stats.csv')
 path_fixtures = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Data', '2020-21','fixtures.csv')
 
 data = pd.read_csv(path_data)
@@ -403,6 +425,14 @@ player_metadata = pd.read_csv(path_player_metadata)
 team_metadata = pd.read_csv(path_team_metadata)
 team_codes = pd.read_csv(path_team_codes)
 fixture_data = pd.read_csv(path_fixtures)
+team_stats = pd.read_csv(path_team_stats)
+
+season_latest = player_metadata['season'].max()
+player_metadata_season = player_metadata[player_metadata['season'] == season_latest]
+round_curr = 19
+round_next = round_curr + 1
+
+team_stats = team_stats[team_stats['season']==season_latest]
 
 data['mean_total_points_any_3/pound'] = data['mean_total_points_any_3'] / (data['value'] / 10)
 data['mean_total_points_any_5/pound'] = data['mean_total_points_any_5'] / (data['value'] / 10)
@@ -476,12 +506,6 @@ timeout = 300
 
 # Get list of player names and associated unique id's
 
-season_latest = player_metadata['season'].max()
-# season_latest = 2020
-player_metadata_season = player_metadata[player_metadata['season'] == season_latest]
-round_curr = 19
-round_next = round_curr + 1
-
 player_names = []
 unique_ids = []
 
@@ -512,84 +536,84 @@ def render_content(tab):
         player_1_id = team_picks['element'].iloc[0]
         player_1_captain = team_picks['is_captain'].iloc[0]
         player_1_value = '{0:.1f}'.format(team_picks['selling_price'].iloc[0]/10)
-        (player_1_unique_id, player_1_player_form, player_1_team_unique_id, player_1_team_id, player_1_position, player_1_team_code, player_1_player_name, player_1_opposition, player_1_was_home, player_1_odds_win, player_1_fixture_diff, n_matches) = \
-            planner_process_player(data, team_codes, fixture_data, player_1_id, season_latest, round_next)
+        (player_1_unique_id, player_1_player_form, player_1_team_unique_id, player_1_team_id, player_1_position, player_1_team_code, player_1_player_name, player_1_opposition, player_1_was_home, player_1_odds_win, player_1_fixture_diff, player_1_team_form, n_matches) = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_1_id, season_latest, round_next)
 
 
         player_2_id = team_picks['element'].iloc[1]
         player_2_captain = team_picks['is_captain'].iloc[1]
-        player_2_unique_id, player_2_player_form, player_2_team_unique_id, player_2_team_id, player_2_position, player_2_team_code, player_2_player_name, player_2_opposition, player_2_was_home, player_2_odds_win, player_2_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_2_id, season_latest, round_next)
+        player_2_unique_id, player_2_player_form, player_2_team_unique_id, player_2_team_id, player_2_position, player_2_team_code, player_2_player_name, player_2_opposition, player_2_was_home, player_2_odds_win, player_2_fixture_diff, player_2_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_2_id, season_latest, round_next)
 
 
         player_3_id = team_picks['element'].iloc[2]
         player_3_captain = team_picks['is_captain'].iloc[2]
-        player_3_unique_id, player_3_player_form, player_3_team_unique_id, player_3_team_id, player_3_position, player_3_team_code, player_3_player_name, player_3_opposition, player_3_was_home, player_3_odds_win, player_3_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_3_id, season_latest, round_next)
+        player_3_unique_id, player_3_player_form, player_3_team_unique_id, player_3_team_id, player_3_position, player_3_team_code, player_3_player_name, player_3_opposition, player_3_was_home, player_3_odds_win, player_3_fixture_diff, player_3_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_3_id, season_latest, round_next)
 
         player_4_id = team_picks['element'].iloc[3]
         player_4_captain = team_picks['is_captain'].iloc[3]
-        player_4_unique_id, player_4_player_form, player_4_team_unique_id, player_4_team_id, player_4_position, player_4_team_code, player_4_player_name, player_4_opposition, player_4_was_home, player_4_odds_win, player_4_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_4_id, season_latest, round_next)
+        player_4_unique_id, player_4_player_form, player_4_team_unique_id, player_4_team_id, player_4_position, player_4_team_code, player_4_player_name, player_4_opposition, player_4_was_home, player_4_odds_win, player_4_fixture_diff, player_4_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_4_id, season_latest, round_next)
 
         player_5_id = team_picks['element'].iloc[4]
         player_5_captain = team_picks['is_captain'].iloc[4]
-        player_5_unique_id, player_5_player_form, player_5_team_unique_id, player_5_team_id, player_5_position, player_5_team_code, player_5_player_name, player_5_opposition, player_5_was_home, player_5_odds_win, player_5_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_5_id, season_latest, round_next)
+        player_5_unique_id, player_5_player_form, player_5_team_unique_id, player_5_team_id, player_5_position, player_5_team_code, player_5_player_name, player_5_opposition, player_5_was_home, player_5_odds_win, player_5_fixture_diff, player_5_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_5_id, season_latest, round_next)
 
         player_6_id = team_picks['element'].iloc[5]
         player_6_captain = team_picks['is_captain'].iloc[5]
-        player_6_unique_id, player_6_player_form, player_6_team_unique_id, player_6_team_id, player_6_position, player_6_team_code, player_6_player_name, player_6_opposition, player_6_was_home, player_6_odds_win, player_6_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_6_id, season_latest, round_next)
+        player_6_unique_id, player_6_player_form, player_6_team_unique_id, player_6_team_id, player_6_position, player_6_team_code, player_6_player_name, player_6_opposition, player_6_was_home, player_6_odds_win, player_6_fixture_diff, player_6_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_6_id, season_latest, round_next)
 
 
         player_7_id = team_picks['element'].iloc[6]
         player_7_captain = team_picks['is_captain'].iloc[6]
-        player_7_unique_id, player_7_player_form, player_7_team_unique_id, player_7_team_id, player_7_position, player_7_team_code, player_7_player_name, player_7_opposition, player_7_was_home, player_7_odds_win, player_7_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_7_id, season_latest, round_next)
+        player_7_unique_id, player_7_player_form, player_7_team_unique_id, player_7_team_id, player_7_position, player_7_team_code, player_7_player_name, player_7_opposition, player_7_was_home, player_7_odds_win, player_7_fixture_diff, player_7_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_7_id, season_latest, round_next)
 
 
         player_8_id = team_picks['element'].iloc[7]
         player_8_captain = team_picks['is_captain'].iloc[7]
-        player_8_unique_id, player_8_player_form, player_8_team_unique_id, player_8_team_id, player_8_position, player_8_team_code, player_8_player_name, player_8_opposition, player_8_was_home, player_8_odds_win, player_8_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_8_id, season_latest, round_next)
+        player_8_unique_id, player_8_player_form, player_8_team_unique_id, player_8_team_id, player_8_position, player_8_team_code, player_8_player_name, player_8_opposition, player_8_was_home, player_8_odds_win, player_8_fixture_diff, player_8_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_8_id, season_latest, round_next)
 
 
         player_9_id = team_picks['element'].iloc[8]
         player_9_captain = team_picks['is_captain'].iloc[8]
-        player_9_unique_id, player_9_player_form, player_9_team_unique_id, player_9_team_id, player_9_position, player_9_team_code, player_9_player_name, player_9_opposition, player_9_was_home, player_9_odds_win, player_9_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_9_id, season_latest, round_next)
+        player_9_unique_id, player_9_player_form, player_9_team_unique_id, player_9_team_id, player_9_position, player_9_team_code, player_9_player_name, player_9_opposition, player_9_was_home, player_9_odds_win, player_9_fixture_diff, player_9_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_9_id, season_latest, round_next)
 
 
         player_10_id = team_picks['element'].iloc[9]
         player_10_captain = team_picks['is_captain'].iloc[9]
-        player_10_unique_id, player_10_player_form, player_10_team_unique_id, player_10_team_id, player_10_position, player_10_team_code, player_10_player_name, player_10_opposition, player_10_was_home, player_10_odds_win, player_10_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_10_id, season_latest, round_next)
+        player_10_unique_id, player_10_player_form, player_10_team_unique_id, player_10_team_id, player_10_position, player_10_team_code, player_10_player_name, player_10_opposition, player_10_was_home, player_10_odds_win, player_10_fixture_diff, player_11_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_10_id, season_latest, round_next)
 
         player_11_id = team_picks['element'].iloc[10]
         player_11_captain = team_picks['is_captain'].iloc[10]
-        player_11_unique_id, player_11_player_form, player_11_team_unique_id, player_11_team_id, player_11_position, player_11_team_code, player_11_player_name, player_11_opposition, player_11_was_home, player_11_odds_win, player_11_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_11_id, season_latest, round_next)
+        player_11_unique_id, player_11_player_form, player_11_team_unique_id, player_11_team_id, player_11_position, player_11_team_code, player_11_player_name, player_11_opposition, player_11_was_home, player_11_odds_win, player_11_fixture_diff, player_s1_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_11_id, season_latest, round_next)
 
         player_s1_id = team_picks['element'].iloc[11]
         player_s1_captain = team_picks['is_captain'].iloc[11]
-        player_s1_unique_id, player_s1_player_form, player_s1_team_unique_id, player_s1_team_id, player_s1_position, player_s1_team_code, player_s1_player_name, player_s1_opposition, player_s1_was_home, player_s1_odds_win, player_s1_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_s1_id, season_latest, round_next)
+        player_s1_unique_id, player_s1_player_form, player_s1_team_unique_id, player_s1_team_id, player_s1_position, player_s1_team_code, player_s1_player_name, player_s1_opposition, player_s1_was_home, player_s1_odds_win, player_s1_fixture_diff, player_1_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_s1_id, season_latest, round_next)
 
         player_s2_id = team_picks['element'].iloc[12]
         player_s2_captain = team_picks['is_captain'].iloc[12]
-        player_s2_unique_id, player_s2_player_form, player_s2_team_unique_id, player_s2_team_id, player_s2_position, player_s2_team_code, player_s2_player_name, player_s2_opposition, player_s2_was_home, player_s2_odds_win, player_s2_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_s2_id, season_latest, round_next)
+        player_s2_unique_id, player_s2_player_form, player_s2_team_unique_id, player_s2_team_id, player_s2_position, player_s2_team_code, player_s2_player_name, player_s2_opposition, player_s2_was_home, player_s2_odds_win, player_s2_fixture_diff, player_s2_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_s2_id, season_latest, round_next)
 
         player_s3_id = team_picks['element'].iloc[13]
         player_s3_captain = team_picks['is_captain'].iloc[13]
-        player_s3_unique_id, player_s3_player_form, player_s3_team_unique_id, player_s3_team_id, player_s3_position, player_s3_team_code, player_s3_player_name, player_s3_opposition, player_s3_was_home, player_s3_odds_win, player_s3_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_s3_id, season_latest, round_next)
+        player_s3_unique_id, player_s3_player_form, player_s3_team_unique_id, player_s3_team_id, player_s3_position, player_s3_team_code, player_s3_player_name, player_s3_opposition, player_s3_was_home, player_s3_odds_win, player_s3_fixture_diff, player_s3_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_s3_id, season_latest, round_next)
 
         player_s4_id = team_picks['element'].iloc[14]
         player_s4_captain = team_picks['is_captain'].iloc[14]
-        player_s4_unique_id, player_s4_player_form, player_s4_team_unique_id, player_s4_team_id, player_s4_position, player_s4_team_code, player_s4_player_name, player_a4_opposition, player_s4_was_home, player_s4_odds_win, player_s4_fixture_diff, n_matches = \
-            planner_process_player(data, team_codes, fixture_data, player_s4_id, season_latest, round_next)
+        player_s4_unique_id, player_s4_player_form, player_s4_team_unique_id, player_s4_team_id, player_s4_position, player_s4_team_code, player_s4_player_name, player_a4_opposition, player_s4_was_home, player_s4_odds_win, player_s4_fixture_diff, player_s4_team_form, n_matches = \
+            planner_process_player(data, team_codes, fixture_data, team_stats, player_s4_id, season_latest, round_next)
 
         team_names = [player_1_player_name,
                       player_2_player_name,
@@ -694,7 +718,7 @@ def render_content(tab):
 
         round_id = 1
         for i in range(0, len(team_names)):
-            player_1_1_div, player_1_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id)
+            player_1_1_div, player_1_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, team_stats, season_latest, round_curr, font_size, round_id)
             player_1_X_1.append(player_1_1_div)
             player_1_X_2.append(player_1_2_div)
             blanks_1.append(blank)
@@ -707,7 +731,7 @@ def render_content(tab):
 
         round_id = 2
         for i in range(0, len(team_names)):
-            player_2_1_div, player_2_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id)
+            player_2_1_div, player_2_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, team_stats, season_latest, round_curr, font_size, round_id)
             player_2_X_1.append(player_2_1_div)
             player_2_X_2.append(player_2_2_div)
             blanks_2.append(blank)
@@ -720,7 +744,7 @@ def render_content(tab):
 
         round_id = 3
         for i in range(0, len(team_names)):
-            player_3_1_div, player_3_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id)
+            player_3_1_div, player_3_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, team_stats, season_latest, round_curr, font_size, round_id)
             player_3_X_1.append(player_3_1_div)
             player_3_X_2.append(player_3_2_div)
             blanks_3.append(blank)
@@ -733,7 +757,7 @@ def render_content(tab):
 
         round_id = 4
         for i in range(0, len(team_names)):
-            player_4_1_div, player_4_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, season_latest, round_curr, font_size, round_id)
+            player_4_1_div, player_4_2_div, blank = create_player_div(i, team_unique_ids, team_names, team_picks, data, team_codes, fixture_data, team_stats, season_latest, round_curr, font_size, round_id)
             player_4_X_1.append(player_4_1_div)
             player_4_X_2.append(player_4_2_div)
             blanks_4.append(blank)
@@ -747,7 +771,7 @@ def render_content(tab):
 
             html.Div([html.Div([
 
-                html.Div(children='GW+1', style={'font-size': font_size_heading, 'font-weight': 'bold', "border":"2px black solid", 'padding': '2%', 'text-align': 'center'}),
+                html.Div(children='GW ' + str(round_curr+1), style={'font-size': font_size_heading, 'font-weight': 'bold', "border":"2px black solid", 'padding': '2%', 'text-align': 'center'}),
 
                 html.Div(children='Points Summary:', style={'font-size': font_size_summary, 'font-weight': 'bold', 'padding': '2%'}),
                 # html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
@@ -916,297 +940,331 @@ def render_content(tab):
             ])],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
 
             html.Div([html.Div([
-                html.Div(children='GW+2', style={'font-size': font_size_heading, 'font-weight': 'bold'}),
 
-                html.Div(children='Points Summary:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
-                html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+                html.Div(children='GW ' + str(round_curr+2), style={'font-size': font_size_heading, 'font-weight': 'bold', "border":"2px black solid", 'padding': '2%', 'text-align': 'center'}),
 
-                html.Div([
-                    html.Div(children='Free transfers:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    dcc.Input(value='1', type='text', id='gw2_free_transfer', style={'width': vertical_width_points_inp, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                html.Div(children='Points Summary:', style={'font-size': font_size_summary, 'font-weight': 'bold', 'padding': '2%'}),
+                # html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
 
                 html.Div([
-                    html.Div(children='Expected points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw2-expected-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    html.Div([
+
+                        html.Div([
+                            html.Div(children='Free transfers:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            dcc.Input(value=str(transfers['limit']), type='text', id='gw2_free_transfer', style={'width': vertical_width_points_inp, 'display': 'inline-block', 'font-size': font_size, 'text-align': 'center', 'margin-left': 'auto', 'margin-right': 'auto'}),
+                        ], style={'width': '100%', 'display': 'inline-block', 'float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Expected points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw2-expected-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Transfer points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw2-transfer-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Final points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw2-final-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Cumulative points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw2-cumulative-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+
+                        html.Div(children='Money:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+
+                        html.Div([
+                            html.Div(children='Total available funds:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw2-funds', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Total team value:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw2-team-value', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Remaining:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw2-remaining-money', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+
+                        html.Div(children='Tokens:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+
+                        dcc.Checklist(
+                                options=[
+                                    {'label': 'Triple Captain', 'value': 'triple-captain'},
+                                    {'label': 'Wildcard', 'value': 'wildcard'},
+                                    {'label': 'Bench Boost', 'value': 'bboost'},
+                                    {'label': 'Free Hit', 'value': 'freehit', 'disabled':True},
+                                ],
+                            value=[],
+                            style={'float': 'center'},
+                            id='gw2-tokens'),
+
+                        html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+
+                    ], style={'width': '60%', 'float': 'left', 'display': 'inline-block', 'padding': '2%'}),
+                    # ],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
+                    html.Div([
+                        html.Div(dcc.Graph(id='gw2-points_indicator')),
+                    ], style={'width': '30%', 'float': 'left', 'display': 'inline-block', 'padding': '2%'}),
+
+                ], style={'display': 'inline-block'}),
+
 
                 html.Div([
-                    html.Div(children='Transfer points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw2-transfer-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
 
-                html.Div([
-                    html.Div(children='Final points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw2-final-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    html.Div([
+                        html.Div(children='Team:', style={'font-size': font_size_summary, 'font-weight': 'bold', 'padding': '2%'}),
+                        html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
 
-                html.Div([
-                    html.Div(children='Cumulative points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw2-cumulative-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    ], style={'width': '100%','float': 'left'}),
 
-                html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+                    player_2_X_1[0][0],
+                    player_2_X_2[0][0],
+                    blanks_2[0][0],
 
-                html.Div(children='Money:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+                    player_2_X_1[1][0],
+                    player_2_X_2[1][0],
+                    blanks_2[1][0],
 
-                html.Div([
-                    html.Div(children='Total available funds:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw2-funds', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    player_2_X_1[2][0],
+                    player_2_X_2[2][0],
+                    blanks_2[2][0],
 
-                html.Div([
-                    html.Div(children='Total team value:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw2-team-value', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    player_2_X_1[3][0],
+                    player_2_X_2[3][0],
+                    blanks_2[3][0],
 
-                html.Div([
-                    html.Div(children='Remaining:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw2-remaining-money', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    player_2_X_1[4][0],
+                    player_2_X_2[4][0],
+                    blanks_2[4][0],
 
-                html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+                    player_2_X_1[5][0],
+                    player_2_X_2[5][0],
+                    blanks_2[5][0],
 
-                html.Div(children='Team:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+                    player_2_X_1[6][0],
+                    player_2_X_2[6][0],
+                    blanks_2[6][0],
 
-                html.Div([
-                    html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    player_2_X_1[7][0],
+                    player_2_X_2[7][0],
+                    blanks_2[7][0],
 
-                ], style={'width': '100%','float': 'left'}),
+                    player_2_X_1[8][0],
+                    player_2_X_2[8][0],
+                    blanks_2[8][0],
 
-                player_2_X_1[0][0],
-                player_2_X_2[0][0],
-                blanks_2[0][0],
+                    player_2_X_1[9][0],
+                    player_2_X_2[9][0],
+                    blanks_2[9][0],
 
-                player_2_X_1[1][0],
-                player_2_X_2[1][0],
-                blanks_2[1][0],
+                    player_2_X_1[10][0],
+                    player_2_X_2[10][0],
+                    blanks_2[10][0],
 
-                player_2_X_1[2][0],
-                player_2_X_2[2][0],
-                blanks_2[2][0],
+                    player_2_X_1[11][0],
+                    player_2_X_2[11][0],
+                    blanks_2[11][0],
 
-                player_2_X_1[3][0],
-                player_2_X_2[3][0],
-                blanks_2[3][0],
+                    player_2_X_1[12][0],
+                    player_2_X_2[12][0],
+                    blanks_2[12][0],
 
-                player_2_X_1[4][0],
-                player_2_X_2[4][0],
-                blanks_2[4][0],
+                    player_2_X_1[13][0],
+                    player_2_X_2[13][0],
+                    blanks_2[13][0],
 
-                player_2_X_1[5][0],
-                player_2_X_2[5][0],
-                blanks_2[5][0],
+                    player_2_X_1[14][0],
+                    player_2_X_2[14][0],
+                    blanks_2[14][0],
 
-                player_2_X_1[6][0],
-                player_2_X_2[6][0],
-                blanks_2[6][0],
-
-                player_2_X_1[7][0],
-                player_2_X_2[7][0],
-                blanks_2[7][0],
-
-                player_2_X_1[8][0],
-                player_2_X_2[8][0],
-                blanks_2[8][0],
-
-                player_2_X_1[9][0],
-                player_2_X_2[9][0],
-                blanks_2[9][0],
-
-                player_2_X_1[10][0],
-                player_2_X_2[10][0],
-                blanks_2[10][0],
-
-                player_2_X_1[11][0],
-                player_2_X_2[11][0],
-                blanks_2[11][0],
-
-                player_2_X_1[12][0],
-                player_2_X_2[12][0],
-                blanks_2[12][0],
-
-                player_2_X_1[13][0],
-                player_2_X_2[13][0],
-                blanks_2[13][0],
-
-                player_2_X_1[14][0],
-                player_2_X_2[14][0],
-                blanks_2[14][0],
-
-                html.Div(children='Tokens:'),
-
-                dcc.Checklist(
-                        options=[
-                            {'label': 'Triple Captain', 'value': 'triple-captain'},
-                            {'label': 'Wildcard', 'value': 'wildcard'},
-                            {'label': 'Bench Boost', 'value': 'bboost'},
-                            {'label': 'Free Hit', 'value': 'freehit'},
-                        ],
-                    value=[],
-                    style={'float': 'center'},
-                    id='gw2-tokens'),
+                ]),
 
                 html.Div(children=team_names_json, id='intermediate-team_names_gw2', style={'display': 'none'}),
-
                 html.Div(children=team_unique_ids_json, id='intermediate-team_unique_ids_gw2', style={'display': 'none'}),
 
             ])],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
 
             html.Div([html.Div([
-                html.Div(children='GW+3', style={'font-size': font_size_heading, 'font-weight': 'bold'}),
 
-                html.Div(children='Points Summary:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
-                html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+                html.Div(children='GW ' + str(round_curr+3), style={'font-size': font_size_heading, 'font-weight': 'bold', "border":"2px black solid", 'padding': '2%', 'text-align': 'center'}),
 
-                html.Div([
-                    html.Div(children='Free transfers:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    dcc.Input(value='1', type='text', id='gw3_free_transfer', style={'width': vertical_width_points_inp, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                html.Div(children='Points Summary:', style={'font-size': font_size_summary, 'font-weight': 'bold', 'padding': '2%'}),
+                # html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
 
                 html.Div([
-                    html.Div(children='Expected points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw3-expected-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    html.Div([
+
+                        html.Div([
+                            html.Div(children='Free transfers:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            dcc.Input(value=str(transfers['limit']), type='text', id='gw3_free_transfer', style={'width': vertical_width_points_inp, 'display': 'inline-block', 'font-size': font_size, 'text-align': 'center', 'margin-left': 'auto', 'margin-right': 'auto'}),
+                        ], style={'width': '100%', 'display': 'inline-block', 'float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Expected points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw3-expected-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Transfer points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw3-transfer-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Final points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw3-final-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Cumulative points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw3-cumulative-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+
+                        html.Div(children='Money:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+
+                        html.Div([
+                            html.Div(children='Total available funds:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw3-funds', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Total team value:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw3-team-value', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Remaining:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw3-remaining-money', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+
+                        html.Div(children='Tokens:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+
+                        dcc.Checklist(
+                                options=[
+                                    {'label': 'Triple Captain', 'value': 'triple-captain'},
+                                    {'label': 'Wildcard', 'value': 'wildcard'},
+                                    {'label': 'Bench Boost', 'value': 'bboost'},
+                                    {'label': 'Free Hit', 'value': 'freehit', 'disabled':True},
+                                ],
+                            value=[],
+                            style={'float': 'center'},
+                            id='gw3-tokens'),
+
+                        html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+
+                    ], style={'width': '60%', 'float': 'left', 'display': 'inline-block', 'padding': '2%'}),
+                    # ],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
+                    html.Div([
+                        html.Div(dcc.Graph(id='gw3-points_indicator')),
+                    ], style={'width': '30%', 'float': 'left', 'display': 'inline-block', 'padding': '2%'}),
+
+                ], style={'display': 'inline-block'}),
+
 
                 html.Div([
-                    html.Div(children='Transfer points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw3-transfer-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
 
-                html.Div([
-                    html.Div(children='Final points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw3-final-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    html.Div([
+                        html.Div(children='Team:', style={'font-size': font_size_summary, 'font-weight': 'bold', 'padding': '2%'}),
+                        html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
 
-                html.Div([
-                    html.Div(children='Cumulative points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw3-cumulative-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    ], style={'width': '100%','float': 'left'}),
 
+                    player_3_X_1[0][0],
+                    player_3_X_2[0][0],
+                    blanks_3[0][0],
 
-                html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+                    player_3_X_1[1][0],
+                    player_3_X_2[1][0],
+                    blanks_3[1][0],
 
-                html.Div(children='Money:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+                    player_3_X_1[2][0],
+                    player_3_X_2[2][0],
+                    blanks_3[2][0],
 
-                html.Div([
-                    html.Div(children='Total available funds:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw3-funds', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    player_3_X_1[3][0],
+                    player_3_X_2[3][0],
+                    blanks_3[3][0],
 
-                html.Div([
-                    html.Div(children='Total team value:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw3-team-value', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    player_3_X_1[4][0],
+                    player_3_X_2[4][0],
+                    blanks_3[4][0],
 
-                html.Div([
-                    html.Div(children='Remaining:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw3-remaining-money', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    player_3_X_1[5][0],
+                    player_3_X_2[5][0],
+                    blanks_3[5][0],
 
-                html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+                    player_3_X_1[6][0],
+                    player_3_X_2[6][0],
+                    blanks_3[6][0],
 
-                html.Div(children='Team:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+                    player_3_X_1[7][0],
+                    player_3_X_2[7][0],
+                    blanks_3[7][0],
 
-                html.Div([
-                    html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    player_3_X_1[8][0],
+                    player_3_X_2[8][0],
+                    blanks_3[8][0],
 
-                ], style={'width': '100%','float': 'left'}),
+                    player_3_X_1[9][0],
+                    player_3_X_2[9][0],
+                    blanks_3[9][0],
 
-                player_3_X_1[0][0],
-                player_3_X_2[0][0],
-                blanks_3[0][0],
+                    player_3_X_1[10][0],
+                    player_3_X_2[10][0],
+                    blanks_3[10][0],
 
-                player_3_X_1[1][0],
-                player_3_X_2[1][0],
-                blanks_3[1][0],
+                    player_3_X_1[11][0],
+                    player_3_X_2[11][0],
+                    blanks_3[11][0],
 
-                player_3_X_1[2][0],
-                player_3_X_2[2][0],
-                blanks_3[2][0],
+                    player_3_X_1[12][0],
+                    player_3_X_2[12][0],
+                    blanks_3[12][0],
 
-                player_3_X_1[3][0],
-                player_3_X_2[3][0],
-                blanks_3[3][0],
+                    player_3_X_1[13][0],
+                    player_3_X_2[13][0],
+                    blanks_3[13][0],
 
-                player_3_X_1[4][0],
-                player_3_X_2[4][0],
-                blanks_3[4][0],
+                    player_3_X_1[14][0],
+                    player_3_X_2[14][0],
+                    blanks_3[14][0],
 
-                player_3_X_1[5][0],
-                player_3_X_2[5][0],
-                blanks_3[5][0],
-
-                player_3_X_1[6][0],
-                player_3_X_2[6][0],
-                blanks_3[6][0],
-
-                player_3_X_1[7][0],
-                player_3_X_2[7][0],
-                blanks_3[7][0],
-
-                player_3_X_1[8][0],
-                player_3_X_2[8][0],
-                blanks_3[8][0],
-
-                player_3_X_1[9][0],
-                player_3_X_2[9][0],
-                blanks_3[9][0],
-
-                player_3_X_1[10][0],
-                player_3_X_2[10][0],
-                blanks_3[10][0],
-
-                player_3_X_1[11][0],
-                player_3_X_2[11][0],
-                blanks_3[11][0],
-
-                player_3_X_1[12][0],
-                player_3_X_2[12][0],
-                blanks_3[12][0],
-
-                player_3_X_1[13][0],
-                player_3_X_2[13][0],
-                blanks_3[13][0],
-
-                player_3_X_1[14][0],
-                player_3_X_2[14][0],
-                blanks_3[14][0],
-
-                html.Div(children='Tokens:'),
-
-                dcc.Checklist(
-                        options=[
-                            {'label': 'Triple Captain', 'value': 'triple-captain'},
-                            {'label': 'Wildcard', 'value': 'wildcard'},
-                            {'label': 'Bench Boost', 'value': 'bboost'},
-                            {'label': 'Free Hit', 'value': 'freehit'},
-                        ],
-                    value=[],
-                    style={'float': 'center'},
-                    id='gw3-tokens'),
+                ]),
 
                 html.Div(children=team_names_json, id='intermediate-team_names_gw3', style={'display': 'none'}),
                 html.Div(children=team_unique_ids_json, id='intermediate-team_unique_ids_gw3', style={'display': 'none'}),
@@ -1214,157 +1272,175 @@ def render_content(tab):
             ])],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
 
             html.Div([html.Div([
-                html.Div(children='GW+4', style={'font-size': font_size_heading, 'font-weight': 'bold'}),
 
-                html.Div(children='Points Summary:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
-                html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+                html.Div(children='GW ' + str(round_curr+4), style={'font-size': font_size_heading, 'font-weight': 'bold', "border":"2px black solid", 'padding': '2%', 'text-align': 'center'}),
 
-                html.Div([
-                    html.Div(children='Free transfers:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    dcc.Input(value='1', type='text', id='gw4_free_transfer', style={'width': vertical_width_points_inp, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                html.Div(children='Points Summary:', style={'font-size': font_size_summary, 'font-weight': 'bold', 'padding': '2%'}),
+                # html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
 
                 html.Div([
-                    html.Div(children='Expected points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw4-expected-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    html.Div([
+
+                        html.Div([
+                            html.Div(children='Free transfers:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            dcc.Input(value=str(transfers['limit']), type='text', id='gw4_free_transfer', style={'width': vertical_width_points_inp, 'display': 'inline-block', 'font-size': font_size, 'text-align': 'center', 'margin-left': 'auto', 'margin-right': 'auto'}),
+                        ], style={'width': '100%', 'display': 'inline-block', 'float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Expected points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw4-expected-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Transfer points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw4-transfer-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Final points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw4-final-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Cumulative points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw4-cumulative-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+
+                        html.Div(children='Money:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+
+                        html.Div([
+                            html.Div(children='Total available funds:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw4-funds', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Total team value:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw4-team-value', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div([
+                            html.Div(children='Remaining:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
+                            html.Div(children='X.XX', id='gw4-remaining-money', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+                        ], style={'width': '100%','float': 'left'}),
+
+                        html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+
+                        html.Div(children='Tokens:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+
+                        dcc.Checklist(
+                                options=[
+                                    {'label': 'Triple Captain', 'value': 'triple-captain'},
+                                    {'label': 'Wildcard', 'value': 'wildcard'},
+                                    {'label': 'Bench Boost', 'value': 'bboost'},
+                                    {'label': 'Free Hit', 'value': 'freehit', 'disabled':True},
+                                ],
+                            value=[],
+                            style={'float': 'center'},
+                            id='gw4-tokens'),
+
+                        html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+
+                    ], style={'width': '60%', 'float': 'left', 'display': 'inline-block', 'padding': '2%'}),
+                    # ],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
+                    html.Div([
+                        html.Div(dcc.Graph(id='gw4-points_indicator')),
+                    ], style={'width': '30%', 'float': 'left', 'display': 'inline-block', 'padding': '2%'}),
+
+                ], style={'display': 'inline-block'}),
+
 
                 html.Div([
-                    html.Div(children='Transfer points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw4-transfer-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
 
-                html.Div([
-                    html.Div(children='Final points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw4-final-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    html.Div([
+                        html.Div(children='Team:', style={'font-size': font_size_summary, 'font-weight': 'bold', 'padding': '2%'}),
+                        html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                        html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
 
-                html.Div([
-                    html.Div(children='Cumulative points:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw4-cumulative-points', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    ], style={'width': '100%','float': 'left'}),
 
+                    player_4_X_1[0][0],
+                    player_4_X_2[0][0],
+                    blanks_4[0][0],
 
-                html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+                    player_4_X_1[1][0],
+                    player_4_X_2[1][0],
+                    blanks_4[1][0],
 
-                html.Div(children='Money:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+                    player_4_X_1[2][0],
+                    player_4_X_2[2][0],
+                    blanks_4[2][0],
 
-                html.Div([
-                    html.Div(children='Total available funds:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw4-funds', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    player_4_X_1[3][0],
+                    player_4_X_2[3][0],
+                    blanks_4[3][0],
 
-                html.Div([
-                    html.Div(children='Total team value:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw4-team-value', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    player_4_X_1[4][0],
+                    player_4_X_2[4][0],
+                    blanks_4[4][0],
 
-                html.Div([
-                    html.Div(children='Remaining:', style={'width': vertical_width_points, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                    html.Div(children='X.XX', id='gw4-remaining-money', style={'width': vertical_width_points_out, 'display': 'inline-block', 'float': 'left', 'font-size': font_size}),
-                ], style={'width': '100%','float': 'left'}),
+                    player_4_X_1[5][0],
+                    player_4_X_2[5][0],
+                    blanks_4[5][0],
 
-                html.Div(children='BLANK', style={'font-size': font_size, 'font-weight': 'bold', 'color': 'white'}),
+                    player_4_X_1[6][0],
+                    player_4_X_2[6][0],
+                    blanks_4[6][0],
 
-                html.Div(children='Team:', style={'font-size': font_size_summary, 'font-weight': 'bold'}),
+                    player_4_X_1[7][0],
+                    player_4_X_2[7][0],
+                    blanks_4[7][0],
 
-                html.Div([
-                    html.Div(children='No.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Pos', id='pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Name', id='name', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Value (£)', id='Value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Team', id='team', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Agst.', id='Agst.', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Home/ Away', id='H_A', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Player Form', id='player_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Team Form', id='team_form', style={'width': '7%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Odds (win)', id='team_odds', style={'width': '5%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Cpt.', id='captain', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
-                    html.Div(children='Trn.', id='transfer', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'font-weight': 'bold'}),
+                    player_4_X_1[8][0],
+                    player_4_X_2[8][0],
+                    blanks_4[8][0],
 
-                ], style={'width': '100%','float': 'left'}),
+                    player_4_X_1[9][0],
+                    player_4_X_2[9][0],
+                    blanks_4[9][0],
 
-                player_4_X_1[0][0],
-                player_4_X_2[0][0],
-                blanks_4[0][0],
+                    player_4_X_1[10][0],
+                    player_4_X_2[10][0],
+                    blanks_4[10][0],
 
-                player_4_X_1[1][0],
-                player_4_X_2[1][0],
-                blanks_4[1][0],
+                    player_4_X_1[11][0],
+                    player_4_X_2[11][0],
+                    blanks_4[11][0],
 
-                player_4_X_1[2][0],
-                player_4_X_2[2][0],
-                blanks_4[2][0],
+                    player_4_X_1[12][0],
+                    player_4_X_2[12][0],
+                    blanks_4[12][0],
 
-                player_4_X_1[3][0],
-                player_4_X_2[3][0],
-                blanks_4[3][0],
+                    player_4_X_1[13][0],
+                    player_4_X_2[13][0],
+                    blanks_4[13][0],
 
-                player_4_X_1[4][0],
-                player_4_X_2[4][0],
-                blanks_4[4][0],
+                    player_4_X_1[14][0],
+                    player_4_X_2[14][0],
+                    blanks_4[14][0],
 
-                player_4_X_1[5][0],
-                player_4_X_2[5][0],
-                blanks_4[5][0],
-
-                player_4_X_1[6][0],
-                player_4_X_2[6][0],
-                blanks_4[6][0],
-
-                player_4_X_1[7][0],
-                player_4_X_2[7][0],
-                blanks_4[7][0],
-
-                player_4_X_1[8][0],
-                player_4_X_2[8][0],
-                blanks_4[8][0],
-
-                player_4_X_1[9][0],
-                player_4_X_2[9][0],
-                blanks_4[9][0],
-
-                player_4_X_1[10][0],
-                player_4_X_2[10][0],
-                blanks_4[10][0],
-
-                player_4_X_1[11][0],
-                player_4_X_2[11][0],
-                blanks_4[11][0],
-
-                player_4_X_1[12][0],
-                player_4_X_2[12][0],
-                blanks_4[12][0],
-
-                player_4_X_1[13][0],
-                player_4_X_2[13][0],
-                blanks_4[13][0],
-
-                player_4_X_1[14][0],
-                player_4_X_2[14][0],
-                blanks_4[14][0],
-
-                html.Div(children='Tokens:'),
-
-                dcc.Checklist(
-                        options=[
-                            {'label': 'Triple Captain', 'value': 'triple-captain'},
-                            {'label': 'Wildcard', 'value': 'wildcard'},
-                            {'label': 'Bench Boost', 'value': 'bboost'},
-                            {'label': 'Free Hit', 'value': 'freehit'},
-                        ],
-                    value=[],
-                    style={'float': 'center'},
-                    id='gw4-tokens'),
+                ]),
 
                 html.Button('Compute', id='compute-btn-1', n_clicks=0, style={'width': '100%'}),
                 html.Button('Update Fixtures', id='btn-update-fixtures', n_clicks=0, style={'width': '100%'}),
 
                 html.Div(children=team_names_json, id='intermediate-team_names_gw4', style={'display': 'none'}),
                 html.Div(children=team_unique_ids_json, id='intermediate-team_unique_ids_gw4', style={'display': 'none'}),
-                html.Div(children=(str(initial_points_firstteam) + ',' + str(initial_points_bench)), id='initial_team_points', style={'display': 'none'}),
+                    html.Div(children=(str(initial_points_firstteam) + ',' + str(initial_points_bench)), id='initial_team_points', style={'display': 'none'})
 
             ])],style={'width': '24.5%', 'float': 'left', 'display': 'inline-block', "border":"2px black solid"}),
+
             )
 
 
@@ -1388,6 +1464,7 @@ def render_content(tab):
      Output('gw2-funds', 'children'),
      Output('gw2-team-value', 'children'),
      Output('gw2-remaining-money', 'children'),
+     Output('gw2-points_indicator', 'figure'),
      Output('gw3-expected-points', 'children'),
      Output('gw3-transfer-points', 'children'),
      Output('gw3-final-points', 'children'),
@@ -1395,13 +1472,15 @@ def render_content(tab):
      Output('gw3-funds', 'children'),
      Output('gw3-team-value', 'children'),
      Output('gw3-remaining-money', 'children'),
+     Output('gw3-points_indicator', 'figure'),
      Output('gw4-expected-points', 'children'),
      Output('gw4-transfer-points', 'children'),
      Output('gw4-final-points', 'children'),
      Output('gw4-cumulative-points','children'),
      Output('gw4-funds', 'children'),
      Output('gw4-team-value', 'children'),
-     Output('gw4-remaining-money', 'children'),],
+     Output('gw4-remaining-money', 'children'),
+     Output('gw4-points_indicator', 'figure'),],
     [Input('compute-btn-1', 'n_clicks')],
     [State('player_1_1_1_player_form', 'children'),
      State('player_1_2_1_player_form', 'children'),
@@ -2184,21 +2263,22 @@ def compute_button(n_clicks,
 
     gw1_fig.add_trace(go.Indicator(
         mode = "number+delta",
-        value = float(gw_1_final),
+        value = int(float(gw_1_final)),
         number = {'suffix': "pts", "font":{"size":indicator_number_fontsize}},
-        delta = {'position': "bottom", 'reference': gw1_initial_points, "font":{"size":indicator_delta_fontsize}},
+        delta = {'position': "bottom", 'reference': int(gw1_initial_points), "font":{"size":indicator_delta_fontsize}},
         title = {'text': "GW:", "font":{"size":indicator_title_fontsize}},
         domain = {'row': 0, 'column': 0}))
 
     gw1_fig.add_trace(go.Indicator(
     mode = "number+delta",
-        value = float(gw_1_cumulative),
+        value = int(float(gw_1_cumulative)),
         number = {'suffix': "pts", "font":{"size":indicator_number_fontsize}},
-        delta = {'position': "bottom", 'reference': gw1_initial_points, "font":{"size":indicator_delta_fontsize}},
+        delta = {'position': "bottom", 'reference': int(gw1_initial_points), "font":{"size":indicator_delta_fontsize}},
         title = {'text': "Total:", "font":{"size":indicator_title_fontsize}},
         domain = {'row': 1, 'column': 0}))
 
     gw1_fig.update_layout(
+        autosize=False,
         paper_bgcolor="lightgray",
         height=300,
         grid = {'rows': 2, 'columns': 1, 'pattern': "independent"})
@@ -2222,6 +2302,31 @@ def compute_button(n_clicks,
 
     gw_2_total_funds = gw_2_team_value + gw_2_remaining
 
+    gw2_fig = go.Figure()
+
+    gw2_fig.add_trace(go.Indicator(
+        mode = "number+delta",
+        value = int(float(gw_2_final)),
+        number = {'suffix': "pts", "font":{"size":indicator_number_fontsize}},
+        delta = {'position': "bottom", 'reference': int(gw1_initial_points), "font":{"size":indicator_delta_fontsize}},
+        title = {'text': "GW:", "font":{"size":indicator_title_fontsize}},
+        domain = {'row': 0, 'column': 0}))
+
+    gw2_fig.add_trace(go.Indicator(
+    mode = "number+delta",
+        value = int(float(gw_2_cumulative)),
+        number = {'suffix': "pts", "font":{"size":indicator_number_fontsize}},
+        delta = {'position': "bottom", 'reference': int(gw2_initial_points), "font":{"size":indicator_delta_fontsize}},
+        title = {'text': "Total:", "font":{"size":indicator_title_fontsize}},
+        domain = {'row': 1, 'column': 0}))
+
+    gw2_fig.update_layout(
+        autosize=False,
+        paper_bgcolor="lightgray",
+        height=300,
+        grid = {'rows': 2, 'columns': 1, 'pattern': "independent"})
+
+
 
     # Gameweek 3
     gw_3_expected_first_team, gw_3_expected_bench = calculate_team_points(player_form_gw3_g1, player_form_gw3_g2, player_cpt_gw3, gw3_tokens)
@@ -2233,13 +2338,37 @@ def compute_button(n_clicks,
 
     gw_3_final = '{0:.1f}'.format(gw_3_expected_first_team + gw_3_transfers)
 
-    gw_3_cumulative = float(float(gw_2_cumulative) + float(gw_3_final))
+    gw_3_cumulative = '{0:.1f}'.format(float(float(gw_2_cumulative) + float(gw_3_final)))
 
     gw_3_team_value = np.sum(player_value_gw3)
 
     gw_3_remaining = gw_2_total_funds - gw_3_team_value
 
     gw_3_total_funds = gw_3_team_value + gw_3_remaining
+
+    gw3_fig = go.Figure()
+
+    gw3_fig.add_trace(go.Indicator(
+        mode = "number+delta",
+        value = int(float(gw_3_final)),
+        number = {'suffix': "pts", "font":{"size":indicator_number_fontsize}},
+        delta = {'position': "bottom", 'reference': int(gw1_initial_points), "font":{"size":indicator_delta_fontsize}},
+        title = {'text': "GW:", "font":{"size":indicator_title_fontsize}},
+        domain = {'row': 0, 'column': 0}))
+
+    gw3_fig.add_trace(go.Indicator(
+    mode = "number+delta",
+        value = int(float(gw_3_cumulative)),
+        number = {'suffix': "pts", "font":{"size":indicator_number_fontsize}},
+        delta = {'position': "bottom", 'reference': int(gw3_initial_points), "font":{"size":indicator_delta_fontsize}},
+        title = {'text': "Total:", "font":{"size":indicator_title_fontsize}},
+        domain = {'row': 1, 'column': 0}))
+
+    gw3_fig.update_layout(
+        autosize=False,
+        paper_bgcolor="lightgray",
+        height=300,
+        grid = {'rows': 2, 'columns': 1, 'pattern': "independent"})
 
 
     # Gameweek 4
@@ -2260,13 +2389,35 @@ def compute_button(n_clicks,
 
     gw_4_total_funds = gw_4_team_value + gw_4_remaining
 
+    gw4_fig = go.Figure()
 
+    gw4_fig.add_trace(go.Indicator(
+        mode = "number+delta",
+        value = int(float(gw_4_final)),
+        number = {'suffix': "pts", "font":{"size":indicator_number_fontsize}},
+        delta = {'position': "bottom", 'reference': int(gw1_initial_points), "font":{"size":indicator_delta_fontsize}},
+        title = {'text': "GW:", "font":{"size":indicator_title_fontsize}},
+        domain = {'row': 0, 'column': 0}))
+
+    gw4_fig.add_trace(go.Indicator(
+    mode = "number+delta",
+        value = int(float(gw_4_cumulative)),
+        number = {'suffix': "pts", "font":{"size":indicator_number_fontsize}},
+        delta = {'position': "bottom", 'reference': int(gw4_initial_points), "font":{"size":indicator_delta_fontsize}},
+        title = {'text': "Total:", "font":{"size":indicator_title_fontsize}},
+        domain = {'row': 1, 'column': 0}))
+
+    gw4_fig.update_layout(
+        autosize=False,
+        paper_bgcolor="lightgray",
+        height=300,
+        grid = {'rows': 2, 'columns': 1, 'pattern': "independent"})
 
 
     return '{0:.1f}'.format(gw_1_expected_first_team), gw_1_transfers, gw_1_final, gw_1_cumulative, '{0:.1f}'.format(gw_1_total_funds), '{0:.1f}'.format(gw_1_team_value), '{0:.1f}'.format(gw_1_remaining), gw1_fig, \
-           '{0:.1f}'.format(gw_2_expected_first_team), gw_2_transfers, gw_2_final, gw_2_cumulative, '{0:.1f}'.format(gw_2_total_funds), '{0:.1f}'.format(gw_2_team_value), '{0:.1f}'.format(gw_2_remaining), \
-           '{0:.1f}'.format(gw_3_expected_first_team), gw_3_transfers, gw_3_final, gw_3_cumulative, '{0:.1f}'.format(gw_3_total_funds), '{0:.1f}'.format(gw_3_team_value), '{0:.1f}'.format(gw_3_remaining), \
-           '{0:.1f}'.format(gw_4_expected_first_team), gw_4_transfers, gw_4_final, gw_4_cumulative, '{0:.1f}'.format(gw_4_total_funds), '{0:.1f}'.format(gw_4_team_value), '{0:.1f}'.format(gw_4_remaining), \
+           '{0:.1f}'.format(gw_2_expected_first_team), gw_2_transfers, gw_2_final, gw_2_cumulative, '{0:.1f}'.format(gw_2_total_funds), '{0:.1f}'.format(gw_2_team_value), '{0:.1f}'.format(gw_2_remaining), gw2_fig, \
+           '{0:.1f}'.format(gw_3_expected_first_team), gw_3_transfers, gw_3_final, gw_3_cumulative, '{0:.1f}'.format(gw_3_total_funds), '{0:.1f}'.format(gw_3_team_value), '{0:.1f}'.format(gw_3_remaining), gw3_fig, \
+           '{0:.1f}'.format(gw_4_expected_first_team), gw_4_transfers, gw_4_final, gw_4_cumulative, '{0:.1f}'.format(gw_4_total_funds), '{0:.1f}'.format(gw_4_team_value), '{0:.1f}'.format(gw_4_remaining), gw4_fig, \
 
 
 if debug_mode is False:
@@ -9299,6 +9450,7 @@ if debug_mode is False:
 
 elif debug_mode is True:
 
+
     @app.callback(
         [Output('player_1_1_1_value', 'children'),
          Output('player_1_1_1_pos', 'children'),
@@ -9307,6 +9459,7 @@ elif debug_mode is True:
          Output('player_1_1_1_H_A', 'children'),
          Output('player_1_1_1_team_odds', 'children'),
          Output('player_1_1_1_player_form', 'children'),
+         Output('player_1_1_1_team_form', 'children'),
          Output('player_1_1_2_against', 'children'),
          Output('player_1_1_2_H_A', 'children'),
          Output('player_1_1_2_team_odds', 'children'),
@@ -9359,8 +9512,8 @@ elif debug_mode is True:
 
         #GW + 1
         player_id = determine_element_id(data, player_unique_id, 2020)
-        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, n_matches) = \
-                planner_process_player(data, team_codes, fixture_data, player_id, season_latest, gw_next)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
 
         if int(unique_id) in team_unique_ids.values:
             value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
@@ -9387,6 +9540,7 @@ elif debug_mode is True:
                 was_home[0],
                 odds_win[0],
                 form[0],
+                team_form,
                 opposition[1],
                 was_home[1],
                 odds_win[1],
@@ -9414,6 +9568,7 @@ elif debug_mode is True:
          Output('player_2_1_1_H_A', 'children'),
          Output('player_2_1_1_team_odds', 'children'),
          Output('player_2_1_1_player_form', 'children'),
+         Output('player_2_1_1_team_form', 'children'),
          Output('player_2_1_2_against', 'children'),
          Output('player_2_1_2_H_A', 'children'),
          Output('player_2_1_2_team_odds', 'children'),
@@ -9465,8 +9620,8 @@ elif debug_mode is True:
 
         #GW next
         player_id = determine_element_id(data, player_unique_id, 2020)
-        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, n_matches) = \
-                planner_process_player(data, team_codes, fixture_data, player_id, season_latest, gw_next)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
 
         if int(unique_id) in team_unique_ids.values:
             value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
@@ -9493,6 +9648,7 @@ elif debug_mode is True:
                 was_home[0],
                 odds_win[0],
                 form[0],
+                team_form,
                 opposition[1],
                 was_home[1],
                 odds_win[1],
@@ -9520,6 +9676,7 @@ elif debug_mode is True:
          Output('player_3_1_1_H_A', 'children'),
          Output('player_3_1_1_team_odds', 'children'),
          Output('player_3_1_1_player_form', 'children'),
+         Output('player_3_1_1_team_form', 'children'),
          Output('player_3_1_2_against', 'children'),
          Output('player_3_1_2_H_A', 'children'),
          Output('player_3_1_2_team_odds', 'children'),
@@ -9571,8 +9728,8 @@ elif debug_mode is True:
 
         #GW next
         player_id = determine_element_id(data, player_unique_id, 2020)
-        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, n_matches) = \
-                planner_process_player(data, team_codes, fixture_data, player_id, season_latest, gw_next)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
 
         if int(unique_id) in team_unique_ids.values:
             value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
@@ -9598,6 +9755,7 @@ elif debug_mode is True:
                 was_home[0],
                 odds_win[0],
                 form[0],
+                team_form,
                 opposition[1],
                 was_home[1],
                 odds_win[1],
@@ -9625,6 +9783,7 @@ elif debug_mode is True:
          Output('player_4_1_1_H_A', 'children'),
          Output('player_4_1_1_team_odds', 'children'),
          Output('player_4_1_1_player_form', 'children'),
+         Output('player_4_1_1_team_form', 'children'),
          Output('player_4_1_2_against', 'children'),
          Output('player_4_1_2_H_A', 'children'),
          Output('player_4_1_2_team_odds', 'children'),
@@ -9665,8 +9824,8 @@ elif debug_mode is True:
 
         #GW next
         player_id = determine_element_id(data, player_unique_id, 2020)
-        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, n_matches) = \
-                planner_process_player(data, team_codes, fixture_data, player_id, season_latest, gw_next)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
 
         if int(unique_id) in team_unique_ids.values:
             value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
@@ -9682,6 +9841,7 @@ elif debug_mode is True:
                 was_home[0],
                 odds_win[0],
                 form[0],
+                team_form,
                 opposition[1],
                 was_home[1],
                 odds_win[1],
@@ -9833,7 +9993,7 @@ elif debug_mode is True:
         return (player_options)
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
 
 # if __name__ == '__main__':
 #     app.run_server(debug=False, host='192.168.0.36', port=8050)

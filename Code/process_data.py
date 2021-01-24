@@ -447,3 +447,16 @@ for season in seasons:
                                  'team_stats.csv',
                                  season,
                                  results_window=10)
+
+    DataLoader.process_team_form(path_processed,
+                                 'team_stats.csv',
+                                 results_window=3)
+    DataLoader.process_team_form(path_processed,
+                                 'team_stats.csv',
+                                 results_window=4)
+    DataLoader.process_team_form(path_processed,
+                                 'team_stats.csv',
+                                 results_window=5)
+    DataLoader.process_team_form(path_processed,
+                                 'team_stats.csv',
+                                 results_window=10)
