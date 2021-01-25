@@ -125,7 +125,11 @@ class DataLoader(DLH.DataLoaderHistoric):
                                             path_processed,
                                             filename_player_database)
 
-
+                # filename_player_data = 'player_db_' + str(gw_curr) + '.csv'
+                #
+                # player_database_gw.to_csv(path.join(path_processed, filename_player_data), index=False)
+                #
+                #
                 print("Processing the aggregate features")
                 self.calculate_aggregate_features(path_processed,
                                                 filename_player_database,
@@ -133,6 +137,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns,
+                                                gw_curr,
                                                 home=None)
 
                 self.calculate_aggregate_features(path_processed,
@@ -141,6 +146,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns,
+                                                gw_curr,
                                                 home=True)
 
                 self.calculate_aggregate_features(path_processed,
@@ -149,6 +155,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns,
+                                                gw_curr,
                                                 home=False)
 
 
@@ -160,7 +167,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns,
-                                            home=None)
+                                                gw_curr,
+                                                home=None)
 
                 self.calculate_stat_features(path_processed,
                                                 filename_player_database,
@@ -168,7 +176,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns,
-                                            home=True)
+                                                gw_curr,
+                                                home=True)
 
                 self.calculate_stat_features(path_processed,
                                                 filename_player_database,
@@ -176,7 +185,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns,
-                                            home=False)
+                                                gw_curr,
+                                                home=False)
 
                 print("Processing the rolling stat features, window size = 3")
                 self.calculate_statrolling_features(path_processed,
@@ -185,6 +195,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     filename_team_metadata,
                                                     season,
                                                     target_columns,
+                                                    gw_curr,
                                                     window_size=3,
                                                     home=None)
 
@@ -194,6 +205,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     filename_team_metadata,
                                                     season,
                                                     target_columns,
+                                                    gw_curr,
                                                     window_size=3,
                                                     home=True)
 
@@ -203,6 +215,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     filename_team_metadata,
                                                     season,
                                                     target_columns,
+                                                    gw_curr,
                                                     window_size=3,
                                                     home=False)
 
@@ -213,6 +226,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     filename_team_metadata,
                                                     season,
                                                     target_columns,
+                                                    gw_curr,
                                                     window_size=4,
                                                     home=None)
 
@@ -222,6 +236,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     filename_team_metadata,
                                                     season,
                                                     target_columns,
+                                                    gw_curr,
                                                     window_size=4,
                                                     home=True)
 
@@ -231,6 +246,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     filename_team_metadata,
                                                     season,
                                                     target_columns,
+                                                    gw_curr,
                                                     window_size=4,
                                                     home=False)
 
@@ -242,6 +258,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     filename_team_metadata,
                                                     season,
                                                     target_columns,
+                                                    gw_curr,
                                                     window_size=5,
                                                     home=None)
 
@@ -251,6 +268,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     filename_team_metadata,
                                                     season,
                                                     target_columns,
+                                                    gw_curr,
                                                     window_size=5,
                                                     home=True)
 
@@ -260,6 +278,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     filename_team_metadata,
                                                     season,
                                                     target_columns,
+                                                    gw_curr,
                                                     window_size=5,
                                                     home=False)
 
@@ -270,6 +289,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns=target_columns,
+                                                gw_curr=gw_curr,
                                                 event=0,
                                                 home=None)
 
@@ -279,6 +299,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns=target_columns,
+                                                gw_curr=gw_curr,
                                                 event=0,
                                                 home=True)
 
@@ -288,6 +309,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns=target_columns,
+                                                gw_curr=gw_curr,
                                                 event=0,
                                                 home=False)
 
@@ -298,6 +320,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns=target_columns,
+                                                gw_curr=gw_curr,
                                                 event=1,
                                                 home=None)
 
@@ -307,6 +330,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns=target_columns,
+                                                gw_curr=gw_curr,
                                                 event=1,
                                                 home=True)
 
@@ -316,6 +340,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 filename_team_metadata,
                                                 season,
                                                 target_columns=target_columns,
+                                                gw_curr=gw_curr,
                                                 event=1,
                                                 home=False)
 
@@ -327,6 +352,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=3,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=0,
                                                     home=None)
 
@@ -337,6 +363,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=3,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=0,
                                                     home=True)
 
@@ -347,6 +374,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=3,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=0,
                                                     home=False)
 
@@ -358,6 +386,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=4,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=0,
                                                     home=None)
 
@@ -368,6 +397,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=4,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=0,
                                                     home=True)
 
@@ -378,6 +408,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=4,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=0,
                                                     home=False)
 
@@ -389,6 +420,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=3,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=0,
                                                     home=None)
 
@@ -399,6 +431,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=5,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=0,
                                                     home=True)
 
@@ -409,6 +442,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=5,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=0,
                                                     home=False)
 
@@ -421,6 +455,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=3,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=1,
                                                     home=None)
 
@@ -431,6 +466,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=3,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=1,
                                                     home=True)
 
@@ -441,6 +477,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=3,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=1,
                                                     home=False)
 
@@ -452,6 +489,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=4,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=1,
                                                     home=None)
 
@@ -462,6 +500,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=4,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=1,
                                                     home=True)
 
@@ -472,6 +511,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=4,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=1,
                                                     home=False)
 
@@ -483,6 +523,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=3,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=1,
                                                     home=None)
 
@@ -493,6 +534,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=5,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=1,
                                                     home=True)
 
@@ -503,6 +545,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     season,
                                                     window_size=5,
                                                     target_columns=target_columns,
+                                                    gw_curr=gw_curr,
                                                     event=1,
                                                     home=False)
 
@@ -921,12 +964,47 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         return player_data
 
+    def get_team_id(self, player_metadata, unique_id):
+
+        return player_metadata[player_metadata['unique_id']==unique_id]['team_id'].values[0]
+
+    def check_unique_id_played(self,
+                               player_metadata,
+                               gw_curr,
+                               season,
+                               unique_id):
+
+        season_name = str(season) + '-' + str(season+1)[-2:]
+        fixture_data = pd.read_csv(path.join(self.get_base_path(), 'Data', season_name, 'fixtures.csv'))
+        fixture_data = fixture_data[fixture_data['event']==gw_curr]
+
+        team_id = self.get_team_id(player_metadata, unique_id)
+
+        team_played = False
+
+        # print(team_id)
+        # print(fixture_data['team_h'])
+
+        if team_id in fixture_data['team_h'].values:
+            team_played = True
+
+        if team_id in fixture_data['team_a'].values:
+            team_played = True
+
+        if team_played is False:
+            print(team_id, gw_curr)
+
+        return team_played
+
+
+
     def calculate_aggregate_features(self, path_processed,
                                         filename_player_data,
                                         filename_player_metadata,
                                         filename_team_metadata,
                                         season,
                                         target_columns,
+                                        gw_curr,
                                         home=None):
 
 
@@ -969,39 +1047,41 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         for unique_id in unique_ids:
 
-            if unique_id % 100 == 0:
-                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
 
-            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-            player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            if team_played is True:
+                if unique_id % 100 == 0:
+                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-            # Iterate through the sorted dataframe to calulate the aggregate features
-            if home is None:
-                for i in range(0, player_data_unique_id.shape[0]):
-                    player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = np.sum(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-            elif home is True:
-                for i in range(0, player_data_unique_id.shape[0]):
-                    player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True]
-                    if player_data_unique_id_temp.shape[0] == 0:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = 0
-                    else:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = np.sum(player_data_unique_id_temp[target_columns].values, axis=0)
+                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
 
-            elif home is False:
-                for i in range(0, player_data_unique_id.shape[0]):
-                    player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False]
-                    if player_data_unique_id_temp.shape[0] == 0:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = 0
-                    else:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = np.sum(player_data_unique_id_temp[target_columns].values, axis=0)
-            # Concatonate the DataFrames
-            player_data_aggregate.append(player_data_unique_id)
+                # Iterate through the sorted dataframe to calulate the aggregate features
+                if home is None:
+                    for i in range(0, player_data_unique_id.shape[0]):
+                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = np.sum(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
+                elif home is True:
+                    for i in range(0, player_data_unique_id.shape[0]):
+                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True]
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = 0
+                        else:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = np.sum(player_data_unique_id_temp[target_columns].values, axis=0)
+
+                elif home is False:
+                    for i in range(0, player_data_unique_id.shape[0]):
+                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False]
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = 0
+                        else:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = np.sum(player_data_unique_id_temp[target_columns].values, axis=0)
+                # Concatonate the DataFrames
+                player_data_aggregate.append(player_data_unique_id)
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
         player_data_aggregate = player_data_aggregate.drop_duplicates()
         player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
-
 
 
     def calculate_stat_features(self, path_processed,
@@ -1010,6 +1090,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                 filename_team_metadata,
                                 season,
                                 target_columns,
+                                gw_curr,
                                 home=None):
 
 
@@ -1079,54 +1160,58 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         for unique_id in unique_ids:
 
-            if unique_id % 100 == 0:
-                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
 
-            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-            player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            if team_played is True:
 
-            # Iterate through the sorted dataframe to calulate the aggregate features
-            if home is None:
-                for i in range(0, player_data_unique_id.shape[0]):
-                    player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-                    player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-                    player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-                    player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)/np.sqrt(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].shape[0])
-                    player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0) - np.min(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-            elif home is True:
-                for i in range(0, player_data_unique_id.shape[0]):
-                    player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True]
-                    if player_data_unique_id_temp.shape[0] == 0:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
-                    else:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
+                if unique_id % 100 == 0:
+                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-            elif home is False:
-                for i in range(0, player_data_unique_id.shape[0]):
-                    player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False]
-                    if player_data_unique_id_temp.shape[0] == 0:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
-                    else:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
+                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+
+                # Iterate through the sorted dataframe to calulate the aggregate features
+                if home is None:
+                    for i in range(0, player_data_unique_id.shape[0]):
+                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
+                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
+                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
+                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)/np.sqrt(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].shape[0])
+                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0) - np.min(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
+                elif home is True:
+                    for i in range(0, player_data_unique_id.shape[0]):
+                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True]
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
+                        else:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
+
+                elif home is False:
+                    for i in range(0, player_data_unique_id.shape[0]):
+                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False]
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
+                        else:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
 
 
-            player_data_aggregate.append(player_data_unique_id)
+                player_data_aggregate.append(player_data_unique_id)
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
@@ -1140,6 +1225,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                         filename_team_metadata,
                                         season,
                                         target_columns,
+                                        gw_curr,
                                         window_size=3,
                                         home=None):
 
@@ -1207,111 +1293,115 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         for unique_id in unique_ids:
 
-            if unique_id % 100 == 0:
-                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
 
-            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-            player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            if team_played is True:
 
-            # if player_data_unique_id.shape[0] > 0:
-            I = player_data_unique_id.shape[0]
-            offset = window_size - 1
+                if unique_id % 100 == 0:
+                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-            if home is None:
-                player_data_unique_id_start = []
-                player_data_unique_id_start_df = player_data_unique_id.iloc[:offset, :].copy()
+                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
 
-                if player_data_unique_id_start_df.shape[0] < offset:
-                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                    for i in range(offset):
-                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                else:
-                    for i in range(offset):
-                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+                # if player_data_unique_id.shape[0] > 0:
+                I = player_data_unique_id.shape[0]
+                offset = window_size - 1
 
-                player_data_unique_id_start.append(player_data_unique_id_start_df)
-                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+                if home is None:
+                    player_data_unique_id_start = []
+                    player_data_unique_id_start_df = player_data_unique_id.iloc[:offset, :].copy()
 
-            if home is True:
-                player_data_unique_id_start = []
-                player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[:offset, :].copy()
-
-                if player_data_unique_id_start_df.shape[0] < offset:
-                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                    for i in range(offset):
-                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                else:
-                    for i in range(offset):
-                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
-
-                player_data_unique_id_start.append(player_data_unique_id_start_df)
-                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
-
-            elif home is False:
-                player_data_unique_id_start = []
-                player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[:offset, :].copy()
-
-                if player_data_unique_id_start_df.shape[0] < offset:
-                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                    for i in range(offset):
-                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                else:
-                    for i in range(offset):
-                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
-
-                player_data_unique_id_start.append(player_data_unique_id_start_df)
-                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
-
-
-            if home is None:
-                if player_data_unique_id.shape[0] > offset:
-                    # print(player_data_unique_id)
-                    for i in range(0, player_data_unique_id.shape[0]-offset):
-                        # print(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values)
-                        player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_mean_list] = np.mean(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_median_list] = np.median(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_std_list] = np.std(np.array(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, dtype=np.float64), axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_se_list] = np.std(np.array(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, dtype=np.float64), axis=0)/np.sqrt(window_size)
-                        player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_range_list] = np.max(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0) - np.min(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0)
-            elif home is True:
-                for i in range(offset, player_data_unique_id.shape[0]):
-                    player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True].iloc[-window_size:, :]
-
-                    if player_data_unique_id_temp.shape[0] == 0:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
+                    if player_data_unique_id_start_df.shape[0] < offset:
+                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                        for i in range(offset):
+                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
                     else:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
+                        for i in range(offset):
+                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
 
-            elif home is False:
-                for i in range(offset, player_data_unique_id.shape[0]):
-                    player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False].iloc[-window_size:, :]
+                    player_data_unique_id_start.append(player_data_unique_id_start_df)
+                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
 
-                    if player_data_unique_id_temp.shape[0] == 0:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
+                if home is True:
+                    player_data_unique_id_start = []
+                    player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[:offset, :].copy()
+
+                    if player_data_unique_id_start_df.shape[0] < offset:
+                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                        for i in range(offset):
+                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
                     else:
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
+                        for i in range(offset):
+                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
 
-            # Concatonate the DataFrames
-            player_data_aggregate.append(player_data_unique_id.iloc[offset:, :])
+                    player_data_unique_id_start.append(player_data_unique_id_start_df)
+                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+
+                elif home is False:
+                    player_data_unique_id_start = []
+                    player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[:offset, :].copy()
+
+                    if player_data_unique_id_start_df.shape[0] < offset:
+                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                        for i in range(offset):
+                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                    else:
+                        for i in range(offset):
+                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+
+                    player_data_unique_id_start.append(player_data_unique_id_start_df)
+                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+
+
+                if home is None:
+                    if player_data_unique_id.shape[0] > offset:
+                        # print(player_data_unique_id)
+                        for i in range(0, player_data_unique_id.shape[0]-offset):
+                            # print(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values)
+                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_mean_list] = np.mean(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_median_list] = np.median(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_std_list] = np.std(np.array(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, dtype=np.float64), axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_se_list] = np.std(np.array(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, dtype=np.float64), axis=0)/np.sqrt(window_size)
+                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_range_list] = np.max(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0) - np.min(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0)
+                elif home is True:
+                    for i in range(offset, player_data_unique_id.shape[0]):
+                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True].iloc[-window_size:, :]
+
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
+                        else:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
+
+                elif home is False:
+                    for i in range(offset, player_data_unique_id.shape[0]):
+                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False].iloc[-window_size:, :]
+
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
+                        else:
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
+
+                # Concatonate the DataFrames
+                player_data_aggregate.append(player_data_unique_id.iloc[offset:, :])
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
@@ -1325,6 +1415,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                     filename_team_metadata,
                                     season,
                                     target_columns,
+                                    gw_curr,
                                     event=0,
                                     home=None):
 
@@ -1367,40 +1458,43 @@ class DataLoader(DLH.DataLoaderHistoric):
         unique_ids = pd.unique(player_data.sort_values('unique_id')['unique_id'])
 
         for unique_id in unique_ids:
+            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
 
-            if unique_id % 100 == 0:
-                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            if team_played is True:
 
-            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-            player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+                if unique_id % 100 == 0:
+                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-            # Iterate through the sorted dataframe to calulate the aggregate features
-            if home is None:
-                for i in range(0, player_data_unique_id.shape[0]):
-                    for k, column in enumerate(target_columns):
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list[k]] = player_data_unique_id[player_data_unique_id[column]>event].iloc[:i+1, :].shape[0] / \
-                                                                                                               player_data_unique_id.iloc[:i+1, :].shape[0]
-            elif home is True:
-                for i in range(0, player_data_unique_id.shape[0]):
-                    for k, column in enumerate(target_columns):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True]
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list[k]] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].iloc[:i+1, :].shape[0] / \
-                                                                                                player_data_unique_id_temp.iloc[:i+1, :].shape[0]
+                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
 
-            elif home is False:
-                for i in range(0, player_data_unique_id.shape[0]):
-                    for k, column in enumerate(target_columns):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False]
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list[k]] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].iloc[:i+1, :].shape[0] / \
-                                                                                                player_data_unique_id_temp.iloc[:i+1, :].shape[0]
-            # Concatonate the DataFrames
-            player_data_aggregate.append(player_data_unique_id)
+                # Iterate through the sorted dataframe to calulate the aggregate features
+                if home is None:
+                    for i in range(0, player_data_unique_id.shape[0]):
+                        for k, column in enumerate(target_columns):
+                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list[k]] = player_data_unique_id[player_data_unique_id[column]>event].iloc[:i+1, :].shape[0] / \
+                                                                                                                   player_data_unique_id.iloc[:i+1, :].shape[0]
+                elif home is True:
+                    for i in range(0, player_data_unique_id.shape[0]):
+                        for k, column in enumerate(target_columns):
+                            player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True]
+                            if player_data_unique_id_temp.shape[0] == 0:
+                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list[k]] = 0
+                            else:
+                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].iloc[:i+1, :].shape[0] / \
+                                                                                                    player_data_unique_id_temp.iloc[:i+1, :].shape[0]
+
+                elif home is False:
+                    for i in range(0, player_data_unique_id.shape[0]):
+                        for k, column in enumerate(target_columns):
+                            player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False]
+                            if player_data_unique_id_temp.shape[0] == 0:
+                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list[k]] = 0
+                            else:
+                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].iloc[:i+1, :].shape[0] / \
+                                                                                                    player_data_unique_id_temp.iloc[:i+1, :].shape[0]
+                # Concatonate the DataFrames
+                player_data_aggregate.append(player_data_unique_id)
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
@@ -1414,6 +1508,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                             filename_team_metadata,
                                             season,
                                             target_columns,
+                                            gw_curr,
                                             window_size=3,
                                             event=0,
                                             home=None):
@@ -1459,94 +1554,98 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         for unique_id in unique_ids:
 
-            if unique_id % 100 == 0:
-                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
 
-            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-            player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            if team_played is True:
 
-            # if player_data_unique_id.shape[0] > 0:
-            I = player_data_unique_id.shape[0]
-            offset = window_size - 1
+                if unique_id % 100 == 0:
+                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-            if home is None:
-                player_data_unique_id_start = []
-                player_data_unique_id_start_df = player_data_unique_id.iloc[:offset, :].copy()
+                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
 
-                if player_data_unique_id_start_df.shape[0] < offset:
-                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                    for i in range(offset):
-                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                else:
-                    for i in range(offset):
-                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+                # if player_data_unique_id.shape[0] > 0:
+                I = player_data_unique_id.shape[0]
+                offset = window_size - 1
 
-                player_data_unique_id_start.append(player_data_unique_id_start_df)
-                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+                if home is None:
+                    player_data_unique_id_start = []
+                    player_data_unique_id_start_df = player_data_unique_id.iloc[:offset, :].copy()
 
-            if home is True:
-                player_data_unique_id_start = []
-                player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[:offset, :].copy()
+                    if player_data_unique_id_start_df.shape[0] < offset:
+                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                        for i in range(offset):
+                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                    else:
+                        for i in range(offset):
+                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
 
-                if player_data_unique_id_start_df.shape[0] < offset:
-                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                    for i in range(offset):
-                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                else:
-                    for i in range(offset):
-                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+                    player_data_unique_id_start.append(player_data_unique_id_start_df)
+                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
 
-                player_data_unique_id_start.append(player_data_unique_id_start_df)
-                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+                if home is True:
+                    player_data_unique_id_start = []
+                    player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[:offset, :].copy()
 
-            elif home is False:
-                player_data_unique_id_start = []
-                player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[:offset, :].copy()
+                    if player_data_unique_id_start_df.shape[0] < offset:
+                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                        for i in range(offset):
+                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                    else:
+                        for i in range(offset):
+                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
 
-                if player_data_unique_id_start_df.shape[0] < offset:
-                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                    for i in range(offset):
-                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                else:
-                    for i in range(offset):
-                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+                    player_data_unique_id_start.append(player_data_unique_id_start_df)
+                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
 
-                player_data_unique_id_start.append(player_data_unique_id_start_df)
-                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+                elif home is False:
+                    player_data_unique_id_start = []
+                    player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[:offset, :].copy()
 
+                    if player_data_unique_id_start_df.shape[0] < offset:
+                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                        for i in range(offset):
+                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                    else:
+                        for i in range(offset):
+                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
 
-            if home is None:
-                # if player_data_unique_id.shape[0] > offset:
-                for i in range(0, player_data_unique_id.shape[0]-offset):
-                    for k, column in enumerate(target_columns):
-                        player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_list[k]] = player_data_unique_id[player_data_unique_id[column]>event].iloc[i:i+window_size].shape[0] / window_size
-
-            elif home is True:
-                for i in range(offset, player_data_unique_id.shape[0]):
-                    player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True].iloc[-window_size:, :]
-                    for k, column in enumerate(target_columns):
-
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / window_size
-
-            elif home is False:
-                for i in range(offset, player_data_unique_id.shape[0]):
-                    player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False].iloc[-window_size:, :]
-                    for k, column in enumerate(target_columns):
-
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / window_size
+                    player_data_unique_id_start.append(player_data_unique_id_start_df)
+                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
 
 
-            # Concatonate the DataFrames
-            player_data_aggregate.append(player_data_unique_id.iloc[offset:, :])
+                if home is None:
+                    # if player_data_unique_id.shape[0] > offset:
+                    for i in range(0, player_data_unique_id.shape[0]-offset):
+                        for k, column in enumerate(target_columns):
+                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_list[k]] = player_data_unique_id[player_data_unique_id[column]>event].iloc[i:i+window_size].shape[0] / window_size
+
+                elif home is True:
+                    for i in range(offset, player_data_unique_id.shape[0]):
+                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True].iloc[-window_size:, :]
+                        for k, column in enumerate(target_columns):
+
+                            if player_data_unique_id_temp.shape[0] == 0:
+                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = 0
+                            else:
+                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / window_size
+
+                elif home is False:
+                    for i in range(offset, player_data_unique_id.shape[0]):
+                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False].iloc[-window_size:, :]
+                        for k, column in enumerate(target_columns):
+
+                            if player_data_unique_id_temp.shape[0] == 0:
+                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = 0
+                            else:
+                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / window_size
+
+
+                # Concatonate the DataFrames
+                player_data_aggregate.append(player_data_unique_id.iloc[offset:, :])
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
