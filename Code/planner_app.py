@@ -345,10 +345,8 @@ def style_colour_injury(font_size, chance_of_playing):
         injury_colour = 'yellow'
 
     style_1 = {'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'background-color': injury_colour}
-    style_2 = {'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'background-color': injury_colour}
-    style_3 = {'width': '100%','float': 'left', 'background-color': injury_colour}
 
-    return style_1, style_2, style_3
+    return style_1
 
 
 def calculate_player_points(player_form_1, player_form_2, player_cpt, triple_captain=False):
@@ -9484,7 +9482,6 @@ if debug_mode is False:
 
 elif debug_mode is True:
 
-    'div_1_1_1'
     @app.callback(
         [Output('player_1_1_1_value', 'children'),
          Output('player_1_1_1_pos', 'children'),
@@ -9514,11 +9511,7 @@ elif debug_mode is True:
          Output('player_1_1_2_team_form', 'style'),
          Output('player_1_1_1_team_odds', 'style'),
          Output('player_1_1_2_team_odds', 'style'),
-         Output('player_1_1_1_no', 'style'),
-         Output('player_1_1_2_no', 'style'),
-         Output('div_1_1_1', 'style'),
-         Output('div_1_1_2', 'style'),
-         Output('div_1_1_blank', 'style'),],
+         Output('player_1_1_1_no', 'style')],
         [Input('player_1_1_name', 'value')],
         [State('intermediate-team_names_gw1', 'children'),
          State('intermediate-team_unique_ids_gw1', 'children'),
@@ -9549,14 +9542,14 @@ elif debug_mode is True:
         gw_curr = int(gw_curr)
         gw_next = gw_curr + 1
 
-        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
-        chance_of_playing_style1, chance_of_playing_style2, chance_of_playing_style3 = style_colour_injury(font_size, chance_of_playing)
-
         #GW + 1
         player_id = determine_element_id(data, player_unique_id, 2020)
         (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
                 planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
 
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
 
         if int(unique_id) in team_unique_ids.values:
             value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
@@ -9601,11 +9594,1617 @@ elif debug_mode is True:
                 style_colour(font_size, fixture_diff[1], '8%'),
                 style_colour(font_size, fixture_diff[0], '5%'),
                 style_colour(font_size, fixture_diff[1], '5%'),
-                chance_of_playing_style1,
-                chance_of_playing_style2,
-                chance_of_playing_style3,
-                chance_of_playing_style3,
-                chance_of_playing_style3)
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_2_1_value', 'children'),
+         Output('player_1_2_1_pos', 'children'),
+         Output('player_1_2_1_team', 'children'),
+         Output('player_1_2_1_against', 'children'),
+         Output('player_1_2_1_H_A', 'children'),
+         Output('player_1_2_1_team_odds', 'children'),
+         Output('player_1_2_1_player_form', 'children'),
+         Output('player_1_2_1_team_form', 'children'),
+         Output('player_1_2_2_against', 'children'),
+         Output('player_1_2_2_H_A', 'children'),
+         Output('player_1_2_2_team_odds', 'children'),
+         Output('player_1_2_2_player_form', 'children'),
+         Output('player_2_2_name', 'options'),
+         Output('player_2_2_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_2_1_against', 'style'),
+         Output('player_1_2_2_against', 'style'),
+         Output('player_1_2_1_H_A', 'style'),
+         Output('player_1_2_2_H_A', 'style'),
+         Output('player_1_2_1_player_form', 'style'),
+         Output('player_1_2_2_player_form', 'style'),
+         Output('player_1_2_1_team_form', 'style'),
+         Output('player_1_2_2_team_form', 'style'),
+         Output('player_1_2_1_team_odds', 'style'),
+         Output('player_1_2_2_team_odds', 'style'),
+         Output('player_1_2_1_no', 'style')],
+        [Input('player_1_2_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p2(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_3_1_value', 'children'),
+         Output('player_1_3_1_pos', 'children'),
+         Output('player_1_3_1_team', 'children'),
+         Output('player_1_3_1_against', 'children'),
+         Output('player_1_3_1_H_A', 'children'),
+         Output('player_1_3_1_team_odds', 'children'),
+         Output('player_1_3_1_player_form', 'children'),
+         Output('player_1_3_1_team_form', 'children'),
+         Output('player_1_3_2_against', 'children'),
+         Output('player_1_3_2_H_A', 'children'),
+         Output('player_1_3_2_team_odds', 'children'),
+         Output('player_1_3_2_player_form', 'children'),
+         Output('player_2_3_name', 'options'),
+         Output('player_2_3_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_3_1_against', 'style'),
+         Output('player_1_3_2_against', 'style'),
+         Output('player_1_3_1_H_A', 'style'),
+         Output('player_1_3_2_H_A', 'style'),
+         Output('player_1_3_1_player_form', 'style'),
+         Output('player_1_3_2_player_form', 'style'),
+         Output('player_1_3_1_team_form', 'style'),
+         Output('player_1_3_2_team_form', 'style'),
+         Output('player_1_3_1_team_odds', 'style'),
+         Output('player_1_3_2_team_odds', 'style'),
+         Output('player_1_3_1_no', 'style')],
+        [Input('player_1_3_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p3(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_4_1_value', 'children'),
+         Output('player_1_4_1_pos', 'children'),
+         Output('player_1_4_1_team', 'children'),
+         Output('player_1_4_1_against', 'children'),
+         Output('player_1_4_1_H_A', 'children'),
+         Output('player_1_4_1_team_odds', 'children'),
+         Output('player_1_4_1_player_form', 'children'),
+         Output('player_1_4_1_team_form', 'children'),
+         Output('player_1_4_2_against', 'children'),
+         Output('player_1_4_2_H_A', 'children'),
+         Output('player_1_4_2_team_odds', 'children'),
+         Output('player_1_4_2_player_form', 'children'),
+         Output('player_2_4_name', 'options'),
+         Output('player_2_4_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_4_1_against', 'style'),
+         Output('player_1_4_2_against', 'style'),
+         Output('player_1_4_1_H_A', 'style'),
+         Output('player_1_4_2_H_A', 'style'),
+         Output('player_1_4_1_player_form', 'style'),
+         Output('player_1_4_2_player_form', 'style'),
+         Output('player_1_4_1_team_form', 'style'),
+         Output('player_1_4_2_team_form', 'style'),
+         Output('player_1_4_1_team_odds', 'style'),
+         Output('player_1_4_2_team_odds', 'style'),
+         Output('player_1_4_1_no', 'style')],
+        [Input('player_1_4_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p4(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_5_1_value', 'children'),
+         Output('player_1_5_1_pos', 'children'),
+         Output('player_1_5_1_team', 'children'),
+         Output('player_1_5_1_against', 'children'),
+         Output('player_1_5_1_H_A', 'children'),
+         Output('player_1_5_1_team_odds', 'children'),
+         Output('player_1_5_1_player_form', 'children'),
+         Output('player_1_5_1_team_form', 'children'),
+         Output('player_1_5_2_against', 'children'),
+         Output('player_1_5_2_H_A', 'children'),
+         Output('player_1_5_2_team_odds', 'children'),
+         Output('player_1_5_2_player_form', 'children'),
+         Output('player_2_5_name', 'options'),
+         Output('player_2_5_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_5_1_against', 'style'),
+         Output('player_1_5_2_against', 'style'),
+         Output('player_1_5_1_H_A', 'style'),
+         Output('player_1_5_2_H_A', 'style'),
+         Output('player_1_5_1_player_form', 'style'),
+         Output('player_1_5_2_player_form', 'style'),
+         Output('player_1_5_1_team_form', 'style'),
+         Output('player_1_5_2_team_form', 'style'),
+         Output('player_1_5_1_team_odds', 'style'),
+         Output('player_1_5_2_team_odds', 'style'),
+         Output('player_1_5_1_no', 'style')],
+        [Input('player_1_5_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p5(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_6_1_value', 'children'),
+         Output('player_1_6_1_pos', 'children'),
+         Output('player_1_6_1_team', 'children'),
+         Output('player_1_6_1_against', 'children'),
+         Output('player_1_6_1_H_A', 'children'),
+         Output('player_1_6_1_team_odds', 'children'),
+         Output('player_1_6_1_player_form', 'children'),
+         Output('player_1_6_1_team_form', 'children'),
+         Output('player_1_6_2_against', 'children'),
+         Output('player_1_6_2_H_A', 'children'),
+         Output('player_1_6_2_team_odds', 'children'),
+         Output('player_1_6_2_player_form', 'children'),
+         Output('player_2_6_name', 'options'),
+         Output('player_2_6_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_6_1_against', 'style'),
+         Output('player_1_6_2_against', 'style'),
+         Output('player_1_6_1_H_A', 'style'),
+         Output('player_1_6_2_H_A', 'style'),
+         Output('player_1_6_1_player_form', 'style'),
+         Output('player_1_6_2_player_form', 'style'),
+         Output('player_1_6_1_team_form', 'style'),
+         Output('player_1_6_2_team_form', 'style'),
+         Output('player_1_6_1_team_odds', 'style'),
+         Output('player_1_6_2_team_odds', 'style'),
+         Output('player_1_6_1_no', 'style')],
+        [Input('player_1_6_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p6(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_7_1_value', 'children'),
+         Output('player_1_7_1_pos', 'children'),
+         Output('player_1_7_1_team', 'children'),
+         Output('player_1_7_1_against', 'children'),
+         Output('player_1_7_1_H_A', 'children'),
+         Output('player_1_7_1_team_odds', 'children'),
+         Output('player_1_7_1_player_form', 'children'),
+         Output('player_1_7_1_team_form', 'children'),
+         Output('player_1_7_2_against', 'children'),
+         Output('player_1_7_2_H_A', 'children'),
+         Output('player_1_7_2_team_odds', 'children'),
+         Output('player_1_7_2_player_form', 'children'),
+         Output('player_2_7_name', 'options'),
+         Output('player_2_7_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_7_1_against', 'style'),
+         Output('player_1_7_2_against', 'style'),
+         Output('player_1_7_1_H_A', 'style'),
+         Output('player_1_7_2_H_A', 'style'),
+         Output('player_1_7_1_player_form', 'style'),
+         Output('player_1_7_2_player_form', 'style'),
+         Output('player_1_7_1_team_form', 'style'),
+         Output('player_1_7_2_team_form', 'style'),
+         Output('player_1_7_1_team_odds', 'style'),
+         Output('player_1_7_2_team_odds', 'style'),
+         Output('player_1_7_1_no', 'style')],
+        [Input('player_1_7_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p7(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_1_8_1_value', 'children'),
+         Output('player_1_8_1_pos', 'children'),
+         Output('player_1_8_1_team', 'children'),
+         Output('player_1_8_1_against', 'children'),
+         Output('player_1_8_1_H_A', 'children'),
+         Output('player_1_8_1_team_odds', 'children'),
+         Output('player_1_8_1_player_form', 'children'),
+         Output('player_1_8_1_team_form', 'children'),
+         Output('player_1_8_2_against', 'children'),
+         Output('player_1_8_2_H_A', 'children'),
+         Output('player_1_8_2_team_odds', 'children'),
+         Output('player_1_8_2_player_form', 'children'),
+         Output('player_2_8_name', 'options'),
+         Output('player_2_8_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_8_1_against', 'style'),
+         Output('player_1_8_2_against', 'style'),
+         Output('player_1_8_1_H_A', 'style'),
+         Output('player_1_8_2_H_A', 'style'),
+         Output('player_1_8_1_player_form', 'style'),
+         Output('player_1_8_2_player_form', 'style'),
+         Output('player_1_8_1_team_form', 'style'),
+         Output('player_1_8_2_team_form', 'style'),
+         Output('player_1_8_1_team_odds', 'style'),
+         Output('player_1_8_2_team_odds', 'style'),
+         Output('player_1_8_1_no', 'style')],
+        [Input('player_1_8_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p8(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_9_1_value', 'children'),
+         Output('player_1_9_1_pos', 'children'),
+         Output('player_1_9_1_team', 'children'),
+         Output('player_1_9_1_against', 'children'),
+         Output('player_1_9_1_H_A', 'children'),
+         Output('player_1_9_1_team_odds', 'children'),
+         Output('player_1_9_1_player_form', 'children'),
+         Output('player_1_9_1_team_form', 'children'),
+         Output('player_1_9_2_against', 'children'),
+         Output('player_1_9_2_H_A', 'children'),
+         Output('player_1_9_2_team_odds', 'children'),
+         Output('player_1_9_2_player_form', 'children'),
+         Output('player_2_9_name', 'options'),
+         Output('player_2_9_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_9_1_against', 'style'),
+         Output('player_1_9_2_against', 'style'),
+         Output('player_1_9_1_H_A', 'style'),
+         Output('player_1_9_2_H_A', 'style'),
+         Output('player_1_9_1_player_form', 'style'),
+         Output('player_1_9_2_player_form', 'style'),
+         Output('player_1_9_1_team_form', 'style'),
+         Output('player_1_9_2_team_form', 'style'),
+         Output('player_1_9_1_team_odds', 'style'),
+         Output('player_1_9_2_team_odds', 'style'),
+         Output('player_1_9_1_no', 'style')],
+        [Input('player_1_9_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p9(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_10_1_value', 'children'),
+         Output('player_1_10_1_pos', 'children'),
+         Output('player_1_10_1_team', 'children'),
+         Output('player_1_10_1_against', 'children'),
+         Output('player_1_10_1_H_A', 'children'),
+         Output('player_1_10_1_team_odds', 'children'),
+         Output('player_1_10_1_player_form', 'children'),
+         Output('player_1_10_1_team_form', 'children'),
+         Output('player_1_10_2_against', 'children'),
+         Output('player_1_10_2_H_A', 'children'),
+         Output('player_1_10_2_team_odds', 'children'),
+         Output('player_1_10_2_player_form', 'children'),
+         Output('player_2_10_name', 'options'),
+         Output('player_2_10_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_10_1_against', 'style'),
+         Output('player_1_10_2_against', 'style'),
+         Output('player_1_10_1_H_A', 'style'),
+         Output('player_1_10_2_H_A', 'style'),
+         Output('player_1_10_1_player_form', 'style'),
+         Output('player_1_10_2_player_form', 'style'),
+         Output('player_1_10_1_team_form', 'style'),
+         Output('player_1_10_2_team_form', 'style'),
+         Output('player_1_10_1_team_odds', 'style'),
+         Output('player_1_10_2_team_odds', 'style'),
+         Output('player_1_10_1_no', 'style')],
+        [Input('player_1_10_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p10(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_11_1_value', 'children'),
+         Output('player_1_11_1_pos', 'children'),
+         Output('player_1_11_1_team', 'children'),
+         Output('player_1_11_1_against', 'children'),
+         Output('player_1_11_1_H_A', 'children'),
+         Output('player_1_11_1_team_odds', 'children'),
+         Output('player_1_11_1_player_form', 'children'),
+         Output('player_1_11_1_team_form', 'children'),
+         Output('player_1_11_2_against', 'children'),
+         Output('player_1_11_2_H_A', 'children'),
+         Output('player_1_11_2_team_odds', 'children'),
+         Output('player_1_11_2_player_form', 'children'),
+         Output('player_2_11_name', 'options'),
+         Output('player_2_11_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_11_1_against', 'style'),
+         Output('player_1_11_2_against', 'style'),
+         Output('player_1_11_1_H_A', 'style'),
+         Output('player_1_11_2_H_A', 'style'),
+         Output('player_1_11_1_player_form', 'style'),
+         Output('player_1_11_2_player_form', 'style'),
+         Output('player_1_11_1_team_form', 'style'),
+         Output('player_1_11_2_team_form', 'style'),
+         Output('player_1_11_1_team_odds', 'style'),
+         Output('player_1_11_2_team_odds', 'style'),
+         Output('player_1_11_1_no', 'style')],
+        [Input('player_1_11_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p11(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_12_1_value', 'children'),
+         Output('player_1_12_1_pos', 'children'),
+         Output('player_1_12_1_team', 'children'),
+         Output('player_1_12_1_against', 'children'),
+         Output('player_1_12_1_H_A', 'children'),
+         Output('player_1_12_1_team_odds', 'children'),
+         Output('player_1_12_1_player_form', 'children'),
+         Output('player_1_12_1_team_form', 'children'),
+         Output('player_1_12_2_against', 'children'),
+         Output('player_1_12_2_H_A', 'children'),
+         Output('player_1_12_2_team_odds', 'children'),
+         Output('player_1_12_2_player_form', 'children'),
+         Output('player_2_12_name', 'options'),
+         Output('player_2_12_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_12_1_against', 'style'),
+         Output('player_1_12_2_against', 'style'),
+         Output('player_1_12_1_H_A', 'style'),
+         Output('player_1_12_2_H_A', 'style'),
+         Output('player_1_12_1_player_form', 'style'),
+         Output('player_1_12_2_player_form', 'style'),
+         Output('player_1_12_1_team_form', 'style'),
+         Output('player_1_12_2_team_form', 'style'),
+         Output('player_1_12_1_team_odds', 'style'),
+         Output('player_1_12_2_team_odds', 'style'),
+         Output('player_1_12_1_no', 'style')],
+        [Input('player_1_12_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p12(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_13_1_value', 'children'),
+         Output('player_1_13_1_pos', 'children'),
+         Output('player_1_13_1_team', 'children'),
+         Output('player_1_13_1_against', 'children'),
+         Output('player_1_13_1_H_A', 'children'),
+         Output('player_1_13_1_team_odds', 'children'),
+         Output('player_1_13_1_player_form', 'children'),
+         Output('player_1_13_1_team_form', 'children'),
+         Output('player_1_13_2_against', 'children'),
+         Output('player_1_13_2_H_A', 'children'),
+         Output('player_1_13_2_team_odds', 'children'),
+         Output('player_1_13_2_player_form', 'children'),
+         Output('player_2_13_name', 'options'),
+         Output('player_2_13_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_13_1_against', 'style'),
+         Output('player_1_13_2_against', 'style'),
+         Output('player_1_13_1_H_A', 'style'),
+         Output('player_1_13_2_H_A', 'style'),
+         Output('player_1_13_1_player_form', 'style'),
+         Output('player_1_13_2_player_form', 'style'),
+         Output('player_1_13_1_team_form', 'style'),
+         Output('player_1_13_2_team_form', 'style'),
+         Output('player_1_13_1_team_odds', 'style'),
+         Output('player_1_13_2_team_odds', 'style'),
+         Output('player_1_13_1_no', 'style')],
+        [Input('player_1_13_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p13(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_1_14_1_value', 'children'),
+         Output('player_1_14_1_pos', 'children'),
+         Output('player_1_14_1_team', 'children'),
+         Output('player_1_14_1_against', 'children'),
+         Output('player_1_14_1_H_A', 'children'),
+         Output('player_1_14_1_team_odds', 'children'),
+         Output('player_1_14_1_player_form', 'children'),
+         Output('player_1_14_1_team_form', 'children'),
+         Output('player_1_14_2_against', 'children'),
+         Output('player_1_14_2_H_A', 'children'),
+         Output('player_1_14_2_team_odds', 'children'),
+         Output('player_1_14_2_player_form', 'children'),
+         Output('player_2_14_name', 'options'),
+         Output('player_2_14_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_14_1_against', 'style'),
+         Output('player_1_14_2_against', 'style'),
+         Output('player_1_14_1_H_A', 'style'),
+         Output('player_1_14_2_H_A', 'style'),
+         Output('player_1_14_1_player_form', 'style'),
+         Output('player_1_14_2_player_form', 'style'),
+         Output('player_1_14_1_team_form', 'style'),
+         Output('player_1_14_2_team_form', 'style'),
+         Output('player_1_14_1_team_odds', 'style'),
+         Output('player_1_14_2_team_odds', 'style'),
+         Output('player_1_14_1_no', 'style')],
+        [Input('player_1_14_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p14(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+
+    @app.callback(
+        [Output('player_1_15_1_value', 'children'),
+         Output('player_1_15_1_pos', 'children'),
+         Output('player_1_15_1_team', 'children'),
+         Output('player_1_15_1_against', 'children'),
+         Output('player_1_15_1_H_A', 'children'),
+         Output('player_1_15_1_team_odds', 'children'),
+         Output('player_1_15_1_player_form', 'children'),
+         Output('player_1_15_1_team_form', 'children'),
+         Output('player_1_15_2_against', 'children'),
+         Output('player_1_15_2_H_A', 'children'),
+         Output('player_1_15_2_team_odds', 'children'),
+         Output('player_1_15_2_player_form', 'children'),
+         Output('player_2_15_name', 'options'),
+         Output('player_2_15_name', 'value'),
+         Output('intermediate-team_names_gw1', 'children'),
+         Output('intermediate-team_unique_ids_gw1', 'children'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('player_1_15_1_against', 'style'),
+         Output('player_1_15_2_against', 'style'),
+         Output('player_1_15_1_H_A', 'style'),
+         Output('player_1_15_2_H_A', 'style'),
+         Output('player_1_15_1_player_form', 'style'),
+         Output('player_1_15_2_player_form', 'style'),
+         Output('player_1_15_1_team_form', 'style'),
+         Output('player_1_15_2_team_form', 'style'),
+         Output('player_1_15_1_team_odds', 'style'),
+         Output('player_1_15_2_team_odds', 'style'),
+         Output('player_1_15_1_no', 'style')],
+        [Input('player_1_15_name', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw1_p15(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
 
 
     @app.callback(
@@ -9636,7 +11235,8 @@ elif debug_mode is True:
          Output('player_2_1_1_team_form', 'style'),
          Output('player_2_1_2_team_form', 'style'),
          Output('player_2_1_1_team_odds', 'style'),
-         Output('player_2_1_2_team_odds', 'style')],
+         Output('player_2_1_2_team_odds', 'style'),
+         Output('player_2_1_1_no', 'style')],
         [Input('player_2_1_name', 'value')],
         [State('intermediate-team_names_gw2', 'children'),
          State('intermediate-team_unique_ids_gw2', 'children'),
@@ -9653,6 +11253,7 @@ elif debug_mode is True:
                                     gw_curr,
                                     team_picks_json):
 
+
         team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
 
         data_2020 = data[data['season']==2020]
@@ -9664,12 +11265,16 @@ elif debug_mode is True:
         team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
         gw_curr = int(gw_curr)
-        gw_next = gw_curr + 2
+        gw_next = gw_curr + 1
 
-        #GW next
+        #GW + 1
         player_id = determine_element_id(data, player_unique_id, 2020)
         (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
                 planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
 
         if int(unique_id) in team_unique_ids.values:
             value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
@@ -9713,7 +11318,1618 @@ elif debug_mode is True:
                 style_colour(font_size, fixture_diff[0], '8%'),
                 style_colour(font_size, fixture_diff[1], '8%'),
                 style_colour(font_size, fixture_diff[0], '5%'),
-                style_colour(font_size, fixture_diff[1], '5%'))
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_2_1_value', 'children'),
+         Output('player_2_2_1_pos', 'children'),
+         Output('player_2_2_1_team', 'children'),
+         Output('player_2_2_1_against', 'children'),
+         Output('player_2_2_1_H_A', 'children'),
+         Output('player_2_2_1_team_odds', 'children'),
+         Output('player_2_2_1_player_form', 'children'),
+         Output('player_2_2_1_team_form', 'children'),
+         Output('player_2_2_2_against', 'children'),
+         Output('player_2_2_2_H_A', 'children'),
+         Output('player_2_2_2_team_odds', 'children'),
+         Output('player_2_2_2_player_form', 'children'),
+         Output('player_3_2_name', 'options'),
+         Output('player_3_2_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_2_1_against', 'style'),
+         Output('player_2_2_2_against', 'style'),
+         Output('player_2_2_1_H_A', 'style'),
+         Output('player_2_2_2_H_A', 'style'),
+         Output('player_2_2_1_player_form', 'style'),
+         Output('player_2_2_2_player_form', 'style'),
+         Output('player_2_2_1_team_form', 'style'),
+         Output('player_2_2_2_team_form', 'style'),
+         Output('player_2_2_1_team_odds', 'style'),
+         Output('player_2_2_2_team_odds', 'style'),
+         Output('player_2_2_1_no', 'style')],
+        [Input('player_2_2_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p2(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_2_3_1_value', 'children'),
+         Output('player_2_3_1_pos', 'children'),
+         Output('player_2_3_1_team', 'children'),
+         Output('player_2_3_1_against', 'children'),
+         Output('player_2_3_1_H_A', 'children'),
+         Output('player_2_3_1_team_odds', 'children'),
+         Output('player_2_3_1_player_form', 'children'),
+         Output('player_2_3_1_team_form', 'children'),
+         Output('player_2_3_2_against', 'children'),
+         Output('player_2_3_2_H_A', 'children'),
+         Output('player_2_3_2_team_odds', 'children'),
+         Output('player_2_3_2_player_form', 'children'),
+         Output('player_3_3_name', 'options'),
+         Output('player_3_3_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_3_1_against', 'style'),
+         Output('player_2_3_2_against', 'style'),
+         Output('player_2_3_1_H_A', 'style'),
+         Output('player_2_3_2_H_A', 'style'),
+         Output('player_2_3_1_player_form', 'style'),
+         Output('player_2_3_2_player_form', 'style'),
+         Output('player_2_3_1_team_form', 'style'),
+         Output('player_2_3_2_team_form', 'style'),
+         Output('player_2_3_1_team_odds', 'style'),
+         Output('player_2_3_2_team_odds', 'style'),
+         Output('player_2_3_1_no', 'style')],
+        [Input('player_2_3_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p3(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_4_1_value', 'children'),
+         Output('player_2_4_1_pos', 'children'),
+         Output('player_2_4_1_team', 'children'),
+         Output('player_2_4_1_against', 'children'),
+         Output('player_2_4_1_H_A', 'children'),
+         Output('player_2_4_1_team_odds', 'children'),
+         Output('player_2_4_1_player_form', 'children'),
+         Output('player_2_4_1_team_form', 'children'),
+         Output('player_2_4_2_against', 'children'),
+         Output('player_2_4_2_H_A', 'children'),
+         Output('player_2_4_2_team_odds', 'children'),
+         Output('player_2_4_2_player_form', 'children'),
+         Output('player_3_4_name', 'options'),
+         Output('player_3_4_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_4_1_against', 'style'),
+         Output('player_2_4_2_against', 'style'),
+         Output('player_2_4_1_H_A', 'style'),
+         Output('player_2_4_2_H_A', 'style'),
+         Output('player_2_4_1_player_form', 'style'),
+         Output('player_2_4_2_player_form', 'style'),
+         Output('player_2_4_1_team_form', 'style'),
+         Output('player_2_4_2_team_form', 'style'),
+         Output('player_2_4_1_team_odds', 'style'),
+         Output('player_2_4_2_team_odds', 'style'),
+         Output('player_2_4_1_no', 'style')],
+        [Input('player_2_4_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p4(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_5_1_value', 'children'),
+         Output('player_2_5_1_pos', 'children'),
+         Output('player_2_5_1_team', 'children'),
+         Output('player_2_5_1_against', 'children'),
+         Output('player_2_5_1_H_A', 'children'),
+         Output('player_2_5_1_team_odds', 'children'),
+         Output('player_2_5_1_player_form', 'children'),
+         Output('player_2_5_1_team_form', 'children'),
+         Output('player_2_5_2_against', 'children'),
+         Output('player_2_5_2_H_A', 'children'),
+         Output('player_2_5_2_team_odds', 'children'),
+         Output('player_2_5_2_player_form', 'children'),
+         Output('player_3_5_name', 'options'),
+         Output('player_3_5_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_5_1_against', 'style'),
+         Output('player_2_5_2_against', 'style'),
+         Output('player_2_5_1_H_A', 'style'),
+         Output('player_2_5_2_H_A', 'style'),
+         Output('player_2_5_1_player_form', 'style'),
+         Output('player_2_5_2_player_form', 'style'),
+         Output('player_2_5_1_team_form', 'style'),
+         Output('player_2_5_2_team_form', 'style'),
+         Output('player_2_5_1_team_odds', 'style'),
+         Output('player_2_5_2_team_odds', 'style'),
+         Output('player_2_5_1_no', 'style')],
+        [Input('player_2_5_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p5(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_6_1_value', 'children'),
+         Output('player_2_6_1_pos', 'children'),
+         Output('player_2_6_1_team', 'children'),
+         Output('player_2_6_1_against', 'children'),
+         Output('player_2_6_1_H_A', 'children'),
+         Output('player_2_6_1_team_odds', 'children'),
+         Output('player_2_6_1_player_form', 'children'),
+         Output('player_2_6_1_team_form', 'children'),
+         Output('player_2_6_2_against', 'children'),
+         Output('player_2_6_2_H_A', 'children'),
+         Output('player_2_6_2_team_odds', 'children'),
+         Output('player_2_6_2_player_form', 'children'),
+         Output('player_3_6_name', 'options'),
+         Output('player_3_6_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_6_1_against', 'style'),
+         Output('player_2_6_2_against', 'style'),
+         Output('player_2_6_1_H_A', 'style'),
+         Output('player_2_6_2_H_A', 'style'),
+         Output('player_2_6_1_player_form', 'style'),
+         Output('player_2_6_2_player_form', 'style'),
+         Output('player_2_6_1_team_form', 'style'),
+         Output('player_2_6_2_team_form', 'style'),
+         Output('player_2_6_1_team_odds', 'style'),
+         Output('player_2_6_2_team_odds', 'style'),
+         Output('player_2_6_1_no', 'style')],
+        [Input('player_2_6_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p6(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_7_1_value', 'children'),
+         Output('player_2_7_1_pos', 'children'),
+         Output('player_2_7_1_team', 'children'),
+         Output('player_2_7_1_against', 'children'),
+         Output('player_2_7_1_H_A', 'children'),
+         Output('player_2_7_1_team_odds', 'children'),
+         Output('player_2_7_1_player_form', 'children'),
+         Output('player_2_7_1_team_form', 'children'),
+         Output('player_2_7_2_against', 'children'),
+         Output('player_2_7_2_H_A', 'children'),
+         Output('player_2_7_2_team_odds', 'children'),
+         Output('player_2_7_2_player_form', 'children'),
+         Output('player_3_7_name', 'options'),
+         Output('player_3_7_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_7_1_against', 'style'),
+         Output('player_2_7_2_against', 'style'),
+         Output('player_2_7_1_H_A', 'style'),
+         Output('player_2_7_2_H_A', 'style'),
+         Output('player_2_7_1_player_form', 'style'),
+         Output('player_2_7_2_player_form', 'style'),
+         Output('player_2_7_1_team_form', 'style'),
+         Output('player_2_7_2_team_form', 'style'),
+         Output('player_2_7_1_team_odds', 'style'),
+         Output('player_2_7_2_team_odds', 'style'),
+         Output('player_2_7_1_no', 'style')],
+        [Input('player_2_7_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p7(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_8_1_value', 'children'),
+         Output('player_2_8_1_pos', 'children'),
+         Output('player_2_8_1_team', 'children'),
+         Output('player_2_8_1_against', 'children'),
+         Output('player_2_8_1_H_A', 'children'),
+         Output('player_2_8_1_team_odds', 'children'),
+         Output('player_2_8_1_player_form', 'children'),
+         Output('player_2_8_1_team_form', 'children'),
+         Output('player_2_8_2_against', 'children'),
+         Output('player_2_8_2_H_A', 'children'),
+         Output('player_2_8_2_team_odds', 'children'),
+         Output('player_2_8_2_player_form', 'children'),
+         Output('player_3_8_name', 'options'),
+         Output('player_3_8_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_8_1_against', 'style'),
+         Output('player_2_8_2_against', 'style'),
+         Output('player_2_8_1_H_A', 'style'),
+         Output('player_2_8_2_H_A', 'style'),
+         Output('player_2_8_1_player_form', 'style'),
+         Output('player_2_8_2_player_form', 'style'),
+         Output('player_2_8_1_team_form', 'style'),
+         Output('player_2_8_2_team_form', 'style'),
+         Output('player_2_8_1_team_odds', 'style'),
+         Output('player_2_8_2_team_odds', 'style'),
+         Output('player_2_8_1_no', 'style')],
+        [Input('player_2_8_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p8(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_9_1_value', 'children'),
+         Output('player_2_9_1_pos', 'children'),
+         Output('player_2_9_1_team', 'children'),
+         Output('player_2_9_1_against', 'children'),
+         Output('player_2_9_1_H_A', 'children'),
+         Output('player_2_9_1_team_odds', 'children'),
+         Output('player_2_9_1_player_form', 'children'),
+         Output('player_2_9_1_team_form', 'children'),
+         Output('player_2_9_2_against', 'children'),
+         Output('player_2_9_2_H_A', 'children'),
+         Output('player_2_9_2_team_odds', 'children'),
+         Output('player_2_9_2_player_form', 'children'),
+         Output('player_3_9_name', 'options'),
+         Output('player_3_9_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_9_1_against', 'style'),
+         Output('player_2_9_2_against', 'style'),
+         Output('player_2_9_1_H_A', 'style'),
+         Output('player_2_9_2_H_A', 'style'),
+         Output('player_2_9_1_player_form', 'style'),
+         Output('player_2_9_2_player_form', 'style'),
+         Output('player_2_9_1_team_form', 'style'),
+         Output('player_2_9_2_team_form', 'style'),
+         Output('player_2_9_1_team_odds', 'style'),
+         Output('player_2_9_2_team_odds', 'style'),
+         Output('player_2_9_1_no', 'style')],
+        [Input('player_2_9_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p9(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_10_1_value', 'children'),
+         Output('player_2_10_1_pos', 'children'),
+         Output('player_2_10_1_team', 'children'),
+         Output('player_2_10_1_against', 'children'),
+         Output('player_2_10_1_H_A', 'children'),
+         Output('player_2_10_1_team_odds', 'children'),
+         Output('player_2_10_1_player_form', 'children'),
+         Output('player_2_10_1_team_form', 'children'),
+         Output('player_2_10_2_against', 'children'),
+         Output('player_2_10_2_H_A', 'children'),
+         Output('player_2_10_2_team_odds', 'children'),
+         Output('player_2_10_2_player_form', 'children'),
+         Output('player_3_10_name', 'options'),
+         Output('player_3_10_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_10_1_against', 'style'),
+         Output('player_2_10_2_against', 'style'),
+         Output('player_2_10_1_H_A', 'style'),
+         Output('player_2_10_2_H_A', 'style'),
+         Output('player_2_10_1_player_form', 'style'),
+         Output('player_2_10_2_player_form', 'style'),
+         Output('player_2_10_1_team_form', 'style'),
+         Output('player_2_10_2_team_form', 'style'),
+         Output('player_2_10_1_team_odds', 'style'),
+         Output('player_2_10_2_team_odds', 'style'),
+         Output('player_2_10_1_no', 'style')],
+        [Input('player_2_10_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p10(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_11_1_value', 'children'),
+         Output('player_2_11_1_pos', 'children'),
+         Output('player_2_11_1_team', 'children'),
+         Output('player_2_11_1_against', 'children'),
+         Output('player_2_11_1_H_A', 'children'),
+         Output('player_2_11_1_team_odds', 'children'),
+         Output('player_2_11_1_player_form', 'children'),
+         Output('player_2_11_1_team_form', 'children'),
+         Output('player_2_11_2_against', 'children'),
+         Output('player_2_11_2_H_A', 'children'),
+         Output('player_2_11_2_team_odds', 'children'),
+         Output('player_2_11_2_player_form', 'children'),
+         Output('player_3_11_name', 'options'),
+         Output('player_3_11_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_11_1_against', 'style'),
+         Output('player_2_11_2_against', 'style'),
+         Output('player_2_11_1_H_A', 'style'),
+         Output('player_2_11_2_H_A', 'style'),
+         Output('player_2_11_1_player_form', 'style'),
+         Output('player_2_11_2_player_form', 'style'),
+         Output('player_2_11_1_team_form', 'style'),
+         Output('player_2_11_2_team_form', 'style'),
+         Output('player_2_11_1_team_odds', 'style'),
+         Output('player_2_11_2_team_odds', 'style'),
+         Output('player_2_11_1_no', 'style')],
+        [Input('player_2_11_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p11(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_12_1_value', 'children'),
+         Output('player_2_12_1_pos', 'children'),
+         Output('player_2_12_1_team', 'children'),
+         Output('player_2_12_1_against', 'children'),
+         Output('player_2_12_1_H_A', 'children'),
+         Output('player_2_12_1_team_odds', 'children'),
+         Output('player_2_12_1_player_form', 'children'),
+         Output('player_2_12_1_team_form', 'children'),
+         Output('player_2_12_2_against', 'children'),
+         Output('player_2_12_2_H_A', 'children'),
+         Output('player_2_12_2_team_odds', 'children'),
+         Output('player_2_12_2_player_form', 'children'),
+         Output('player_3_12_name', 'options'),
+         Output('player_3_12_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_12_1_against', 'style'),
+         Output('player_2_12_2_against', 'style'),
+         Output('player_2_12_1_H_A', 'style'),
+         Output('player_2_12_2_H_A', 'style'),
+         Output('player_2_12_1_player_form', 'style'),
+         Output('player_2_12_2_player_form', 'style'),
+         Output('player_2_12_1_team_form', 'style'),
+         Output('player_2_12_2_team_form', 'style'),
+         Output('player_2_12_1_team_odds', 'style'),
+         Output('player_2_12_2_team_odds', 'style'),
+         Output('player_2_12_1_no', 'style')],
+        [Input('player_2_12_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p12(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_13_1_value', 'children'),
+         Output('player_2_13_1_pos', 'children'),
+         Output('player_2_13_1_team', 'children'),
+         Output('player_2_13_1_against', 'children'),
+         Output('player_2_13_1_H_A', 'children'),
+         Output('player_2_13_1_team_odds', 'children'),
+         Output('player_2_13_1_player_form', 'children'),
+         Output('player_2_13_1_team_form', 'children'),
+         Output('player_2_13_2_against', 'children'),
+         Output('player_2_13_2_H_A', 'children'),
+         Output('player_2_13_2_team_odds', 'children'),
+         Output('player_2_13_2_player_form', 'children'),
+         Output('player_3_13_name', 'options'),
+         Output('player_3_13_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_13_1_against', 'style'),
+         Output('player_2_13_2_against', 'style'),
+         Output('player_2_13_1_H_A', 'style'),
+         Output('player_2_13_2_H_A', 'style'),
+         Output('player_2_13_1_player_form', 'style'),
+         Output('player_2_13_2_player_form', 'style'),
+         Output('player_2_13_1_team_form', 'style'),
+         Output('player_2_13_2_team_form', 'style'),
+         Output('player_2_13_1_team_odds', 'style'),
+         Output('player_2_13_2_team_odds', 'style'),
+         Output('player_2_13_1_no', 'style')],
+        [Input('player_2_13_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p13(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_14_1_value', 'children'),
+         Output('player_2_14_1_pos', 'children'),
+         Output('player_2_14_1_team', 'children'),
+         Output('player_2_14_1_against', 'children'),
+         Output('player_2_14_1_H_A', 'children'),
+         Output('player_2_14_1_team_odds', 'children'),
+         Output('player_2_14_1_player_form', 'children'),
+         Output('player_2_14_1_team_form', 'children'),
+         Output('player_2_14_2_against', 'children'),
+         Output('player_2_14_2_H_A', 'children'),
+         Output('player_2_14_2_team_odds', 'children'),
+         Output('player_2_14_2_player_form', 'children'),
+         Output('player_3_14_name', 'options'),
+         Output('player_3_14_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_14_1_against', 'style'),
+         Output('player_2_14_2_against', 'style'),
+         Output('player_2_14_1_H_A', 'style'),
+         Output('player_2_14_2_H_A', 'style'),
+         Output('player_2_14_1_player_form', 'style'),
+         Output('player_2_14_2_player_form', 'style'),
+         Output('player_2_14_1_team_form', 'style'),
+         Output('player_2_14_2_team_form', 'style'),
+         Output('player_2_14_1_team_odds', 'style'),
+         Output('player_2_14_2_team_odds', 'style'),
+         Output('player_2_14_1_no', 'style')],
+        [Input('player_2_14_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p14(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+
+    @app.callback(
+        [Output('player_2_15_1_value', 'children'),
+         Output('player_2_15_1_pos', 'children'),
+         Output('player_2_15_1_team', 'children'),
+         Output('player_2_15_1_against', 'children'),
+         Output('player_2_15_1_H_A', 'children'),
+         Output('player_2_15_1_team_odds', 'children'),
+         Output('player_2_15_1_player_form', 'children'),
+         Output('player_2_15_1_team_form', 'children'),
+         Output('player_2_15_2_against', 'children'),
+         Output('player_2_15_2_H_A', 'children'),
+         Output('player_2_15_2_team_odds', 'children'),
+         Output('player_2_15_2_player_form', 'children'),
+         Output('player_3_15_name', 'options'),
+         Output('player_3_15_name', 'value'),
+         Output('intermediate-team_names_gw2', 'children'),
+         Output('intermediate-team_unique_ids_gw2', 'children'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('player_2_15_1_against', 'style'),
+         Output('player_2_15_2_against', 'style'),
+         Output('player_2_15_1_H_A', 'style'),
+         Output('player_2_15_2_H_A', 'style'),
+         Output('player_2_15_1_player_form', 'style'),
+         Output('player_2_15_2_player_form', 'style'),
+         Output('player_2_15_1_team_form', 'style'),
+         Output('player_2_15_2_team_form', 'style'),
+         Output('player_2_15_1_team_odds', 'style'),
+         Output('player_2_15_2_team_odds', 'style'),
+         Output('player_2_15_1_no', 'style')],
+        [Input('player_2_15_name', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw2_p15(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
 
 
     @app.callback(
@@ -9744,7 +12960,8 @@ elif debug_mode is True:
          Output('player_3_1_1_team_form', 'style'),
          Output('player_3_1_2_team_form', 'style'),
          Output('player_3_1_1_team_odds', 'style'),
-         Output('player_3_1_2_team_odds', 'style')],
+         Output('player_3_1_2_team_odds', 'style'),
+         Output('player_3_1_1_no', 'style')],
         [Input('player_3_1_name', 'value')],
         [State('intermediate-team_names_gw3', 'children'),
          State('intermediate-team_unique_ids_gw3', 'children'),
@@ -9761,6 +12978,7 @@ elif debug_mode is True:
                                     gw_curr,
                                     team_picks_json):
 
+
         team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
 
         data_2020 = data[data['season']==2020]
@@ -9772,12 +12990,16 @@ elif debug_mode is True:
         team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
         gw_curr = int(gw_curr)
-        gw_next = gw_curr + 3
+        gw_next = gw_curr + 1
 
-        #GW next
+        #GW + 1
         player_id = determine_element_id(data, player_unique_id, 2020)
         (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
                 planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
 
         if int(unique_id) in team_unique_ids.values:
             value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
@@ -9795,6 +13017,7 @@ elif debug_mode is True:
 
         team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
         team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
 
         return (value,
                 position,
@@ -9820,8 +13043,1604 @@ elif debug_mode is True:
                 style_colour(font_size, fixture_diff[0], '8%'),
                 style_colour(font_size, fixture_diff[1], '8%'),
                 style_colour(font_size, fixture_diff[0], '5%'),
-                style_colour(font_size, fixture_diff[1], '5%'))
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
 
+    @app.callback(
+        [Output('player_3_2_1_value', 'children'),
+         Output('player_3_2_1_pos', 'children'),
+         Output('player_3_2_1_team', 'children'),
+         Output('player_3_2_1_against', 'children'),
+         Output('player_3_2_1_H_A', 'children'),
+         Output('player_3_2_1_team_odds', 'children'),
+         Output('player_3_2_1_player_form', 'children'),
+         Output('player_3_2_1_team_form', 'children'),
+         Output('player_3_2_2_against', 'children'),
+         Output('player_3_2_2_H_A', 'children'),
+         Output('player_3_2_2_team_odds', 'children'),
+         Output('player_3_2_2_player_form', 'children'),
+         Output('player_4_2_name', 'options'),
+         Output('player_4_2_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_2_1_against', 'style'),
+         Output('player_3_2_2_against', 'style'),
+         Output('player_3_2_1_H_A', 'style'),
+         Output('player_3_2_2_H_A', 'style'),
+         Output('player_3_2_1_player_form', 'style'),
+         Output('player_3_2_2_player_form', 'style'),
+         Output('player_3_2_1_team_form', 'style'),
+         Output('player_3_2_2_team_form', 'style'),
+         Output('player_3_2_1_team_odds', 'style'),
+         Output('player_3_2_2_team_odds', 'style'),
+         Output('player_3_2_1_no', 'style')],
+        [Input('player_3_2_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p2(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_3_1_value', 'children'),
+         Output('player_3_3_1_pos', 'children'),
+         Output('player_3_3_1_team', 'children'),
+         Output('player_3_3_1_against', 'children'),
+         Output('player_3_3_1_H_A', 'children'),
+         Output('player_3_3_1_team_odds', 'children'),
+         Output('player_3_3_1_player_form', 'children'),
+         Output('player_3_3_1_team_form', 'children'),
+         Output('player_3_3_2_against', 'children'),
+         Output('player_3_3_2_H_A', 'children'),
+         Output('player_3_3_2_team_odds', 'children'),
+         Output('player_3_3_2_player_form', 'children'),
+         Output('player_4_3_name', 'options'),
+         Output('player_4_3_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_3_1_against', 'style'),
+         Output('player_3_3_2_against', 'style'),
+         Output('player_3_3_1_H_A', 'style'),
+         Output('player_3_3_2_H_A', 'style'),
+         Output('player_3_3_1_player_form', 'style'),
+         Output('player_3_3_2_player_form', 'style'),
+         Output('player_3_3_1_team_form', 'style'),
+         Output('player_3_3_2_team_form', 'style'),
+         Output('player_3_3_1_team_odds', 'style'),
+         Output('player_3_3_2_team_odds', 'style'),
+         Output('player_3_3_1_no', 'style')],
+        [Input('player_3_3_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p3(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_4_1_value', 'children'),
+         Output('player_3_4_1_pos', 'children'),
+         Output('player_3_4_1_team', 'children'),
+         Output('player_3_4_1_against', 'children'),
+         Output('player_3_4_1_H_A', 'children'),
+         Output('player_3_4_1_team_odds', 'children'),
+         Output('player_3_4_1_player_form', 'children'),
+         Output('player_3_4_1_team_form', 'children'),
+         Output('player_3_4_2_against', 'children'),
+         Output('player_3_4_2_H_A', 'children'),
+         Output('player_3_4_2_team_odds', 'children'),
+         Output('player_3_4_2_player_form', 'children'),
+         Output('player_4_4_name', 'options'),
+         Output('player_4_4_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_4_1_against', 'style'),
+         Output('player_3_4_2_against', 'style'),
+         Output('player_3_4_1_H_A', 'style'),
+         Output('player_3_4_2_H_A', 'style'),
+         Output('player_3_4_1_player_form', 'style'),
+         Output('player_3_4_2_player_form', 'style'),
+         Output('player_3_4_1_team_form', 'style'),
+         Output('player_3_4_2_team_form', 'style'),
+         Output('player_3_4_1_team_odds', 'style'),
+         Output('player_3_4_2_team_odds', 'style'),
+         Output('player_3_4_1_no', 'style')],
+        [Input('player_3_4_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p4(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_5_1_value', 'children'),
+         Output('player_3_5_1_pos', 'children'),
+         Output('player_3_5_1_team', 'children'),
+         Output('player_3_5_1_against', 'children'),
+         Output('player_3_5_1_H_A', 'children'),
+         Output('player_3_5_1_team_odds', 'children'),
+         Output('player_3_5_1_player_form', 'children'),
+         Output('player_3_5_1_team_form', 'children'),
+         Output('player_3_5_2_against', 'children'),
+         Output('player_3_5_2_H_A', 'children'),
+         Output('player_3_5_2_team_odds', 'children'),
+         Output('player_3_5_2_player_form', 'children'),
+         Output('player_4_5_name', 'options'),
+         Output('player_4_5_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_5_1_against', 'style'),
+         Output('player_3_5_2_against', 'style'),
+         Output('player_3_5_1_H_A', 'style'),
+         Output('player_3_5_2_H_A', 'style'),
+         Output('player_3_5_1_player_form', 'style'),
+         Output('player_3_5_2_player_form', 'style'),
+         Output('player_3_5_1_team_form', 'style'),
+         Output('player_3_5_2_team_form', 'style'),
+         Output('player_3_5_1_team_odds', 'style'),
+         Output('player_3_5_2_team_odds', 'style'),
+         Output('player_3_5_1_no', 'style')],
+        [Input('player_3_5_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p5(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_6_1_value', 'children'),
+         Output('player_3_6_1_pos', 'children'),
+         Output('player_3_6_1_team', 'children'),
+         Output('player_3_6_1_against', 'children'),
+         Output('player_3_6_1_H_A', 'children'),
+         Output('player_3_6_1_team_odds', 'children'),
+         Output('player_3_6_1_player_form', 'children'),
+         Output('player_3_6_1_team_form', 'children'),
+         Output('player_3_6_2_against', 'children'),
+         Output('player_3_6_2_H_A', 'children'),
+         Output('player_3_6_2_team_odds', 'children'),
+         Output('player_3_6_2_player_form', 'children'),
+         Output('player_4_6_name', 'options'),
+         Output('player_4_6_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_6_1_against', 'style'),
+         Output('player_3_6_2_against', 'style'),
+         Output('player_3_6_1_H_A', 'style'),
+         Output('player_3_6_2_H_A', 'style'),
+         Output('player_3_6_1_player_form', 'style'),
+         Output('player_3_6_2_player_form', 'style'),
+         Output('player_3_6_1_team_form', 'style'),
+         Output('player_3_6_2_team_form', 'style'),
+         Output('player_3_6_1_team_odds', 'style'),
+         Output('player_3_6_2_team_odds', 'style'),
+         Output('player_3_6_1_no', 'style')],
+        [Input('player_3_6_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p6(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_7_1_value', 'children'),
+         Output('player_3_7_1_pos', 'children'),
+         Output('player_3_7_1_team', 'children'),
+         Output('player_3_7_1_against', 'children'),
+         Output('player_3_7_1_H_A', 'children'),
+         Output('player_3_7_1_team_odds', 'children'),
+         Output('player_3_7_1_player_form', 'children'),
+         Output('player_3_7_1_team_form', 'children'),
+         Output('player_3_7_2_against', 'children'),
+         Output('player_3_7_2_H_A', 'children'),
+         Output('player_3_7_2_team_odds', 'children'),
+         Output('player_3_7_2_player_form', 'children'),
+         Output('player_4_7_name', 'options'),
+         Output('player_4_7_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_7_1_against', 'style'),
+         Output('player_3_7_2_against', 'style'),
+         Output('player_3_7_1_H_A', 'style'),
+         Output('player_3_7_2_H_A', 'style'),
+         Output('player_3_7_1_player_form', 'style'),
+         Output('player_3_7_2_player_form', 'style'),
+         Output('player_3_7_1_team_form', 'style'),
+         Output('player_3_7_2_team_form', 'style'),
+         Output('player_3_7_1_team_odds', 'style'),
+         Output('player_3_7_2_team_odds', 'style'),
+         Output('player_3_7_1_no', 'style')],
+        [Input('player_3_7_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p7(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_8_1_value', 'children'),
+         Output('player_3_8_1_pos', 'children'),
+         Output('player_3_8_1_team', 'children'),
+         Output('player_3_8_1_against', 'children'),
+         Output('player_3_8_1_H_A', 'children'),
+         Output('player_3_8_1_team_odds', 'children'),
+         Output('player_3_8_1_player_form', 'children'),
+         Output('player_3_8_1_team_form', 'children'),
+         Output('player_3_8_2_against', 'children'),
+         Output('player_3_8_2_H_A', 'children'),
+         Output('player_3_8_2_team_odds', 'children'),
+         Output('player_3_8_2_player_form', 'children'),
+         Output('player_4_8_name', 'options'),
+         Output('player_4_8_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_8_1_against', 'style'),
+         Output('player_3_8_2_against', 'style'),
+         Output('player_3_8_1_H_A', 'style'),
+         Output('player_3_8_2_H_A', 'style'),
+         Output('player_3_8_1_player_form', 'style'),
+         Output('player_3_8_2_player_form', 'style'),
+         Output('player_3_8_1_team_form', 'style'),
+         Output('player_3_8_2_team_form', 'style'),
+         Output('player_3_8_1_team_odds', 'style'),
+         Output('player_3_8_2_team_odds', 'style'),
+         Output('player_3_8_1_no', 'style')],
+        [Input('player_3_8_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p8(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_9_1_value', 'children'),
+         Output('player_3_9_1_pos', 'children'),
+         Output('player_3_9_1_team', 'children'),
+         Output('player_3_9_1_against', 'children'),
+         Output('player_3_9_1_H_A', 'children'),
+         Output('player_3_9_1_team_odds', 'children'),
+         Output('player_3_9_1_player_form', 'children'),
+         Output('player_3_9_1_team_form', 'children'),
+         Output('player_3_9_2_against', 'children'),
+         Output('player_3_9_2_H_A', 'children'),
+         Output('player_3_9_2_team_odds', 'children'),
+         Output('player_3_9_2_player_form', 'children'),
+         Output('player_4_9_name', 'options'),
+         Output('player_4_9_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_9_1_against', 'style'),
+         Output('player_3_9_2_against', 'style'),
+         Output('player_3_9_1_H_A', 'style'),
+         Output('player_3_9_2_H_A', 'style'),
+         Output('player_3_9_1_player_form', 'style'),
+         Output('player_3_9_2_player_form', 'style'),
+         Output('player_3_9_1_team_form', 'style'),
+         Output('player_3_9_2_team_form', 'style'),
+         Output('player_3_9_1_team_odds', 'style'),
+         Output('player_3_9_2_team_odds', 'style'),
+         Output('player_3_9_1_no', 'style')],
+        [Input('player_3_9_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p9(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_10_1_value', 'children'),
+         Output('player_3_10_1_pos', 'children'),
+         Output('player_3_10_1_team', 'children'),
+         Output('player_3_10_1_against', 'children'),
+         Output('player_3_10_1_H_A', 'children'),
+         Output('player_3_10_1_team_odds', 'children'),
+         Output('player_3_10_1_player_form', 'children'),
+         Output('player_3_10_1_team_form', 'children'),
+         Output('player_3_10_2_against', 'children'),
+         Output('player_3_10_2_H_A', 'children'),
+         Output('player_3_10_2_team_odds', 'children'),
+         Output('player_3_10_2_player_form', 'children'),
+         Output('player_4_10_name', 'options'),
+         Output('player_4_10_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_10_1_against', 'style'),
+         Output('player_3_10_2_against', 'style'),
+         Output('player_3_10_1_H_A', 'style'),
+         Output('player_3_10_2_H_A', 'style'),
+         Output('player_3_10_1_player_form', 'style'),
+         Output('player_3_10_2_player_form', 'style'),
+         Output('player_3_10_1_team_form', 'style'),
+         Output('player_3_10_2_team_form', 'style'),
+         Output('player_3_10_1_team_odds', 'style'),
+         Output('player_3_10_2_team_odds', 'style'),
+         Output('player_3_10_1_no', 'style')],
+        [Input('player_3_10_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p10(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_11_1_value', 'children'),
+         Output('player_3_11_1_pos', 'children'),
+         Output('player_3_11_1_team', 'children'),
+         Output('player_3_11_1_against', 'children'),
+         Output('player_3_11_1_H_A', 'children'),
+         Output('player_3_11_1_team_odds', 'children'),
+         Output('player_3_11_1_player_form', 'children'),
+         Output('player_3_11_1_team_form', 'children'),
+         Output('player_3_11_2_against', 'children'),
+         Output('player_3_11_2_H_A', 'children'),
+         Output('player_3_11_2_team_odds', 'children'),
+         Output('player_3_11_2_player_form', 'children'),
+         Output('player_4_11_name', 'options'),
+         Output('player_4_11_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_11_1_against', 'style'),
+         Output('player_3_11_2_against', 'style'),
+         Output('player_3_11_1_H_A', 'style'),
+         Output('player_3_11_2_H_A', 'style'),
+         Output('player_3_11_1_player_form', 'style'),
+         Output('player_3_11_2_player_form', 'style'),
+         Output('player_3_11_1_team_form', 'style'),
+         Output('player_3_11_2_team_form', 'style'),
+         Output('player_3_11_1_team_odds', 'style'),
+         Output('player_3_11_2_team_odds', 'style'),
+         Output('player_3_11_1_no', 'style')],
+        [Input('player_3_11_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p11(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_12_1_value', 'children'),
+         Output('player_3_12_1_pos', 'children'),
+         Output('player_3_12_1_team', 'children'),
+         Output('player_3_12_1_against', 'children'),
+         Output('player_3_12_1_H_A', 'children'),
+         Output('player_3_12_1_team_odds', 'children'),
+         Output('player_3_12_1_player_form', 'children'),
+         Output('player_3_12_1_team_form', 'children'),
+         Output('player_3_12_2_against', 'children'),
+         Output('player_3_12_2_H_A', 'children'),
+         Output('player_3_12_2_team_odds', 'children'),
+         Output('player_3_12_2_player_form', 'children'),
+         Output('player_4_12_name', 'options'),
+         Output('player_4_12_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_12_1_against', 'style'),
+         Output('player_3_12_2_against', 'style'),
+         Output('player_3_12_1_H_A', 'style'),
+         Output('player_3_12_2_H_A', 'style'),
+         Output('player_3_12_1_player_form', 'style'),
+         Output('player_3_12_2_player_form', 'style'),
+         Output('player_3_12_1_team_form', 'style'),
+         Output('player_3_12_2_team_form', 'style'),
+         Output('player_3_12_1_team_odds', 'style'),
+         Output('player_3_12_2_team_odds', 'style'),
+         Output('player_3_12_1_no', 'style')],
+        [Input('player_3_12_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p12(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_13_1_value', 'children'),
+         Output('player_3_13_1_pos', 'children'),
+         Output('player_3_13_1_team', 'children'),
+         Output('player_3_13_1_against', 'children'),
+         Output('player_3_13_1_H_A', 'children'),
+         Output('player_3_13_1_team_odds', 'children'),
+         Output('player_3_13_1_player_form', 'children'),
+         Output('player_3_13_1_team_form', 'children'),
+         Output('player_3_13_2_against', 'children'),
+         Output('player_3_13_2_H_A', 'children'),
+         Output('player_3_13_2_team_odds', 'children'),
+         Output('player_3_13_2_player_form', 'children'),
+         Output('player_4_13_name', 'options'),
+         Output('player_4_13_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_13_1_against', 'style'),
+         Output('player_3_13_2_against', 'style'),
+         Output('player_3_13_1_H_A', 'style'),
+         Output('player_3_13_2_H_A', 'style'),
+         Output('player_3_13_1_player_form', 'style'),
+         Output('player_3_13_2_player_form', 'style'),
+         Output('player_3_13_1_team_form', 'style'),
+         Output('player_3_13_2_team_form', 'style'),
+         Output('player_3_13_1_team_odds', 'style'),
+         Output('player_3_13_2_team_odds', 'style'),
+         Output('player_3_13_1_no', 'style')],
+        [Input('player_3_13_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p13(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_14_1_value', 'children'),
+         Output('player_3_14_1_pos', 'children'),
+         Output('player_3_14_1_team', 'children'),
+         Output('player_3_14_1_against', 'children'),
+         Output('player_3_14_1_H_A', 'children'),
+         Output('player_3_14_1_team_odds', 'children'),
+         Output('player_3_14_1_player_form', 'children'),
+         Output('player_3_14_1_team_form', 'children'),
+         Output('player_3_14_2_against', 'children'),
+         Output('player_3_14_2_H_A', 'children'),
+         Output('player_3_14_2_team_odds', 'children'),
+         Output('player_3_14_2_player_form', 'children'),
+         Output('player_4_14_name', 'options'),
+         Output('player_4_14_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_14_1_against', 'style'),
+         Output('player_3_14_2_against', 'style'),
+         Output('player_3_14_1_H_A', 'style'),
+         Output('player_3_14_2_H_A', 'style'),
+         Output('player_3_14_1_player_form', 'style'),
+         Output('player_3_14_2_player_form', 'style'),
+         Output('player_3_14_1_team_form', 'style'),
+         Output('player_3_14_2_team_form', 'style'),
+         Output('player_3_14_1_team_odds', 'style'),
+         Output('player_3_14_2_team_odds', 'style'),
+         Output('player_3_14_1_no', 'style')],
+        [Input('player_3_14_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p14(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_3_15_1_value', 'children'),
+         Output('player_3_15_1_pos', 'children'),
+         Output('player_3_15_1_team', 'children'),
+         Output('player_3_15_1_against', 'children'),
+         Output('player_3_15_1_H_A', 'children'),
+         Output('player_3_15_1_team_odds', 'children'),
+         Output('player_3_15_1_player_form', 'children'),
+         Output('player_3_15_1_team_form', 'children'),
+         Output('player_3_15_2_against', 'children'),
+         Output('player_3_15_2_H_A', 'children'),
+         Output('player_3_15_2_team_odds', 'children'),
+         Output('player_3_15_2_player_form', 'children'),
+         Output('player_4_15_name', 'options'),
+         Output('player_4_15_name', 'value'),
+         Output('intermediate-team_names_gw3', 'children'),
+         Output('intermediate-team_unique_ids_gw3', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_3_15_1_against', 'style'),
+         Output('player_3_15_2_against', 'style'),
+         Output('player_3_15_1_H_A', 'style'),
+         Output('player_3_15_2_H_A', 'style'),
+         Output('player_3_15_1_player_form', 'style'),
+         Output('player_3_15_2_player_form', 'style'),
+         Output('player_3_15_1_team_form', 'style'),
+         Output('player_3_15_2_team_form', 'style'),
+         Output('player_3_15_1_team_odds', 'style'),
+         Output('player_3_15_2_team_odds', 'style'),
+         Output('player_3_15_1_no', 'style')],
+        [Input('player_3_15_name', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw3_p15(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    team_names_json_next,
+                                    team_unique_ids_json_next,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        team_unique_ids_next = pd.read_json(team_unique_ids_json_next, orient='split', typ='series')
+        team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+        #GW next + 1
+        unique_id_next = unique_id
+        if unique_id_next not in team_unique_ids.unique():
+            team_names_next.iloc[0] = player_name
+            team_unique_ids_next.iloc[0] = unique_id
+
+        player_options_next = [{'label': name, 'value': team_unique_ids_next[i]} for i, name in enumerate(team_names_next)]
+
+        team_names_json_next = team_names_next.to_json(date_format='iso', orient='split')
+        team_unique_ids_json_next = team_unique_ids_next.to_json(date_format='iso', orient='split')
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                player_options_next,
+                unique_id_next,
+                team_names_json, team_unique_ids_json, team_names_json_next, team_unique_ids_json_next,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
 
     @app.callback(
         [Output('player_4_1_1_value', 'children'),
@@ -9847,7 +14666,8 @@ elif debug_mode is True:
          Output('player_4_1_1_team_form', 'style'),
          Output('player_4_1_2_team_form', 'style'),
          Output('player_4_1_1_team_odds', 'style'),
-         Output('player_4_1_2_team_odds', 'style')],
+         Output('player_4_1_2_team_odds', 'style'),
+         Output('player_4_1_1_no', 'style')],
         [Input('player_4_1_name', 'value')],
         [State('intermediate-team_names_gw4', 'children'),
          State('intermediate-team_unique_ids_gw4', 'children'),
@@ -9860,6 +14680,7 @@ elif debug_mode is True:
                                     gw_curr,
                                     team_picks_json):
 
+
         team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
 
         data_2020 = data[data['season']==2020]
@@ -9868,18 +14689,23 @@ elif debug_mode is True:
         team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
         gw_curr = int(gw_curr)
-        gw_next = gw_curr + 4
+        gw_next = gw_curr + 1
 
-        #GW next
+        #GW + 1
         player_id = determine_element_id(data, player_unique_id, 2020)
         (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
                 planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
 
         if int(unique_id) in team_unique_ids.values:
             value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
         else:
             round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
             value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
 
 
         return (value,
@@ -9904,7 +14730,1283 @@ elif debug_mode is True:
                 style_colour(font_size, fixture_diff[0], '8%'),
                 style_colour(font_size, fixture_diff[1], '8%'),
                 style_colour(font_size, fixture_diff[0], '5%'),
-                style_colour(font_size, fixture_diff[1], '5%'))
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_2_1_value', 'children'),
+         Output('player_4_2_1_pos', 'children'),
+         Output('player_4_2_1_team', 'children'),
+         Output('player_4_2_1_against', 'children'),
+         Output('player_4_2_1_H_A', 'children'),
+         Output('player_4_2_1_team_odds', 'children'),
+         Output('player_4_2_1_player_form', 'children'),
+         Output('player_4_2_1_team_form', 'children'),
+         Output('player_4_2_2_against', 'children'),
+         Output('player_4_2_2_H_A', 'children'),
+         Output('player_4_2_2_team_odds', 'children'),
+         Output('player_4_2_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_2_1_against', 'style'),
+         Output('player_4_2_2_against', 'style'),
+         Output('player_4_2_1_H_A', 'style'),
+         Output('player_4_2_2_H_A', 'style'),
+         Output('player_4_2_1_player_form', 'style'),
+         Output('player_4_2_2_player_form', 'style'),
+         Output('player_4_2_1_team_form', 'style'),
+         Output('player_4_2_2_team_form', 'style'),
+         Output('player_4_2_1_team_odds', 'style'),
+         Output('player_4_2_2_team_odds', 'style'),
+         Output('player_4_2_1_no', 'style')],
+        [Input('player_4_2_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p2(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_3_1_value', 'children'),
+         Output('player_4_3_1_pos', 'children'),
+         Output('player_4_3_1_team', 'children'),
+         Output('player_4_3_1_against', 'children'),
+         Output('player_4_3_1_H_A', 'children'),
+         Output('player_4_3_1_team_odds', 'children'),
+         Output('player_4_3_1_player_form', 'children'),
+         Output('player_4_3_1_team_form', 'children'),
+         Output('player_4_3_2_against', 'children'),
+         Output('player_4_3_2_H_A', 'children'),
+         Output('player_4_3_2_team_odds', 'children'),
+         Output('player_4_3_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_3_1_against', 'style'),
+         Output('player_4_3_2_against', 'style'),
+         Output('player_4_3_1_H_A', 'style'),
+         Output('player_4_3_2_H_A', 'style'),
+         Output('player_4_3_1_player_form', 'style'),
+         Output('player_4_3_2_player_form', 'style'),
+         Output('player_4_3_1_team_form', 'style'),
+         Output('player_4_3_2_team_form', 'style'),
+         Output('player_4_3_1_team_odds', 'style'),
+         Output('player_4_3_2_team_odds', 'style'),
+         Output('player_4_3_1_no', 'style')],
+        [Input('player_4_3_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p3(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_4_1_value', 'children'),
+         Output('player_4_4_1_pos', 'children'),
+         Output('player_4_4_1_team', 'children'),
+         Output('player_4_4_1_against', 'children'),
+         Output('player_4_4_1_H_A', 'children'),
+         Output('player_4_4_1_team_odds', 'children'),
+         Output('player_4_4_1_player_form', 'children'),
+         Output('player_4_4_1_team_form', 'children'),
+         Output('player_4_4_2_against', 'children'),
+         Output('player_4_4_2_H_A', 'children'),
+         Output('player_4_4_2_team_odds', 'children'),
+         Output('player_4_4_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_4_1_against', 'style'),
+         Output('player_4_4_2_against', 'style'),
+         Output('player_4_4_1_H_A', 'style'),
+         Output('player_4_4_2_H_A', 'style'),
+         Output('player_4_4_1_player_form', 'style'),
+         Output('player_4_4_2_player_form', 'style'),
+         Output('player_4_4_1_team_form', 'style'),
+         Output('player_4_4_2_team_form', 'style'),
+         Output('player_4_4_1_team_odds', 'style'),
+         Output('player_4_4_2_team_odds', 'style'),
+         Output('player_4_4_1_no', 'style')],
+        [Input('player_4_4_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p4(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_5_1_value', 'children'),
+         Output('player_4_5_1_pos', 'children'),
+         Output('player_4_5_1_team', 'children'),
+         Output('player_4_5_1_against', 'children'),
+         Output('player_4_5_1_H_A', 'children'),
+         Output('player_4_5_1_team_odds', 'children'),
+         Output('player_4_5_1_player_form', 'children'),
+         Output('player_4_5_1_team_form', 'children'),
+         Output('player_4_5_2_against', 'children'),
+         Output('player_4_5_2_H_A', 'children'),
+         Output('player_4_5_2_team_odds', 'children'),
+         Output('player_4_5_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_5_1_against', 'style'),
+         Output('player_4_5_2_against', 'style'),
+         Output('player_4_5_1_H_A', 'style'),
+         Output('player_4_5_2_H_A', 'style'),
+         Output('player_4_5_1_player_form', 'style'),
+         Output('player_4_5_2_player_form', 'style'),
+         Output('player_4_5_1_team_form', 'style'),
+         Output('player_4_5_2_team_form', 'style'),
+         Output('player_4_5_1_team_odds', 'style'),
+         Output('player_4_5_2_team_odds', 'style'),
+         Output('player_4_5_1_no', 'style')],
+        [Input('player_4_5_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p5(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_6_1_value', 'children'),
+         Output('player_4_6_1_pos', 'children'),
+         Output('player_4_6_1_team', 'children'),
+         Output('player_4_6_1_against', 'children'),
+         Output('player_4_6_1_H_A', 'children'),
+         Output('player_4_6_1_team_odds', 'children'),
+         Output('player_4_6_1_player_form', 'children'),
+         Output('player_4_6_1_team_form', 'children'),
+         Output('player_4_6_2_against', 'children'),
+         Output('player_4_6_2_H_A', 'children'),
+         Output('player_4_6_2_team_odds', 'children'),
+         Output('player_4_6_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_6_1_against', 'style'),
+         Output('player_4_6_2_against', 'style'),
+         Output('player_4_6_1_H_A', 'style'),
+         Output('player_4_6_2_H_A', 'style'),
+         Output('player_4_6_1_player_form', 'style'),
+         Output('player_4_6_2_player_form', 'style'),
+         Output('player_4_6_1_team_form', 'style'),
+         Output('player_4_6_2_team_form', 'style'),
+         Output('player_4_6_1_team_odds', 'style'),
+         Output('player_4_6_2_team_odds', 'style'),
+         Output('player_4_6_1_no', 'style')],
+        [Input('player_4_6_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p6(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_7_1_value', 'children'),
+         Output('player_4_7_1_pos', 'children'),
+         Output('player_4_7_1_team', 'children'),
+         Output('player_4_7_1_against', 'children'),
+         Output('player_4_7_1_H_A', 'children'),
+         Output('player_4_7_1_team_odds', 'children'),
+         Output('player_4_7_1_player_form', 'children'),
+         Output('player_4_7_1_team_form', 'children'),
+         Output('player_4_7_2_against', 'children'),
+         Output('player_4_7_2_H_A', 'children'),
+         Output('player_4_7_2_team_odds', 'children'),
+         Output('player_4_7_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_7_1_against', 'style'),
+         Output('player_4_7_2_against', 'style'),
+         Output('player_4_7_1_H_A', 'style'),
+         Output('player_4_7_2_H_A', 'style'),
+         Output('player_4_7_1_player_form', 'style'),
+         Output('player_4_7_2_player_form', 'style'),
+         Output('player_4_7_1_team_form', 'style'),
+         Output('player_4_7_2_team_form', 'style'),
+         Output('player_4_7_1_team_odds', 'style'),
+         Output('player_4_7_2_team_odds', 'style'),
+         Output('player_4_7_1_no', 'style')],
+        [Input('player_4_7_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p7(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_8_1_value', 'children'),
+         Output('player_4_8_1_pos', 'children'),
+         Output('player_4_8_1_team', 'children'),
+         Output('player_4_8_1_against', 'children'),
+         Output('player_4_8_1_H_A', 'children'),
+         Output('player_4_8_1_team_odds', 'children'),
+         Output('player_4_8_1_player_form', 'children'),
+         Output('player_4_8_1_team_form', 'children'),
+         Output('player_4_8_2_against', 'children'),
+         Output('player_4_8_2_H_A', 'children'),
+         Output('player_4_8_2_team_odds', 'children'),
+         Output('player_4_8_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_8_1_against', 'style'),
+         Output('player_4_8_2_against', 'style'),
+         Output('player_4_8_1_H_A', 'style'),
+         Output('player_4_8_2_H_A', 'style'),
+         Output('player_4_8_1_player_form', 'style'),
+         Output('player_4_8_2_player_form', 'style'),
+         Output('player_4_8_1_team_form', 'style'),
+         Output('player_4_8_2_team_form', 'style'),
+         Output('player_4_8_1_team_odds', 'style'),
+         Output('player_4_8_2_team_odds', 'style'),
+         Output('player_4_8_1_no', 'style')],
+        [Input('player_4_8_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p8(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_9_1_value', 'children'),
+         Output('player_4_9_1_pos', 'children'),
+         Output('player_4_9_1_team', 'children'),
+         Output('player_4_9_1_against', 'children'),
+         Output('player_4_9_1_H_A', 'children'),
+         Output('player_4_9_1_team_odds', 'children'),
+         Output('player_4_9_1_player_form', 'children'),
+         Output('player_4_9_1_team_form', 'children'),
+         Output('player_4_9_2_against', 'children'),
+         Output('player_4_9_2_H_A', 'children'),
+         Output('player_4_9_2_team_odds', 'children'),
+         Output('player_4_9_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_9_1_against', 'style'),
+         Output('player_4_9_2_against', 'style'),
+         Output('player_4_9_1_H_A', 'style'),
+         Output('player_4_9_2_H_A', 'style'),
+         Output('player_4_9_1_player_form', 'style'),
+         Output('player_4_9_2_player_form', 'style'),
+         Output('player_4_9_1_team_form', 'style'),
+         Output('player_4_9_2_team_form', 'style'),
+         Output('player_4_9_1_team_odds', 'style'),
+         Output('player_4_9_2_team_odds', 'style'),
+         Output('player_4_9_1_no', 'style')],
+        [Input('player_4_9_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p9(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_10_1_value', 'children'),
+         Output('player_4_10_1_pos', 'children'),
+         Output('player_4_10_1_team', 'children'),
+         Output('player_4_10_1_against', 'children'),
+         Output('player_4_10_1_H_A', 'children'),
+         Output('player_4_10_1_team_odds', 'children'),
+         Output('player_4_10_1_player_form', 'children'),
+         Output('player_4_10_1_team_form', 'children'),
+         Output('player_4_10_2_against', 'children'),
+         Output('player_4_10_2_H_A', 'children'),
+         Output('player_4_10_2_team_odds', 'children'),
+         Output('player_4_10_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_10_1_against', 'style'),
+         Output('player_4_10_2_against', 'style'),
+         Output('player_4_10_1_H_A', 'style'),
+         Output('player_4_10_2_H_A', 'style'),
+         Output('player_4_10_1_player_form', 'style'),
+         Output('player_4_10_2_player_form', 'style'),
+         Output('player_4_10_1_team_form', 'style'),
+         Output('player_4_10_2_team_form', 'style'),
+         Output('player_4_10_1_team_odds', 'style'),
+         Output('player_4_10_2_team_odds', 'style'),
+         Output('player_4_10_1_no', 'style')],
+        [Input('player_4_10_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p10(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_11_1_value', 'children'),
+         Output('player_4_11_1_pos', 'children'),
+         Output('player_4_11_1_team', 'children'),
+         Output('player_4_11_1_against', 'children'),
+         Output('player_4_11_1_H_A', 'children'),
+         Output('player_4_11_1_team_odds', 'children'),
+         Output('player_4_11_1_player_form', 'children'),
+         Output('player_4_11_1_team_form', 'children'),
+         Output('player_4_11_2_against', 'children'),
+         Output('player_4_11_2_H_A', 'children'),
+         Output('player_4_11_2_team_odds', 'children'),
+         Output('player_4_11_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_11_1_against', 'style'),
+         Output('player_4_11_2_against', 'style'),
+         Output('player_4_11_1_H_A', 'style'),
+         Output('player_4_11_2_H_A', 'style'),
+         Output('player_4_11_1_player_form', 'style'),
+         Output('player_4_11_2_player_form', 'style'),
+         Output('player_4_11_1_team_form', 'style'),
+         Output('player_4_11_2_team_form', 'style'),
+         Output('player_4_11_1_team_odds', 'style'),
+         Output('player_4_11_2_team_odds', 'style'),
+         Output('player_4_11_1_no', 'style')],
+        [Input('player_4_11_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p11(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_12_1_value', 'children'),
+         Output('player_4_12_1_pos', 'children'),
+         Output('player_4_12_1_team', 'children'),
+         Output('player_4_12_1_against', 'children'),
+         Output('player_4_12_1_H_A', 'children'),
+         Output('player_4_12_1_team_odds', 'children'),
+         Output('player_4_12_1_player_form', 'children'),
+         Output('player_4_12_1_team_form', 'children'),
+         Output('player_4_12_2_against', 'children'),
+         Output('player_4_12_2_H_A', 'children'),
+         Output('player_4_12_2_team_odds', 'children'),
+         Output('player_4_12_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_12_1_against', 'style'),
+         Output('player_4_12_2_against', 'style'),
+         Output('player_4_12_1_H_A', 'style'),
+         Output('player_4_12_2_H_A', 'style'),
+         Output('player_4_12_1_player_form', 'style'),
+         Output('player_4_12_2_player_form', 'style'),
+         Output('player_4_12_1_team_form', 'style'),
+         Output('player_4_12_2_team_form', 'style'),
+         Output('player_4_12_1_team_odds', 'style'),
+         Output('player_4_12_2_team_odds', 'style'),
+         Output('player_4_12_1_no', 'style')],
+        [Input('player_4_12_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p12(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_13_1_value', 'children'),
+         Output('player_4_13_1_pos', 'children'),
+         Output('player_4_13_1_team', 'children'),
+         Output('player_4_13_1_against', 'children'),
+         Output('player_4_13_1_H_A', 'children'),
+         Output('player_4_13_1_team_odds', 'children'),
+         Output('player_4_13_1_player_form', 'children'),
+         Output('player_4_13_1_team_form', 'children'),
+         Output('player_4_13_2_against', 'children'),
+         Output('player_4_13_2_H_A', 'children'),
+         Output('player_4_13_2_team_odds', 'children'),
+         Output('player_4_13_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_13_1_against', 'style'),
+         Output('player_4_13_2_against', 'style'),
+         Output('player_4_13_1_H_A', 'style'),
+         Output('player_4_13_2_H_A', 'style'),
+         Output('player_4_13_1_player_form', 'style'),
+         Output('player_4_13_2_player_form', 'style'),
+         Output('player_4_13_1_team_form', 'style'),
+         Output('player_4_13_2_team_form', 'style'),
+         Output('player_4_13_1_team_odds', 'style'),
+         Output('player_4_13_2_team_odds', 'style'),
+         Output('player_4_13_1_no', 'style')],
+        [Input('player_4_13_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p13(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_14_1_value', 'children'),
+         Output('player_4_14_1_pos', 'children'),
+         Output('player_4_14_1_team', 'children'),
+         Output('player_4_14_1_against', 'children'),
+         Output('player_4_14_1_H_A', 'children'),
+         Output('player_4_14_1_team_odds', 'children'),
+         Output('player_4_14_1_player_form', 'children'),
+         Output('player_4_14_1_team_form', 'children'),
+         Output('player_4_14_2_against', 'children'),
+         Output('player_4_14_2_H_A', 'children'),
+         Output('player_4_14_2_team_odds', 'children'),
+         Output('player_4_14_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_14_1_against', 'style'),
+         Output('player_4_14_2_against', 'style'),
+         Output('player_4_14_1_H_A', 'style'),
+         Output('player_4_14_2_H_A', 'style'),
+         Output('player_4_14_1_player_form', 'style'),
+         Output('player_4_14_2_player_form', 'style'),
+         Output('player_4_14_1_team_form', 'style'),
+         Output('player_4_14_2_team_form', 'style'),
+         Output('player_4_14_1_team_odds', 'style'),
+         Output('player_4_14_2_team_odds', 'style'),
+         Output('player_4_14_1_no', 'style')],
+        [Input('player_4_14_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p14(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
+    @app.callback(
+        [Output('player_4_15_1_value', 'children'),
+         Output('player_4_15_1_pos', 'children'),
+         Output('player_4_15_1_team', 'children'),
+         Output('player_4_15_1_against', 'children'),
+         Output('player_4_15_1_H_A', 'children'),
+         Output('player_4_15_1_team_odds', 'children'),
+         Output('player_4_15_1_player_form', 'children'),
+         Output('player_4_15_1_team_form', 'children'),
+         Output('player_4_15_2_against', 'children'),
+         Output('player_4_15_2_H_A', 'children'),
+         Output('player_4_15_2_team_odds', 'children'),
+         Output('player_4_15_2_player_form', 'children'),
+         Output('intermediate-team_names_gw4', 'children'),
+         Output('intermediate-team_unique_ids_gw4', 'children'),
+         Output('player_4_15_1_against', 'style'),
+         Output('player_4_15_2_against', 'style'),
+         Output('player_4_15_1_H_A', 'style'),
+         Output('player_4_15_2_H_A', 'style'),
+         Output('player_4_15_1_player_form', 'style'),
+         Output('player_4_15_2_player_form', 'style'),
+         Output('player_4_15_1_team_form', 'style'),
+         Output('player_4_15_2_team_form', 'style'),
+         Output('player_4_15_1_team_odds', 'style'),
+         Output('player_4_15_2_team_odds', 'style'),
+         Output('player_4_15_1_no', 'style')],
+        [Input('player_4_15_name', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('round_current', 'children'),
+         State('team_data', 'children')]
+    )
+    def update_player_data_gw4_p15(player_unique_id,
+                                    team_names_json,
+                                    team_unique_ids_json,
+                                    gw_curr,
+                                    team_picks_json):
+
+
+        team_picks = pd.read_json(team_picks_json, orient='split', typ='frame')
+
+        data_2020 = data[data['season']==2020]
+
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+
+        gw_curr = int(gw_curr)
+        gw_next = gw_curr + 1
+
+        #GW + 1
+        player_id = determine_element_id(data, player_unique_id, 2020)
+        (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
+                planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
+
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style = style_colour_injury(font_size, chance_of_playing)
+
+        if int(unique_id) in team_unique_ids.values:
+            value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
+        else:
+            round_player_max = data_2020[(data_2020['unique_id']==unique_id)]['round'].max()
+            value = '{0:.1f}'.format(data_2020[(data_2020['unique_id']==unique_id) & (data_2020['round']==round_player_max)]['value'].values[0]/10)
+
+
+
+        return (value,
+                position,
+                team_code,
+                opposition[0],
+                was_home[0],
+                odds_win[0],
+                form[0],
+                team_form,
+                opposition[1],
+                was_home[1],
+                odds_win[1],
+                form[1],
+                team_names_json, team_unique_ids_json,
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '7%'),
+                style_colour(font_size, fixture_diff[1], '7%'),
+                style_colour(font_size, fixture_diff[0], '8%'),
+                style_colour(font_size, fixture_diff[1], '8%'),
+                style_colour(font_size, fixture_diff[0], '5%'),
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style)
+
 
 
     @app.callback(
@@ -9928,9 +16030,467 @@ elif debug_mode is True:
         team_names = pd.read_json(team_names_json, orient='split', typ='series')
         team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
 
-        print(players_2020_names)
-        print(players_2020_unique_ids)
-        print(len(players_2020_names), len(players_2020_unique_ids))
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_2_name', 'options')],
+        [Input('player_1_2_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p2(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_3_name', 'options')],
+        [Input('player_1_3_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p3(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_4_name', 'options')],
+        [Input('player_1_4_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p4(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_5_name', 'options')],
+        [Input('player_1_5_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p5(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_6_name', 'options')],
+        [Input('player_1_6_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p6(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_7_name', 'options')],
+        [Input('player_1_7_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p7(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_8_name', 'options')],
+        [Input('player_1_8_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p8(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_9_name', 'options')],
+        [Input('player_1_9_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p9(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_10_name', 'options')],
+        [Input('player_1_10_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p10(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_11_name', 'options')],
+        [Input('player_1_11_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p11(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_12_name', 'options')],
+        [Input('player_1_12_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p12(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_13_name', 'options')],
+        [Input('player_1_13_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p13(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_14_name', 'options')],
+        [Input('player_1_14_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p14(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_1_15_name', 'options')],
+        [Input('player_1_15_transfer', 'value')],
+        [State('intermediate-team_names_gw1', 'children'),
+         State('intermediate-team_unique_ids_gw1', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw1_p15(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
 
         if transfer_tick != None:
             if len(transfer_tick) > 0:
@@ -9954,6 +16514,468 @@ elif debug_mode is True:
          State('data2020-names-stored-json', 'children')],
     )
     def select_transfers_gw2_p1(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_2_name', 'options')],
+        [Input('player_2_2_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p2(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_3_name', 'options')],
+        [Input('player_2_3_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p3(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_4_name', 'options')],
+        [Input('player_2_4_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p4(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_5_name', 'options')],
+        [Input('player_2_5_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p5(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_6_name', 'options')],
+        [Input('player_2_6_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p6(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_7_name', 'options')],
+        [Input('player_2_7_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p7(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_8_name', 'options')],
+        [Input('player_2_8_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p8(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_9_name', 'options')],
+        [Input('player_2_9_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p9(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_10_name', 'options')],
+        [Input('player_2_10_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p10(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_11_name', 'options')],
+        [Input('player_2_11_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p11(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_12_name', 'options')],
+        [Input('player_2_12_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p12(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_13_name', 'options')],
+        [Input('player_2_13_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p13(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_14_name', 'options')],
+        [Input('player_2_14_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p14(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+
+    @app.callback(
+        [Output('player_2_15_name', 'options')],
+        [Input('player_2_15_transfer', 'value')],
+        [State('intermediate-team_names_gw2', 'children'),
+         State('intermediate-team_unique_ids_gw2', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw2_p15(transfer_tick,
                                  team_names_json,
                                  team_unique_ids_json,
                                  players_2020_unique_ids_json,
@@ -10011,6 +17033,454 @@ elif debug_mode is True:
 
         return (player_options)
 
+    @app.callback(
+        [Output('player_3_2_name', 'options')],
+        [Input('player_3_2_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p2(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_3_name', 'options')],
+        [Input('player_3_3_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p3(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_4_name', 'options')],
+        [Input('player_3_4_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p4(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_5_name', 'options')],
+        [Input('player_3_5_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p5(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_6_name', 'options')],
+        [Input('player_3_6_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p6(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_7_name', 'options')],
+        [Input('player_3_7_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p7(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_8_name', 'options')],
+        [Input('player_3_8_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p8(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_9_name', 'options')],
+        [Input('player_3_9_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p9(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_10_name', 'options')],
+        [Input('player_3_10_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p10(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_11_name', 'options')],
+        [Input('player_3_11_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p11(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_12_name', 'options')],
+        [Input('player_3_12_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p12(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_13_name', 'options')],
+        [Input('player_3_13_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p13(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_14_name', 'options')],
+        [Input('player_3_14_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p14(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_3_15_name', 'options')],
+        [Input('player_3_15_transfer', 'value')],
+        [State('intermediate-team_names_gw3', 'children'),
+         State('intermediate-team_unique_ids_gw3', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw3_p15(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
 
     @app.callback(
         [Output('player_4_1_name', 'options')],
@@ -10021,6 +17491,454 @@ elif debug_mode is True:
          State('data2020-names-stored-json', 'children')],
     )
     def select_transfers_gw4_p1(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_2_name', 'options')],
+        [Input('player_4_2_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p2(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_3_name', 'options')],
+        [Input('player_4_3_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p3(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_4_name', 'options')],
+        [Input('player_4_4_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p4(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_5_name', 'options')],
+        [Input('player_4_5_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p5(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_6_name', 'options')],
+        [Input('player_4_6_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p6(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_7_name', 'options')],
+        [Input('player_4_7_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p7(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_8_name', 'options')],
+        [Input('player_4_8_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p8(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_9_name', 'options')],
+        [Input('player_4_9_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p9(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_10_name', 'options')],
+        [Input('player_4_10_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p10(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_11_name', 'options')],
+        [Input('player_4_11_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p11(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_12_name', 'options')],
+        [Input('player_4_12_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p12(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_13_name', 'options')],
+        [Input('player_4_13_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p13(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_14_name', 'options')],
+        [Input('player_4_14_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p14(transfer_tick,
+                                 team_names_json,
+                                 team_unique_ids_json,
+                                 players_2020_unique_ids_json,
+                                 players_2020_names_json):
+
+        players_2020_names = list(pd.read_json(players_2020_names_json, orient='split', typ='series').values)
+        players_2020_unique_ids = list(pd.read_json(players_2020_unique_ids_json, orient='split', typ='series'))
+
+        #GW + 1
+        team_names = pd.read_json(team_names_json, orient='split', typ='series')
+        team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        if transfer_tick != None:
+            if len(transfer_tick) > 0:
+                player_options = [[{'label': name, 'value': players_2020_unique_ids[i]} for i, name in enumerate(players_2020_names)]]
+            else:
+                player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        else:
+            player_options = [[{'label': name, 'value': team_unique_ids[i]} for i, name in enumerate(team_names)]]
+
+        return (player_options)
+
+    @app.callback(
+        [Output('player_4_15_name', 'options')],
+        [Input('player_4_15_transfer', 'value')],
+        [State('intermediate-team_names_gw4', 'children'),
+         State('intermediate-team_unique_ids_gw4', 'children'),
+         State('data2020-unique-ids-stored-json', 'children'),
+         State('data2020-names-stored-json', 'children')],
+    )
+    def select_transfers_gw4_p15(transfer_tick,
                                  team_names_json,
                                  team_unique_ids_json,
                                  players_2020_unique_ids_json,
