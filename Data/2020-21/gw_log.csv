@@ -13,11 +13,11 @@ gw,scraped,parsed
 12,True,True
 13,True,True
 14,True,True
-15,True,False
-16,True,False
-17,True,False
-18,True,False
-19,True,False
+15,True,True
+16,True,True
+17,True,True
+18,True,True
+19,True,True
 20,False,False
 21,False,False
 22,False,False

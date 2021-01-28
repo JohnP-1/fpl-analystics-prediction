@@ -19,17 +19,22 @@ DataLoaderFixt = DL.DataLoader()
 fixtures = DataLoaderFixt.scrape_fixtures()
 fixtures.to_csv(path.join('/home/john/Documents/projects/fpl-analystics-prediction/Data/2020-21', 'fixtures.csv'), index=False)
 
-seasons = [2016,
-           2017,
-           2018,
-           2019]
+# seasons = [2016,
+#            2017,
+#            2018,
+#            2019,
+#            2020]
 
+# seasons = [2020]
+
+# print("Processing the team metadata")
 # print("Processing the team metadata")
 # DataLoader.process_team_metadata(path_processed,
 #                                  filename_team_metadata,
 #                                  seasons)
 #
 # gws = list(range(1, 39))
+# gws = list(range(1, 20))
 #
 # print("Processing the player metadata")
 # DataLoader.process_player_metadata(path_processed,
@@ -37,7 +42,7 @@ seasons = [2016,
 #                                    filename_team_metadata,
 #                                    seasons,
 #                                    gws)
-#
+# #
 # print("Processing the player database")
 # DataLoader.process_player_database_vis(path_processed,
 #                                         filename_player_database,

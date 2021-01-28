@@ -345,7 +345,6 @@ class DataLoaderHistoric():
         data_gw.to_csv(path.join(self.path_data_season(year), 'gws', data_GW), encoding='UTF-8', index=False)
 
 
-
     def process_playernames(self, year,
                             gw):
         """
@@ -366,7 +365,6 @@ class DataLoaderHistoric():
             data_gw['name_last'].iloc[i] = names[1]
 
         data_gw.to_csv(path.join(self.path_data_season(year), 'gws', file_GW), encoding='UTF-8', index=False)
-
 
 
     def create_player_data(self, path_processed,
@@ -462,7 +460,6 @@ class DataLoaderHistoric():
         # Check player metadata exists
         if self.check_file_exists(path.join(path_processed, filename)) is False:
             self.create_player_database(path.join(path_processed, filename), columns=columns)
-
 
 
     def create_player_metadata(self, path_processed,
@@ -604,7 +601,6 @@ class DataLoaderHistoric():
                         player_metadata = pd.concat([player_metadata, player_temp])
 
         player_metadata.to_csv(path.join(path_processed, filename_player_metadata), index=False)
-
 
 
     def process_player_database_vis(self, path_processed,
@@ -1299,7 +1295,6 @@ class DataLoaderHistoric():
         player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
 
 
-
     def process_fixtures_season(self, year,
                          path_processed):
         """
@@ -1544,8 +1539,6 @@ class DataLoaderHistoric():
 
         data_all = pd.concat(data_all, axis=0)
         data_all.to_csv(path.join(path_processed, 'team_stats.csv'), index=False)
-
-
 
 
     def process_team_stats(self, seasons,
@@ -1800,6 +1793,7 @@ class DataLoaderHistoric():
 
         return data
 
+
     def process_team_results(self, data, results_window=5):
 
         data = data.sort_values(by='round')
@@ -1868,6 +1862,7 @@ class DataLoaderHistoric():
                 data['team_prob_loss_away_' + str(results_window)].iloc[i] = unknown_prob_away
 
         return data
+
 
     def process_team_score(self, data, results_window=5):
 
@@ -1989,6 +1984,7 @@ class DataLoaderHistoric():
                 data['team_prob_concede3_away_' + str(results_window)].iloc[i] = unknown_prob_away
 
         return data
+
 
     def process_current_game_odds(self, data, results_window=5):
 

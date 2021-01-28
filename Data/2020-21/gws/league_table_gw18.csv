@@ -1,7 +1,7 @@
 code,draw,form,id,loss,name,played,points,position,short_name,strength,team_division,unavailable,win,strength_overall_home,strength_overall_away,strength_attack_home,strength_attack_away,strength_defence_home,strength_defence_away,pulse_id,wins,draws,losses,goals_for,goals_against,goals_diff,yc,rc
-3,0,,1,0,Arsenal,18,24,11,ARS,4,,False,0,1190,1210,1170,1210,1190,1200,1,7,3,8,20,19,1,27,3
+3,0,,1,0,Arsenal,18,24,11,ARS,4,,False,0,1190,1210,1170,1210,1190,1200,1,7,3,8,20,19,1,28,3
 7,0,,2,0,Aston Villa,15,26,8,AVL,3,,False,0,1150,1160,1150,1150,1180,1210,2,8,2,5,29,16,13,27,2
-36,0,,3,0,Brighton,18,14,17,BHA,3,,False,0,1080,1100,1150,1180,1090,1100,131,2,8,8,21,29,-8,26,3
+36,0,,3,0,Brighton,18,14,17,BHA,3,,False,0,1080,1100,1150,1180,1090,1100,131,2,8,8,21,29,-8,25,3
 90,0,,4,0,Burnley,16,16,16,BUR,2,,False,0,1050,1080,1120,1190,1010,1030,43,4,4,8,9,21,-12,22,0
 8,0,,5,0,Chelsea,17,26,9,CHE,4,,False,0,1260,1280,1240,1280,1270,1310,4,7,5,5,32,21,11,23,1
 31,0,,6,0,Crystal Palace,18,23,13,CRY,3,,False,0,1110,1150,1100,1150,1020,1050,6,6,5,7,22,29,-7,25,2

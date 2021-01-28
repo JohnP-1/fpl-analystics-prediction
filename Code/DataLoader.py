@@ -24,6 +24,7 @@ class DataLoader(DLH.DataLoaderHistoric):
         if parse is True:
             self.parse_data(season, gw_log)
 
+
     def scrape_data(self, season, gw_log):
 
         season_name = str(season) + '-' + str(season+1)[-2:]
@@ -120,8 +121,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                                     seasons,
                                                                     [gw_curr])
 
-
-                self.combine_player_database(player_database_gw,
+                player_database_gw = self.combine_player_database(player_database_gw,
                                             path_processed,
                                             filename_player_database)
 
@@ -129,18 +129,20 @@ class DataLoader(DLH.DataLoaderHistoric):
                 #
                 # player_database_gw.to_csv(path.join(path_processed, filename_player_data), index=False)
                 #
-                #
-                print("Processing the aggregate features")
-                self.calculate_aggregate_features(path_processed,
-                                                filename_player_database,
-                                                filename_player_metadata,
-                                                filename_team_metadata,
-                                                season,
-                                                target_columns,
-                                                gw_curr,
-                                                home=None)
 
-                self.calculate_aggregate_features(path_processed,
+                print("Processing the aggregate features")
+                player_database_gw = self.calculate_aggregate_features(player_database_gw,
+                                                                    path_processed,
+                                                                    filename_player_database,
+                                                                    filename_player_metadata,
+                                                                    filename_team_metadata,
+                                                                    season,
+                                                                    target_columns,
+                                                                    gw_curr,
+                                                                    home=None)
+
+                player_database_gw = self.calculate_aggregate_features(player_database_gw,
+                                                                       path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -149,7 +151,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 gw_curr,
                                                 home=True)
 
-                self.calculate_aggregate_features(path_processed,
+                player_database_gw = self.calculate_aggregate_features(player_database_gw,
+                                                                       path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -161,7 +164,8 @@ class DataLoader(DLH.DataLoaderHistoric):
 
 
                 print("Processing the stat features")
-                self.calculate_stat_features(path_processed,
+                player_database_gw = self.calculate_stat_features(player_database_gw,
+                                                                  path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -170,7 +174,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 gw_curr,
                                                 home=None)
 
-                self.calculate_stat_features(path_processed,
+                player_database_gw = self.calculate_stat_features(player_database_gw,
+                                                                  path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -179,7 +184,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 gw_curr,
                                                 home=True)
 
-                self.calculate_stat_features(path_processed,
+                player_database_gw = self.calculate_stat_features(player_database_gw,
+                                                                  path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -189,7 +195,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 home=False)
 
                 print("Processing the rolling stat features, window size = 3")
-                self.calculate_statrolling_features(path_processed,
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                                         path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -199,7 +206,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     window_size=3,
                                                     home=None)
 
-                self.calculate_statrolling_features(path_processed,
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                                         path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -209,7 +217,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     window_size=3,
                                                     home=True)
 
-                self.calculate_statrolling_features(path_processed,
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                                         path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -220,7 +229,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     home=False)
 
                 print("Processing the rolling stat features, window size = 4")
-                self.calculate_statrolling_features(path_processed,
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                    path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -230,7 +240,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     window_size=4,
                                                     home=None)
 
-                self.calculate_statrolling_features(path_processed,
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                    path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -240,7 +251,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     window_size=4,
                                                     home=True)
 
-                self.calculate_statrolling_features(path_processed,
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                    path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -252,7 +264,8 @@ class DataLoader(DLH.DataLoaderHistoric):
 
 
                 print("Processing the rolling stat features, window size = 5")
-                self.calculate_statrolling_features(path_processed,
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                    path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -262,7 +275,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     window_size=5,
                                                     home=None)
 
-                self.calculate_statrolling_features(path_processed,
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                    path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -272,7 +286,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     window_size=5,
                                                     home=True)
 
-                self.calculate_statrolling_features(path_processed,
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                    path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -283,7 +298,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     home=False)
 
                 print("Processing the prob greater than 0")
-                self.calculate_prob_occur(path_processed,
+                player_database_gw = self.calculate_prob_occur(player_database_gw,
+                                          path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -293,7 +309,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 event=0,
                                                 home=None)
 
-                self.calculate_prob_occur(path_processed,
+                player_database_gw = self.calculate_prob_occur(player_database_gw,
+                                          path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -303,7 +320,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 event=0,
                                                 home=True)
 
-                self.calculate_prob_occur(path_processed,
+                player_database_gw = self.calculate_prob_occur(player_database_gw,
+                                          path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -314,7 +332,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 home=False)
 
                 print("Processing the prob greater than 1")
-                self.calculate_prob_occur(path_processed,
+                player_database_gw = self.calculate_prob_occur(player_database_gw,
+                                          path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -324,7 +343,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 event=1,
                                                 home=None)
 
-                self.calculate_prob_occur(path_processed,
+                player_database_gw = self.calculate_prob_occur(player_database_gw,
+                                          path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -334,7 +354,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 event=1,
                                                 home=True)
 
-                self.calculate_prob_occur(path_processed,
+                player_database_gw = self.calculate_prob_occur(player_database_gw,
+                                          path_processed,
                                                 filename_player_database,
                                                 filename_player_metadata,
                                                 filename_team_metadata,
@@ -345,7 +366,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                 home=False)
 
                 print("Processing the prob greater than 0, window size = 3")
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -356,7 +378,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=0,
                                                     home=None)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -367,7 +390,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=0,
                                                     home=True)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -379,7 +403,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     home=False)
 
                 print("Processing the prob greater than 0, window size = 4")
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -390,7 +415,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=0,
                                                     home=None)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -401,7 +427,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=0,
                                                     home=True)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -413,7 +440,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     home=False)
 
                 print("Processing the prob greater than 0, window size = 5")
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -424,7 +452,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=0,
                                                     home=None)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -435,7 +464,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=0,
                                                     home=True)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -448,7 +478,8 @@ class DataLoader(DLH.DataLoaderHistoric):
 
 
                 print("Processing the prob greater than 1, window size = 3")
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -459,7 +490,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=1,
                                                     home=None)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -470,7 +502,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=1,
                                                     home=True)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -482,7 +515,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     home=False)
 
                 print("Processing the prob greater than 1, window size = 4")
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -493,7 +527,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=1,
                                                     home=None)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -504,7 +539,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=1,
                                                     home=True)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -516,7 +552,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     home=False)
 
                 print("Processing the prob greater than 1, window size = 5")
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -527,7 +564,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=1,
                                                     home=None)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -538,7 +576,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     event=1,
                                                     home=True)
 
-                self.calculate_prob_occur_rolling(path_processed,
+                player_database_gw = self.calculate_prob_occur_rolling(player_database_gw,
+                                                  path_processed,
                                                     filename_player_database,
                                                     filename_player_metadata,
                                                     filename_team_metadata,
@@ -550,17 +589,17 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     home=False)
 
 
+                player_database_gw.to_csv(path.join(path_processed, filename_player_database), index=False)
 
                 gw_log.iloc[gw_curr-1, 2] = True
                 gw_log.to_csv(path.join(self.get_base_path(), 'Data', season_name, 'gw_log.csv'), index=False)
 
 
-
     def get_base_path(self):
         
         return path.dirname(path.dirname(__file__))
-    
-    
+
+
     def create_season_folder(self, season_name):
 
         path_season = path.join(self.get_base_path(), 'Data', season_name)
@@ -783,11 +822,6 @@ class DataLoader(DLH.DataLoaderHistoric):
         data_gw.to_csv(path.join(self.path_data_season(year), 'gws', data_GW), encoding='UTF-8', index=False)
 
 
-
-    def process_team(self):
-        pass
-
-
     def process_player_teams(self, year,
                              gw):
         """
@@ -964,9 +998,11 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         return player_data
 
+
     def get_team_id(self, player_metadata, unique_id):
 
         return player_metadata[player_metadata['unique_id']==unique_id]['team_id'].values[0]
+
 
     def check_unique_id_played(self,
                                player_metadata,
@@ -998,7 +1034,8 @@ class DataLoader(DLH.DataLoaderHistoric):
 
 
 
-    def calculate_aggregate_features(self, path_processed,
+    def calculate_aggregate_features(self, player_data,
+                                        path_processed,
                                         filename_player_data,
                                         filename_player_metadata,
                                         filename_team_metadata,
@@ -1006,7 +1043,6 @@ class DataLoader(DLH.DataLoaderHistoric):
                                         target_columns,
                                         gw_curr,
                                         home=None):
-
 
         try:
             player_metadata = pd.read_csv(path.join(path_processed, filename_player_metadata))
@@ -1018,13 +1054,17 @@ class DataLoader(DLH.DataLoaderHistoric):
         except:
             print('Can\'t find the team_metadata.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
-        try:
-            player_data = pd.read_csv(path.join(path_processed, filename_player_data))
-        except:
-            print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
+        # try:
+        #     player_data = pd.read_csv(path.join(path_processed, filename_player_data))
+        # except:
+        #     print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
         player_data_old = player_data[player_data['season']!=season].copy()
-        player_data = player_data[player_data['season']==season]
+        player_data_old_season = player_data[(player_data['season']==season) & (player_data['round']!=gw_curr)]
+        player_data_old = pd.concat([player_data_old, player_data_old_season], axis=0).reset_index(drop=True)
+
+        player_data_season = player_data[player_data['season']==season]
+        player_data = player_data[(player_data['season']==season) & (player_data['round']==gw_curr)]
 
         target_column_agg_list = []
         for target_column in target_columns:
@@ -1047,44 +1087,44 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         for unique_id in unique_ids:
 
-            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
+            if unique_id % 100 == 0:
+                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-            if team_played is True:
-                if unique_id % 100 == 0:
-                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+            player_data_unique_id = player_data_season[player_data_season['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            player_data_unique_id_gw = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
 
-                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            # Iterate through the sorted dataframe to calculate the aggregate features
+            if home is None:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list] = np.sum(player_data_unique_id[target_columns].values, axis=0)
+            elif home is True:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==True]
+                    if player_data_unique_id_temp.shape[0] == 0:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list] = 0
+                    else:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list] = np.sum(player_data_unique_id_temp[target_columns].values, axis=0)
 
-                # Iterate through the sorted dataframe to calulate the aggregate features
-                if home is None:
-                    for i in range(0, player_data_unique_id.shape[0]):
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = np.sum(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-                elif home is True:
-                    for i in range(0, player_data_unique_id.shape[0]):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True]
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = np.sum(player_data_unique_id_temp[target_columns].values, axis=0)
-
-                elif home is False:
-                    for i in range(0, player_data_unique_id.shape[0]):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False]
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = np.sum(player_data_unique_id_temp[target_columns].values, axis=0)
-                # Concatonate the DataFrames
-                player_data_aggregate.append(player_data_unique_id)
+            elif home is False:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==False]
+                    if player_data_unique_id_temp.shape[0] == 0:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list] = 0
+                    else:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list] = np.sum(player_data_unique_id_temp[target_columns].values, axis=0)
+            # Concatonate the DataFrames
+            player_data_aggregate.append(player_data_unique_id_gw)
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
         player_data_aggregate = player_data_aggregate.drop_duplicates()
-        player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        # player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        return player_data_aggregate
 
 
-    def calculate_stat_features(self, path_processed,
+    def calculate_stat_features(self, player_data,
+                                path_processed,
                                 filename_player_data,
                                 filename_player_metadata,
                                 filename_team_metadata,
@@ -1104,13 +1144,17 @@ class DataLoader(DLH.DataLoaderHistoric):
         except:
             print('Can\'t find the team_metadata.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
-        try:
-            player_data = pd.read_csv(path.join(path_processed, filename_player_data))
-        except:
-            print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
+        # try:
+        #     player_data = pd.read_csv(path.join(path_processed, filename_player_data))
+        # except:
+        #     print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
         player_data_old = player_data[player_data['season']!=season].copy()
-        player_data = player_data[player_data['season']==season]
+        player_data_old_season = player_data[(player_data['season']==season) & (player_data['round']!=gw_curr)]
+        player_data_old = pd.concat([player_data_old, player_data_old_season], axis=0).reset_index(drop=True)
+
+        player_data_season = player_data[player_data['season']==season]
+        player_data = player_data[(player_data['season']==season) & (player_data['round']==gw_curr)]
 
         target_column_mean_list = []
         target_column_median_list = []
@@ -1160,66 +1204,65 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         for unique_id in unique_ids:
 
-            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
+            if unique_id % 100 == 0:
+                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-            if team_played is True:
+            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+            player_data_unique_id = player_data_season[player_data_season['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            player_data_unique_id_gw = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
 
-                if unique_id % 100 == 0:
-                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            # Iterate through the sorted dataframe to calulate the aggregate features
+            if home is None:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = np.mean(player_data_unique_id[target_columns].values, axis=0)
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = np.median(player_data_unique_id[target_columns].values, axis=0)
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id[target_columns].values, dtype=np.float64), axis=0)
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id[target_columns].shape[0])
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = np.max(player_data_unique_id[target_columns].values, axis=0) - np.min(player_data_unique_id[target_columns].values, axis=0)
+            elif home is True:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==True]
+                    if player_data_unique_id_temp.shape[0] == 0:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = 0
+                    else:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
 
-                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
-
-                # Iterate through the sorted dataframe to calulate the aggregate features
-                if home is None:
-                    for i in range(0, player_data_unique_id.shape[0]):
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)/np.sqrt(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].shape[0])
-                        player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0) - np.min(player_data_unique_id.loc[player_data_unique_id.index[:i+1], target_columns].values, axis=0)
-                elif home is True:
-                    for i in range(0, player_data_unique_id.shape[0]):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True]
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
-
-                elif home is False:
-                    for i in range(0, player_data_unique_id.shape[0]):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False]
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(player_data_unique_id_temp[target_columns].values, axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
+            elif home is False:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==False]
+                    if player_data_unique_id_temp.shape[0] == 0:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = 0
+                    else:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
 
 
-                player_data_aggregate.append(player_data_unique_id)
+            player_data_aggregate.append(player_data_unique_id_gw)
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
         player_data_aggregate = player_data_aggregate.drop_duplicates()
-        player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        # player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        return player_data_aggregate
 
 
-    def calculate_statrolling_features(self, path_processed,
+    def calculate_statrolling_features(self, player_data,
+                                        path_processed,
                                         filename_player_data,
                                         filename_player_metadata,
                                         filename_team_metadata,
@@ -1239,13 +1282,17 @@ class DataLoader(DLH.DataLoaderHistoric):
         except:
             print('Can\'t find the team_metadata.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
-        try:
-            player_data = pd.read_csv(path.join(path_processed, filename_player_data))
-        except:
-            print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
+        # try:
+        #     player_data = pd.read_csv(path.join(path_processed, filename_player_data))
+        # except:
+        #     print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
         player_data_old = player_data[player_data['season']!=season].copy()
-        player_data = player_data[player_data['season']==season]
+        player_data_old_season = player_data[(player_data['season']==season) & (player_data['round']!=gw_curr)]
+        player_data_old = pd.concat([player_data_old, player_data_old_season], axis=0).reset_index(drop=True)
+
+        player_data_season = player_data[player_data['season']==season]
+        player_data = player_data[(player_data['season']==season) & (player_data['round']==gw_curr)]
 
         target_column_mean_list = []
         target_column_median_list = []
@@ -1293,123 +1340,119 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         for unique_id in unique_ids:
 
-            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
+            if unique_id % 100 == 0:
+                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-            if team_played is True:
+            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+            player_data_unique_id = player_data_season[player_data_season['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            player_data_unique_id_gw = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
 
-                if unique_id % 100 == 0:
-                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            # if player_data_unique_id.shape[0] > 0:
+            I = player_data_unique_id.shape[0]
+            offset = window_size - 1
 
-                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            if home is None:
+                player_data_unique_id_start = []
+                player_data_unique_id_start_df = player_data_unique_id.iloc[:offset, :].copy()
 
-                # if player_data_unique_id.shape[0] > 0:
-                I = player_data_unique_id.shape[0]
-                offset = window_size - 1
+                if player_data_unique_id_start_df.shape[0] < offset:
+                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                    for i in range(offset):
+                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                else:
+                    for i in range(offset):
+                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
 
-                if home is None:
-                    player_data_unique_id_start = []
-                    player_data_unique_id_start_df = player_data_unique_id.iloc[:offset, :].copy()
+                player_data_unique_id_start.append(player_data_unique_id_start_df)
+                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
 
-                    if player_data_unique_id_start_df.shape[0] < offset:
-                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                        for i in range(offset):
-                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+            if home is True:
+                player_data_unique_id_start = []
+                player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[:offset, :].copy()
+
+                if player_data_unique_id_start_df.shape[0] < offset:
+                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                    for i in range(offset):
+                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                else:
+                    for i in range(offset):
+                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+
+                player_data_unique_id_start.append(player_data_unique_id_start_df)
+                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+
+            elif home is False:
+                player_data_unique_id_start = []
+                player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[:offset, :].copy()
+
+                if player_data_unique_id_start_df.shape[0] < offset:
+                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                    for i in range(offset):
+                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                else:
+                    for i in range(offset):
+                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+
+                player_data_unique_id_start.append(player_data_unique_id_start_df)
+                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+
+
+            if home is None:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = np.mean(player_data_unique_id.loc[player_data_unique_id.index[-window_size:], target_columns].values, axis=0)
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = np.median(player_data_unique_id.loc[player_data_unique_id.index[-window_size:], target_columns].values, axis=0)
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id.loc[player_data_unique_id.index[-window_size:], target_columns].values, dtype=np.float64), axis=0)
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id.loc[player_data_unique_id.index[-window_size:], target_columns].values, dtype=np.float64), axis=0)/np.sqrt(window_size)
+                    player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = np.max(player_data_unique_id.loc[player_data_unique_id.index[-window_size:], target_columns].values, axis=0) - np.min(player_data_unique_id.loc[player_data_unique_id.index[-window_size:], target_columns].values, axis=0)
+            elif home is True:
+                for i in range(offset, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[-window_size:, :]
+
+                    if player_data_unique_id_temp.shape[0] == 0:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = 0
                     else:
-                        for i in range(offset):
-                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
 
-                    player_data_unique_id_start.append(player_data_unique_id_start_df)
-                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+            elif home is False:
+                for i in range(offset, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[-window_size:, :]
 
-                if home is True:
-                    player_data_unique_id_start = []
-                    player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[:offset, :].copy()
-
-                    if player_data_unique_id_start_df.shape[0] < offset:
-                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                        for i in range(offset):
-                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                    if player_data_unique_id_temp.shape[0] == 0:
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = 0
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = 0
                     else:
-                        for i in range(offset):
-                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
 
-                    player_data_unique_id_start.append(player_data_unique_id_start_df)
-                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
-
-                elif home is False:
-                    player_data_unique_id_start = []
-                    player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[:offset, :].copy()
-
-                    if player_data_unique_id_start_df.shape[0] < offset:
-                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                        for i in range(offset):
-                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                    else:
-                        for i in range(offset):
-                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
-
-                    player_data_unique_id_start.append(player_data_unique_id_start_df)
-                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
-
-
-                if home is None:
-                    if player_data_unique_id.shape[0] > offset:
-                        # print(player_data_unique_id)
-                        for i in range(0, player_data_unique_id.shape[0]-offset):
-                            # print(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values)
-                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_mean_list] = np.mean(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_median_list] = np.median(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_std_list] = np.std(np.array(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, dtype=np.float64), axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_se_list] = np.std(np.array(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, dtype=np.float64), axis=0)/np.sqrt(window_size)
-                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_range_list] = np.max(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0) - np.min(player_data_unique_id.loc[player_data_unique_id.index[i:i+window_size], target_columns].values, axis=0)
-                elif home is True:
-                    for i in range(offset, player_data_unique_id.shape[0]):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True].iloc[-window_size:, :]
-
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
-
-                elif home is False:
-                    for i in range(offset, player_data_unique_id.shape[0]):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False].iloc[-window_size:, :]
-
-                        if player_data_unique_id_temp.shape[0] == 0:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = 0
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = 0
-                        else:
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_mean_list] = np.mean(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_median_list] = np.median(player_data_unique_id_temp[target_columns].values, axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_std_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id_temp[target_columns].values, dtype=np.float64), axis=0)/np.sqrt(player_data_unique_id_temp[target_columns].shape[0])
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
-
-                # Concatonate the DataFrames
-                player_data_aggregate.append(player_data_unique_id.iloc[offset:, :])
+            # Concatonate the DataFrames
+            player_data_aggregate.append(player_data_unique_id_gw)
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
         player_data_aggregate = player_data_aggregate.drop_duplicates()
-        player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        # player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        return player_data_aggregate
 
 
-    def calculate_prob_occur(self, path_processed,
+    def calculate_prob_occur(self, player_data,
+                                    path_processed,
                                     filename_player_data,
                                     filename_player_metadata,
                                     filename_team_metadata,
@@ -1430,13 +1473,17 @@ class DataLoader(DLH.DataLoaderHistoric):
         except:
             print('Can\'t find the team_metadata.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
-        try:
-            player_data = pd.read_csv(path.join(path_processed, filename_player_data))
-        except:
-            print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
+        # try:
+        #     player_data = pd.read_csv(path.join(path_processed, filename_player_data))
+        # except:
+        #     print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
         player_data_old = player_data[player_data['season']!=season].copy()
-        player_data = player_data[player_data['season']==season]
+        player_data_old_season = player_data[(player_data['season']==season) & (player_data['round']!=gw_curr)]
+        player_data_old = pd.concat([player_data_old, player_data_old_season], axis=0).reset_index(drop=True)
+
+        player_data_season = player_data[player_data['season']==season]
+        player_data = player_data[(player_data['season']==season) & (player_data['round']==gw_curr)]
 
         target_column_agg_list = []
         for target_column in target_columns:
@@ -1458,51 +1505,51 @@ class DataLoader(DLH.DataLoaderHistoric):
         unique_ids = pd.unique(player_data.sort_values('unique_id')['unique_id'])
 
         for unique_id in unique_ids:
-            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
 
-            if team_played is True:
+            if unique_id % 100 == 0:
+                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-                if unique_id % 100 == 0:
-                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+            player_data_unique_id = player_data_season[player_data_season['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            player_data_unique_id_gw = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
 
-                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            # Iterate through the sorted dataframe to calulate the aggregate features
+            if home is None:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    for k, column in enumerate(target_columns):
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list[k]] = player_data_unique_id[player_data_unique_id[column]>event].shape[0] / \
+                                                                                                               player_data_unique_id.shape[0]
+            elif home is True:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    for k, column in enumerate(target_columns):
+                        player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==True]
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list[k]] = 0
+                        else:
+                            player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / \
+                                                                                                player_data_unique_id_temp.shape[0]
 
-                # Iterate through the sorted dataframe to calulate the aggregate features
-                if home is None:
-                    for i in range(0, player_data_unique_id.shape[0]):
-                        for k, column in enumerate(target_columns):
-                            player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list[k]] = player_data_unique_id[player_data_unique_id[column]>event].iloc[:i+1, :].shape[0] / \
-                                                                                                                   player_data_unique_id.iloc[:i+1, :].shape[0]
-                elif home is True:
-                    for i in range(0, player_data_unique_id.shape[0]):
-                        for k, column in enumerate(target_columns):
-                            player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True]
-                            if player_data_unique_id_temp.shape[0] == 0:
-                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list[k]] = 0
-                            else:
-                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].iloc[:i+1, :].shape[0] / \
-                                                                                                    player_data_unique_id_temp.iloc[:i+1, :].shape[0]
-
-                elif home is False:
-                    for i in range(0, player_data_unique_id.shape[0]):
-                        for k, column in enumerate(target_columns):
-                            player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False]
-                            if player_data_unique_id_temp.shape[0] == 0:
-                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg_list[k]] = 0
-                            else:
-                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_agg] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].iloc[:i+1, :].shape[0] / \
-                                                                                                    player_data_unique_id_temp.iloc[:i+1, :].shape[0]
-                # Concatonate the DataFrames
-                player_data_aggregate.append(player_data_unique_id)
+            elif home is False:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    for k, column in enumerate(target_columns):
+                        player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==False]
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list[k]] = 0
+                        else:
+                            player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_agg_list] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / \
+                                                                                                player_data_unique_id_temp.shape[0]
+            # Concatonate the DataFrames
+            player_data_aggregate.append(player_data_unique_id_gw)
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
         player_data_aggregate = player_data_aggregate.drop_duplicates()
-        player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        # player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        return player_data_aggregate
 
 
-    def calculate_prob_occur_rolling(self, path_processed,
+    def calculate_prob_occur_rolling(self, player_data,
+                                            path_processed,
                                             filename_player_data,
                                             filename_player_metadata,
                                             filename_team_metadata,
@@ -1523,13 +1570,17 @@ class DataLoader(DLH.DataLoaderHistoric):
         except:
             print('Can\'t find the team_metadata.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
-        try:
-            player_data = pd.read_csv(path.join(path_processed, filename_player_data))
-        except:
-            print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
+        # try:
+        #     player_data = pd.read_csv(path.join(path_processed, filename_player_data))
+        # except:
+        #     print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
         player_data_old = player_data[player_data['season']!=season].copy()
-        player_data = player_data[player_data['season']==season]
+        player_data_old_season = player_data[(player_data['season']==season) & (player_data['round']!=gw_curr)]
+        player_data_old = pd.concat([player_data_old, player_data_old_season], axis=0).reset_index(drop=True)
+
+        player_data_season = player_data[player_data['season']==season]
+        player_data = player_data[(player_data['season']==season) & (player_data['round']==gw_curr)]
 
         target_column_list = []
 
@@ -1554,103 +1605,100 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         for unique_id in unique_ids:
 
-            team_played = self.check_unique_id_played(player_metadata, gw_curr, season, unique_id)
 
-            if team_played is True:
+            if unique_id % 100 == 0:
+                print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
 
-                if unique_id % 100 == 0:
-                    print(f"Processing unique_id {unique_id} of {unique_ids[-1]}")
+            # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
+            player_data_unique_id = player_data_season[player_data_season['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            player_data_unique_id_gw = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
 
-                # Filter the DataFrame to return a DataFrame for every unique player id and then sort on the round.
-                player_data_unique_id = player_data[player_data['unique_id']==unique_id].sort_values('round', ascending=True).reset_index(level=0, drop=True)
+            # if player_data_unique_id.shape[0] > 0:
+            I = player_data_unique_id.shape[0]
+            offset = window_size - 1
 
-                # if player_data_unique_id.shape[0] > 0:
-                I = player_data_unique_id.shape[0]
-                offset = window_size - 1
+            if home is None:
+                player_data_unique_id_start = []
+                player_data_unique_id_start_df = player_data_unique_id.iloc[:offset, :].copy()
 
-                if home is None:
-                    player_data_unique_id_start = []
-                    player_data_unique_id_start_df = player_data_unique_id.iloc[:offset, :].copy()
+                if player_data_unique_id_start_df.shape[0] < offset:
+                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                    for i in range(offset):
+                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                else:
+                    for i in range(offset):
+                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
 
-                    if player_data_unique_id_start_df.shape[0] < offset:
-                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                        for i in range(offset):
-                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                    else:
-                        for i in range(offset):
-                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+                player_data_unique_id_start.append(player_data_unique_id_start_df)
+                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
 
-                    player_data_unique_id_start.append(player_data_unique_id_start_df)
-                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+            if home is True:
+                player_data_unique_id_start = []
+                player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[:offset, :].copy()
 
-                if home is True:
-                    player_data_unique_id_start = []
-                    player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[:offset, :].copy()
+                if player_data_unique_id_start_df.shape[0] < offset:
+                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                    for i in range(offset):
+                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                else:
+                    for i in range(offset):
+                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
 
-                    if player_data_unique_id_start_df.shape[0] < offset:
-                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                        for i in range(offset):
-                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                    else:
-                        for i in range(offset):
-                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
+                player_data_unique_id_start.append(player_data_unique_id_start_df)
+                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
 
-                    player_data_unique_id_start.append(player_data_unique_id_start_df)
-                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+            elif home is False:
+                player_data_unique_id_start = []
+                player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[:offset, :].copy()
 
-                elif home is False:
-                    player_data_unique_id_start = []
-                    player_data_unique_id_start_df = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[:offset, :].copy()
+                if player_data_unique_id_start_df.shape[0] < offset:
+                    player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
+                    for i in range(offset):
+                        player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
+                else:
+                    for i in range(offset):
+                        player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
 
-                    if player_data_unique_id_start_df.shape[0] < offset:
-                        player_data_unique_id_start_df = pd.DataFrame([], columns=player_data_unique_id.columns)
-                        for i in range(offset):
-                            player_data_unique_id_start_df = pd.concat([player_data_unique_id_start_df, player_data_unique_id.iloc[[0]]], axis=0)
-                    else:
-                        for i in range(offset):
-                            player_data_unique_id_start_df.iloc[i, :] = player_data_unique_id_start_df.iloc[0, :]
-
-                    player_data_unique_id_start.append(player_data_unique_id_start_df)
-                    player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
-                    player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
+                player_data_unique_id_start.append(player_data_unique_id_start_df)
+                player_data_unique_id = pd.concat([pd.concat(player_data_unique_id_start, axis=0), player_data_unique_id])
+                player_data_unique_id = player_data_unique_id.reset_index(level=0, drop=True)
 
 
-                if home is None:
-                    # if player_data_unique_id.shape[0] > offset:
-                    for i in range(0, player_data_unique_id.shape[0]-offset):
-                        for k, column in enumerate(target_columns):
-                            player_data_unique_id.loc[player_data_unique_id.index[i+offset], target_column_list[k]] = player_data_unique_id[player_data_unique_id[column]>event].iloc[i:i+window_size].shape[0] / window_size
+            if home is None:
+                # if player_data_unique_id.shape[0] > offset:
+                for i in range(0, player_data_unique_id_gw.shape[0]):
+                    for k, column in enumerate(target_columns):
+                        player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_list[k]] = player_data_unique_id[player_data_unique_id[column]>event].iloc[-window_size:].shape[0] / window_size
 
-                elif home is True:
-                    for i in range(offset, player_data_unique_id.shape[0]):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==True].iloc[-window_size:, :]
-                        for k, column in enumerate(target_columns):
+            elif home is True:
+                for i in range(offset, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[-window_size:, :]
+                    for k, column in enumerate(target_columns):
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_list[k]] = 0
+                        else:
+                            player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_list[k]] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / window_size
 
-                            if player_data_unique_id_temp.shape[0] == 0:
-                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = 0
-                            else:
-                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / window_size
-
-                elif home is False:
-                    for i in range(offset, player_data_unique_id.shape[0]):
-                        player_data_unique_id_temp = player_data_unique_id.iloc[:i+1, :][player_data_unique_id.iloc[:i+1, :]['was_home']==False].iloc[-window_size:, :]
-                        for k, column in enumerate(target_columns):
-
-                            if player_data_unique_id_temp.shape[0] == 0:
-                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = 0
-                            else:
-                                player_data_unique_id.loc[player_data_unique_id.index[i], target_column_list[k]] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / window_size
+            elif home is False:
+                for i in range(offset, player_data_unique_id_gw.shape[0]):
+                    player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[-window_size:, :]
+                    for k, column in enumerate(target_columns):
+                        if player_data_unique_id_temp.shape[0] == 0:
+                            player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_list[k]] = 0
+                        else:
+                            player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_list[k]] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / window_size
 
 
-                # Concatonate the DataFrames
-                player_data_aggregate.append(player_data_unique_id.iloc[offset:, :])
+            # Concatonate the DataFrames
+            player_data_aggregate.append(player_data_unique_id_gw)
 
         player_data_aggregate = pd.concat(player_data_aggregate, axis=0)
         player_data_aggregate = pd.concat([player_data_old, player_data_aggregate])
         player_data_aggregate = player_data_aggregate.drop_duplicates()
-        player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        # player_data_aggregate.to_csv(path.join(path_processed, filename_player_data), index=False)
+        return player_data_aggregate
 
 
     def combine_player_database(self, player_data_gw,
@@ -1663,7 +1711,8 @@ class DataLoader(DLH.DataLoaderHistoric):
             print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
         player_data = pd.concat([player_data, player_data_gw], axis=0)
-        player_data.to_csv(path.join(path_processed, filename_player_data), index=False)
+        # player_data.to_csv(path.join(path_processed, filename_player_data), index=False)
+        return player_data
 
 
 
@@ -1716,6 +1765,7 @@ class DataLoader(DLH.DataLoaderHistoric):
 
             league_data_full = league_data_full.rename(columns={"event": "round"})
             league_data_full.to_csv(path_league_data_full, index=False)
+
 
     def process_database_model(self, path_processed,
                                filename_modelling_db,
@@ -1841,6 +1891,25 @@ class DataLoader(DLH.DataLoaderHistoric):
         return transfers
 
 
+    def determine_current_gw(self):
+
+        events = self.scrape_bootstrap_static(keys=['events'])['events']
+
+        curr_gw_flag = False
+        gw_curr = 0
+        i = 0
+
+        while curr_gw_flag is False:
+            # print(events['finished'].values[i])
+            # print(events['finished'].values[i] == True)
+            # print(events['finished'].iloc[i])
+            if events['finished'].values[i] == True:
+                i += 1
+            else:
+                curr_gw_flag = True
+                gw_curr = events['id'].iloc[i-1]
+
+        return gw_curr
 
 
 

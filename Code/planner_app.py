@@ -246,7 +246,7 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
     player_no = i + 1
 
     match_1 = html.Div([
-        html.Div(children=str(player_no)+'.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
+        html.Div(children=str(player_no)+'.', id='player_'+str(round_id)+'_'+str(player_no)+'_1_no', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
         html.Div(children=player_position, id='player_'+str(round_id)+'_'+str(player_no)+'_1_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
         html.Div(dcc.Dropdown(
                     id='player_'+str(round_id)+'_'+str(player_no)+'_name',
@@ -280,11 +280,11 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
             id='player_'+str(round_id)+'_'+str(player_no)+'_transfer')
         , style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'})
 
-    ], style={'width': '100%','float': 'left'}),
+    ], id='div_'+str(round_id)+'_'+str(player_no)+'_1', style={'width': '100%','float': 'left'}),
 
     # Player 1, 2nd game placeholder
     match_2 = html.Div([
-        html.Div(children=str(player_no)+'.', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
+        html.Div(children=str(player_no)+'.', id='player_'+str(round_id)+'_'+str(player_no)+'_2_no', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
         html.Div(children=player_position, id='player_'+str(round_id)+'_'+str(player_no)+'_2_pos', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
         html.Div(children='XXXXXXXXXX', style={'width': '29%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'color': 'white'}),
         html.Div(children='X.X', id='player_'+str(round_id)+'_'+str(player_no)+'_2_value', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
@@ -298,7 +298,7 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
         html.Div(children='', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'}),
         html.Div(children='',style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center'})
 
-    ], style={'width': '100%','float': 'left'}),
+    ], id='div_'+str(round_id)+'_'+str(player_no)+'_2', style={'width': '100%','float': 'left'}),
 
     # Blank Line
     blank = html.Div([
@@ -315,7 +315,7 @@ def create_player_div(i, team_unique_ids, team_names, team_picks, data, team_cod
         html.Div(children='', style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'}),
         html.Div(children='',style={'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'color': 'white'})
 
-    ], style={'width': '100%','float': 'left'}),
+    ], id='div_'+str(round_id)+'_'+str(player_no)+'_blank', style={'width': '100%','float': 'left'}),
 
     return match_1, match_2, blank
 
@@ -331,6 +331,24 @@ def style_colour(font_size, fixture_diff, width):
     style = {'width': width, 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'background-color': fixture_diff_colour(fixture_diff)}
 
     return style
+
+def style_colour_injury(font_size, chance_of_playing):
+
+    colour_names = ['white', 'yellow', 'red']
+
+    if chance_of_playing == 100:
+        font_colour = 'black'
+        injury_colour = 'white'
+    elif chance_of_playing == 0:
+        injury_colour = 'red'
+    else:
+        injury_colour = 'yellow'
+
+    style_1 = {'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'background-color': injury_colour}
+    style_2 = {'width': '6%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size, 'text-align': 'center', 'background-color': injury_colour}
+    style_3 = {'width': '100%','float': 'left', 'background-color': injury_colour}
+
+    return style_1, style_2, style_3
 
 
 def calculate_player_points(player_form_1, player_form_2, player_cpt, triple_captain=False):
@@ -409,9 +427,24 @@ def calculate_team_cost(player_value_list):
     return team_value
 
 
+def get_chance_of_playing(data, data_raw, player_unique_id):
+
+    player_id = determine_element_id(data, player_unique_id, season_latest)
+
+    for i in range(data.shape[0]):
+        if data_raw['id'].iloc[i] == player_id:
+            chance_of_playing = data_raw['chance_of_playing_this_round'].iloc[i]
+            if np.isnan(chance_of_playing) == True:
+                chance_of_playing = 100
+            return chance_of_playing
+
+
+
 ######################################################################################################################
 ################################################ Load Data ###########################################################
 ######################################################################################################################
+
+DataLoaderObj = DL.DataLoader()
 
 path_data = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'player_database.csv')
 path_player_metadata = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed', 'player_metadata.csv')
@@ -429,7 +462,8 @@ team_stats = pd.read_csv(path_team_stats)
 
 season_latest = player_metadata['season'].max()
 player_metadata_season = player_metadata[player_metadata['season'] == season_latest]
-round_curr = 19
+# round_curr = 19
+round_curr = DataLoaderObj.determine_current_gw()
 round_next = round_curr + 1
 
 team_stats = team_stats[team_stats['season']==season_latest]
@@ -444,7 +478,6 @@ path_league_data = path.join(path.dirname(path.dirname(path.abspath(__file__))),
 path_league_data_full = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Cache', 'league_data_full.csv')
 available_indicators = data.columns
 
-DataLoaderObj = DL.DataLoader()
 DataLoaderObj.scrape_league_standings(path_league_data_full,
                                       path_league_data,
                                       league_id=1218670,
@@ -470,6 +503,7 @@ transfers = DataLoaderObj.scrape_transfer_information(email, password, team_id)
 
 initial_teamvalue = (team_picks['selling_price'].sum() + transfers['bank'])/10
 
+data_raw = DataLoaderObj.scrape_bootstrap_static(keys=['elements'])['elements']
 
 ######################################################################################################################
 ################################################ Layout Function #####################################################
@@ -9450,7 +9484,7 @@ if debug_mode is False:
 
 elif debug_mode is True:
 
-
+    'div_1_1_1'
     @app.callback(
         [Output('player_1_1_1_value', 'children'),
          Output('player_1_1_1_pos', 'children'),
@@ -9479,7 +9513,12 @@ elif debug_mode is True:
          Output('player_1_1_1_team_form', 'style'),
          Output('player_1_1_2_team_form', 'style'),
          Output('player_1_1_1_team_odds', 'style'),
-         Output('player_1_1_2_team_odds', 'style')],
+         Output('player_1_1_2_team_odds', 'style'),
+         Output('player_1_1_1_no', 'style'),
+         Output('player_1_1_2_no', 'style'),
+         Output('div_1_1_1', 'style'),
+         Output('div_1_1_2', 'style'),
+         Output('div_1_1_blank', 'style'),],
         [Input('player_1_1_name', 'value')],
         [State('intermediate-team_names_gw1', 'children'),
          State('intermediate-team_unique_ids_gw1', 'children'),
@@ -9510,10 +9549,14 @@ elif debug_mode is True:
         gw_curr = int(gw_curr)
         gw_next = gw_curr + 1
 
+        chance_of_playing = get_chance_of_playing(data, data_raw, player_unique_id)
+        chance_of_playing_style1, chance_of_playing_style2, chance_of_playing_style3 = style_colour_injury(font_size, chance_of_playing)
+
         #GW + 1
         player_id = determine_element_id(data, player_unique_id, 2020)
         (unique_id, form, team_unique_id, team_id, position, team_code, player_name, opposition, was_home, odds_win, fixture_diff, team_form, n_matches) = \
                 planner_process_player(data, team_codes, fixture_data, team_stats, player_id, season_latest, gw_next)
+
 
         if int(unique_id) in team_unique_ids.values:
             value = '{0:.1f}'.format(team_picks[team_picks['element']==player_id]['selling_price'].values[0]/10)
@@ -9557,7 +9600,12 @@ elif debug_mode is True:
                 style_colour(font_size, fixture_diff[0], '8%'),
                 style_colour(font_size, fixture_diff[1], '8%'),
                 style_colour(font_size, fixture_diff[0], '5%'),
-                style_colour(font_size, fixture_diff[1], '5%'))
+                style_colour(font_size, fixture_diff[1], '5%'),
+                chance_of_playing_style1,
+                chance_of_playing_style2,
+                chance_of_playing_style3,
+                chance_of_playing_style3,
+                chance_of_playing_style3)
 
 
     @app.callback(
@@ -9879,6 +9927,10 @@ elif debug_mode is True:
         #GW + 1
         team_names = pd.read_json(team_names_json, orient='split', typ='series')
         team_unique_ids = pd.read_json(team_unique_ids_json, orient='split', typ='series')
+
+        print(players_2020_names)
+        print(players_2020_unique_ids)
+        print(len(players_2020_names), len(players_2020_unique_ids))
 
         if transfer_tick != None:
             if len(transfer_tick) > 0:

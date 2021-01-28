@@ -14,14 +14,24 @@ filename_player_metadata = 'player_metadata.csv'
 filename_team_metadata = 'team_metadata.csv'
 
 data = pd.read_csv(path.join(path_processed, filename_player_database))
+player_metadata = pd.read_csv(path.join(path_processed, filename_player_metadata))
 
+I = data.shape[0]
 
-data_old = data[data['season']!=2020].reset_index(drop=True)
-# data = data[data['season']!=2020].reset_index(drop=True)
-data_new = data[data['season']==2020]
+for i in range(data.shape[0]):
 
-data_new = data_new[data_new['round']<=16].reset_index(drop=True)
+    if ((i / I) * 100) % 1 == 0:
+        print('Processed ', str((i / I) * 100), '%')
+    player_name = data['name'].iloc[i]
+    season = data['season'].iloc[i]
 
-data = pd.concat([data_old, data_new], axis=0).reset_index(drop=True)
+    unique_id = player_metadata[(player_metadata['name']==player_name) & (player_metadata['season']==season)]['unique_id'].values
+    print(player_name, season)
+    print('unique_id = ', unique_id)
+
+    data['unique_id'].iloc[i] = unique_id
+
+data = data.reset_index(drop=True)
+data = data.drop_duplicates()
 
 data.to_csv(path.join(path_processed, filename_player_database), index=False)
