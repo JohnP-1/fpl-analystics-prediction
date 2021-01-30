@@ -46,6 +46,31 @@ def find_top_results(data, target_column, n, element_type=-1):
         data_filt = data_filt[data_filt['element_type']==element_type]
 
     data_filt = data_filt[data_filt['round']==data_filt['round'].max()]
+    # unique_ids = data_filt['unique_id'].unique()
+    # player_data_list = []
+    #
+    # print(data_filt['team_wins'].dtypes, data_filt['team_draws'].dtypes, data_filt['team_losses'].dtypes)
+    #
+    # for unique_id in unique_ids:
+    #
+    #     player_data_unique = data_filt[data_filt['unique_id']==unique_id]
+    #
+    #     if player_data_unique.shape[0] == 2:
+    #         played_0 = int(player_data_unique['team_wins'].iloc[0]) + int(player_data_unique['team_draws'].iloc[0]) + int(player_data_unique['team_losses'].iloc[0])
+    #         played_1 = int(player_data_unique['team_wins'].iloc[1]) + int(player_data_unique['team_draws'].iloc[1]) + int(player_data_unique['team_losses'].iloc[1])
+    #
+    #         print(type(played_0), type(played_1))
+    #
+    #         if played_0 > played_1:
+    #             player_data_list.append(player_data_unique.iloc[0, :])
+    #         else:
+    #             player_data_list.append(player_data_unique.iloc[1, :])
+    #
+    #     elif player_data_unique.shape[0] == 1:
+    #         player_data_list.append(player_data_unique)
+    #
+    # data_filt = pd.concat(player_data_list, axis=0).reset_index(drop=True)
+
     data_filt = data_filt.sort_values(by=target_column, ascending=False)
 
     return data_filt['unique_id'].iloc[:n]
@@ -1540,7 +1565,7 @@ def update_league_graph(xaxis_column_name,
      Input('position-type', 'value'),
      Input('player-selection-type', 'value'),
      Input('n', 'value')])
-def update_aggregate_graph(plot_type,
+def APA_update_aggregate_graph(plot_type,
                         xaxis_column_name,
                         yaxis_column_name,
                         aggregate_column_name,
@@ -1603,6 +1628,9 @@ def update_aggregate_graph(plot_type,
     if plot_type == 'Bar':
         if unique_ids.iloc[0] != -1:
             data_filt = data_filt[data_filt['round'] == data_filt['round'].max()]
+            # data_filt = data_filt.groupby('unique_id').mean()
+            # data_filt.reset_index(level=0, inplace=True)
+
 
         fig = px.bar(data_filt,
                      x=xaxis_column_name,
