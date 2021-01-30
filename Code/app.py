@@ -1866,8 +1866,8 @@ def update_aggregate_figure_ycol_error(fig_yaxis_column,
     return fig
 
 
-if __name__ == '__main__':
-    app.run_server(debug=False, host='192.168.0.36', port=8051)
-
 # if __name__ == '__main__':
-#     app.run_server(debug=False, port=8051)
+#     app.run_server(debug=False, host='192.168.0.36', port=8051)
+
+if __name__ == '__main__':
+    app.run_server(debug=False, port=8051)
