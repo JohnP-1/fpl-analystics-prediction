@@ -14,6 +14,7 @@ import requests
 from flask_caching import Cache
 import os
 import functools
+import unidecode
 
 def find_unique_id(data, first_name, second_name, season):
     """
@@ -489,7 +490,7 @@ cache = Cache(app.server, config={
 app.config.suppress_callback_exceptions = True
 
 app.layout = html.Div([
-    dcc.Tabs(id='tabs-example', value='APA', children=[
+    dcc.Tabs(id='tabs-example', value='IPL', children=[
         dcc.Tab(label='Aggregate Player Analysis', value='APA'),
         dcc.Tab(label='Individual Player Analysis', value='IPL'),
         dcc.Tab(label='FPL League Analysis', value='LA'),
@@ -514,7 +515,7 @@ unique_ids = []
 
 for i in range(player_metadata_season.shape[0]):
     player_name_key = player_metadata_season['name'].iloc[i]
-    player_name = player_metadata_season['name_first'].iloc[i] + ' ' + player_metadata_season['name_last'].iloc[i]
+    player_name = unidecode.unidecode(player_metadata_season['name_first'].iloc[i]) + ' ' + unidecode.unidecode(player_metadata_season['name_last'].iloc[i])
     unique_id = player_metadata_season['unique_id'].iloc[i]
     player_names.append(player_name)
     unique_ids.append(unique_id)
@@ -795,7 +796,7 @@ def render_content(tab):
                             html.Div(dcc.Dropdown(
                                 id='IPL_playerselect',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
-                                value=2327,
+                                value=2828,
                                 # value=2828,
                                 multi=False),
                             style={'width': '55%', 'display': 'inline-block', 'float': 'left'}),
@@ -807,7 +808,7 @@ def render_content(tab):
                                 id='IPL_reference_player',
                                 options=[{'label': name, 'value': unique_ids[i]} for i, name in enumerate(player_names)],
                                 # value=2828,
-                                value=2327,
+                                value=3097,
                                 multi=False),
                             style={'width': '55%', 'display': 'inline-block', 'float': 'left'}),
                         ]),
@@ -991,7 +992,7 @@ def render_content(tab):
 def IPL_select_player(unique_id,
                       unique_id_reference):
 
-
+    print(unique_id, unique_id_reference)
     # Player Data
     data_IPL_player = data[data['unique_id']==unique_id]
     round_max = data_IPL_player['round'].max()
@@ -1072,6 +1073,8 @@ def IPL_select_player(unique_id,
         form_away_previous = data_IPL_player[data_IPL_player['round']==round_max-1]['mean_total_points_away_4'].values[0]
     else:
         form_away_previous = 0
+
+    print(form_all_reference, form_home_reference, form_away_reference)
 
     indicator_form.add_trace(go.Indicator(
         value = form_all,
@@ -1898,4 +1901,4 @@ def update_aggregate_figure_ycol_error(fig_yaxis_column,
 #     app.run_server(debug=False, host='192.168.0.36', port=8051)
 
 if __name__ == '__main__':
-    app.run_server(debug=False, port=8051)
+    app.run_server(debug=True, port=8051)

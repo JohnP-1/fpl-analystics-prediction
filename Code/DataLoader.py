@@ -125,10 +125,10 @@ class DataLoader(DLH.DataLoaderHistoric):
                                             path_processed,
                                             filename_player_database)
 
-                # filename_player_data = 'player_db_' + str(gw_curr) + '.csv'
-                #
-                # player_database_gw.to_csv(path.join(path_processed, filename_player_data), index=False)
-                #
+                filename_player_data = 'player_db_' + str(gw_curr) + '.csv'
+
+                player_database_gw.to_csv(path.join(path_processed, filename_player_data), index=False)
+
 
                 print("Processing the aggregate features")
                 player_database_gw = self.calculate_aggregate_features(player_database_gw,
@@ -1408,9 +1408,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                     player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_se_list] = np.std(np.array(player_data_unique_id.loc[player_data_unique_id.index[-window_size:], target_columns].values, dtype=np.float64), axis=0)/np.sqrt(window_size)
                     player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = np.max(player_data_unique_id.loc[player_data_unique_id.index[-window_size:], target_columns].values, axis=0) - np.min(player_data_unique_id.loc[player_data_unique_id.index[-window_size:], target_columns].values, axis=0)
             elif home is True:
-                for i in range(offset, player_data_unique_id_gw.shape[0]):
+                for i in range(0, player_data_unique_id_gw.shape[0]):
                     player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[-window_size:, :]
-
                     if player_data_unique_id_temp.shape[0] == 0:
                         player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = 0
                         player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = 0
@@ -1425,9 +1424,8 @@ class DataLoader(DLH.DataLoaderHistoric):
                         player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_range_list] = np.max(player_data_unique_id_temp[target_columns].values, axis=0) - np.min(player_data_unique_id_temp[target_columns].values, axis=0)
 
             elif home is False:
-                for i in range(offset, player_data_unique_id_gw.shape[0]):
+                for i in range(0, player_data_unique_id_gw.shape[0]):
                     player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[-window_size:, :]
-
                     if player_data_unique_id_temp.shape[0] == 0:
                         player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_mean_list] = 0
                         player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_median_list] = 0
@@ -1673,7 +1671,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                         player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_list[k]] = player_data_unique_id[player_data_unique_id[column]>event].iloc[-window_size:].shape[0] / window_size
 
             elif home is True:
-                for i in range(offset, player_data_unique_id_gw.shape[0]):
+                for i in range(0, player_data_unique_id_gw.shape[0]):
                     player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==True].iloc[-window_size:, :]
                     for k, column in enumerate(target_columns):
                         if player_data_unique_id_temp.shape[0] == 0:
@@ -1682,7 +1680,7 @@ class DataLoader(DLH.DataLoaderHistoric):
                             player_data_unique_id_gw.loc[player_data_unique_id_gw.index[i], target_column_list[k]] = player_data_unique_id_temp[player_data_unique_id_temp[column]>event].shape[0] / window_size
 
             elif home is False:
-                for i in range(offset, player_data_unique_id_gw.shape[0]):
+                for i in range(0, player_data_unique_id_gw.shape[0]):
                     player_data_unique_id_temp = player_data_unique_id[player_data_unique_id['was_home']==False].iloc[-window_size:, :]
                     for k, column in enumerate(target_columns):
                         if player_data_unique_id_temp.shape[0] == 0:

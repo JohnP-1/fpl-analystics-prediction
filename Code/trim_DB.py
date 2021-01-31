@@ -20,7 +20,7 @@ data_old = data[data['season']!=2020].reset_index(drop=True)
 # data = data[data['season']!=2020].reset_index(drop=True)
 data_new = data[data['season']==2020]
 
-data_new = data_new[data_new['round']<=16].reset_index(drop=True)
+data_new = data_new[data_new['round']<=18].reset_index(drop=True)
 
 data = pd.concat([data_old, data_new], axis=0).reset_index(drop=True)
 
