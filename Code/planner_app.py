@@ -478,13 +478,16 @@ available_indicators = data.columns
 
 DataLoaderObj.scrape_league_standings(path_league_data_full,
                                       path_league_data,
-                                      league_id=1218670,
+                                      league_id=1217918,
                                       league_type='classic')
 
 data_team_ids_summary = pd.read_csv(path_league_data, encoding='UTF-8')
 data_team_ids_summary = data_team_ids_summary.rename(columns={"id": "identifier", "entry": "id"})
 data_team_ids = data_team_ids_summary.copy()
-data_team_ids = data_team_ids[['rank', 'entry_name', 'total']]
+data_team_ids = data_team_ids[['rank', 'id', 'entry_name', 'total']]
+fpl_team_entries = ['5403039', '5389914']
+fpl_team_entry_names = ['The Kouyaté Kid', 'McGinn&Tonic']
+
 data_league_standings = pd.read_csv(path_league_data_full, encoding='UTF-8')
 
 data_league_standings = data_league_standings.merge(data_team_ids_summary.drop(columns=['rank', 'rank_sort']), on=['id'])
@@ -493,9 +496,16 @@ labels_league_standings = data_league_standings.columns
 league_ids = ['1217918', '1218670']
 league_names = ['The league of Leith', 'The old office Vs no AI']
 
-email = 'speeder1987@gmail.com'
-password = 'Footb@ll2020'
+path_users = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Cache', 'users.csv')
+
+users = pd.read_csv(path_users)
+users['id'] = users['id'].astype('str')
+
 team_id = '5403039'
+
+email = users[users['id']=='5403039']['email'].values[0]
+password = users[users['id']=='5403039']['password'].values[0]
+
 team_picks = DataLoaderObj.scrape_team_information(email, password, team_id)
 transfers = DataLoaderObj.scrape_transfer_information(email, password, team_id)
 
@@ -961,6 +971,15 @@ def render_content(tab):
                     blanks_1[14][0],
 
                 ]),
+
+                html.Div(children='Select Team:', style={'font-size': font_size_heading, 'font-weight': 'bold', 'padding': '2%'}),
+
+                html.Div(dcc.Dropdown(
+                    id='fantasy-team-names',
+                    options=[{'label': name, 'value': fpl_team_entries[i]} for i, name in enumerate(fpl_team_entry_names)],
+                    value=fpl_team_entries[0],
+                    multi=False),
+                style={'width': '100%', 'display': 'inline-block', 'float': 'left', 'font-size': font_size_summary}),
 
                 html.Div(children=team_names_json, id='intermediate-team_names_gw1', style={'display': 'none'}),
                 html.Div(children=team_unique_ids_json, id='intermediate-team_unique_ids_gw1', style={'display': 'none'}),
@@ -1479,6 +1498,7 @@ def render_content(tab):
 ######################################################################################################################
 ################################################ Callbacks ###########################################################
 ######################################################################################################################
+
 
 @app.callback(
     [Output('gw1-expected-points', 'children'),
@@ -4235,7 +4255,7 @@ def update_player_data_gw2_p1(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -4350,7 +4370,7 @@ def update_player_data_gw2_p2(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -4464,7 +4484,7 @@ def update_player_data_gw2_p3(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -4579,7 +4599,7 @@ def update_player_data_gw2_p4(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -4694,7 +4714,7 @@ def update_player_data_gw2_p5(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -4809,7 +4829,7 @@ def update_player_data_gw2_p6(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -4924,7 +4944,7 @@ def update_player_data_gw2_p7(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -5039,7 +5059,7 @@ def update_player_data_gw2_p8(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -5154,7 +5174,7 @@ def update_player_data_gw2_p9(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -5269,7 +5289,7 @@ def update_player_data_gw2_p10(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -5384,7 +5404,7 @@ def update_player_data_gw2_p11(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -5499,7 +5519,7 @@ def update_player_data_gw2_p12(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -5614,7 +5634,7 @@ def update_player_data_gw2_p13(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -5729,7 +5749,7 @@ def update_player_data_gw2_p14(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -5844,7 +5864,7 @@ def update_player_data_gw2_p15(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 2
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -5899,7 +5919,6 @@ def update_player_data_gw2_p15(player_unique_id,
             style_colour(font_size, fixture_diff[0], '5%'),
             style_colour(font_size, fixture_diff[1], '5%'),
             chance_of_playing_style)
-
 
 
 @app.callback(
@@ -5960,7 +5979,7 @@ def update_player_data_gw3_p1(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -6074,7 +6093,7 @@ def update_player_data_gw3_p2(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -6188,7 +6207,7 @@ def update_player_data_gw3_p3(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -6302,7 +6321,7 @@ def update_player_data_gw3_p4(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -6416,7 +6435,7 @@ def update_player_data_gw3_p5(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -6530,7 +6549,7 @@ def update_player_data_gw3_p6(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -6644,7 +6663,7 @@ def update_player_data_gw3_p7(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -6758,7 +6777,7 @@ def update_player_data_gw3_p8(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -6872,7 +6891,7 @@ def update_player_data_gw3_p9(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -6986,7 +7005,7 @@ def update_player_data_gw3_p10(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -7100,7 +7119,7 @@ def update_player_data_gw3_p11(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -7214,7 +7233,7 @@ def update_player_data_gw3_p12(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -7328,7 +7347,7 @@ def update_player_data_gw3_p13(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -7442,7 +7461,7 @@ def update_player_data_gw3_p14(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -7556,7 +7575,7 @@ def update_player_data_gw3_p15(player_unique_id,
     team_names_next = pd.read_json(team_names_json_next, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 3
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -7659,7 +7678,7 @@ def update_player_data_gw4_p1(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -7750,7 +7769,7 @@ def update_player_data_gw4_p2(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -7841,7 +7860,7 @@ def update_player_data_gw4_p3(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -7932,7 +7951,7 @@ def update_player_data_gw4_p4(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8023,7 +8042,7 @@ def update_player_data_gw4_p5(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8114,7 +8133,7 @@ def update_player_data_gw4_p6(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8205,7 +8224,7 @@ def update_player_data_gw4_p7(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8296,7 +8315,7 @@ def update_player_data_gw4_p8(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8387,7 +8406,7 @@ def update_player_data_gw4_p9(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8478,7 +8497,7 @@ def update_player_data_gw4_p10(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8569,7 +8588,7 @@ def update_player_data_gw4_p11(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8660,7 +8679,7 @@ def update_player_data_gw4_p12(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8751,7 +8770,7 @@ def update_player_data_gw4_p13(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8842,7 +8861,7 @@ def update_player_data_gw4_p14(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8933,7 +8952,7 @@ def update_player_data_gw4_p15(player_unique_id,
     team_names = pd.read_json(team_names_json, orient='split', typ='series')
 
     gw_curr = int(gw_curr)
-    gw_next = gw_curr + 1
+    gw_next = gw_curr + 4
 
     #GW + 1
     player_id = determine_element_id(data, player_unique_id, 2020)
@@ -8976,7 +8995,6 @@ def update_player_data_gw4_p15(player_unique_id,
             style_colour(font_size, fixture_diff[0], '5%'),
             style_colour(font_size, fixture_diff[1], '5%'),
             chance_of_playing_style)
-
 
 
 @app.callback(
