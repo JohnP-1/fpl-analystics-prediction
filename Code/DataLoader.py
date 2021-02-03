@@ -1768,8 +1768,7 @@ class DataLoader(DLH.DataLoaderHistoric):
     def process_database_model(self, path_processed,
                                filename_modelling_db,
                                filename_player_data,
-                               filename_player_metadata,
-                               filename_team_metadata):
+                               team_stats):
 
         # 1. make sure all rounds go from 1-38 +++++++++++++++
         # 2. make sure all players have rounds 1-38?
@@ -1781,68 +1780,113 @@ class DataLoader(DLH.DataLoaderHistoric):
         except:
             print('Can\'t find the player_data.csv file, either the path specified is incorrect or it hasn\'t been created yet')
 
+        try:
+            team_stats = pd.read_csv(path.join(path_processed, team_stats))
+        except:
+            print('Can\'t find the team_stats.csv file, either the path specified is incorrect or it hasn\'t been created yet')
+
         model_db = player_data.copy()
 
-        model_db['future_fixture_team_next'] = 0
-        model_db['future_fixture_team_unique_id_next'] = 0
-        model_db['future_fixture_position_next'] = 0
-        model_db['future_fixture_points_next'] = 0
-        model_db['future_fixture_wins_next'] = 0
-        model_db['future_fixture_draws_next'] = 0
-        model_db['future_fixture_losses_next'] = 0
-        model_db['future_fixture_goals_for_next'] = 0
-        model_db['future_fixture_goals_against_next'] = 0
-        model_db['future_fixture_goals_diff_next'] = 0
-        model_db['future_fixture_played_next'] = 0
-        model_db['future_fixture_yc_next'] = 0
-        model_db['future_fixture_rc_next'] = 0
-
-        for i in range(model_db.shape[0]):
-            if model_db['season'].iloc[i] == 2019:
-                if model_db['round'].iloc[i] > 38:
-                   model_db['round'].iloc[i] = model_db['round'].iloc[i] - 9
-            round = model_db['round'].iloc[i]
-            if model_db['round'].iloc[i] < 38:
-                model_db['future_fixture_team_next'].iloc[i] = model_db['future_fixture_team_' + str(round+1)].iloc[i]
-                model_db['future_fixture_team_unique_id_next'].iloc[i] = model_db['future_fixture_team_unique_id_' + str(round+1)].iloc[i]
-                model_db['future_fixture_position_next'].iloc[i] = model_db['future_fixture_position_' + str(round+1)].iloc[i]
-                model_db['future_fixture_points_next'].iloc[i] = model_db['future_fixture_points_' + str(round+1)].iloc[i]
-                model_db['future_fixture_wins_next'].iloc[i] = model_db['future_fixture_wins_' + str(round+1)].iloc[i]
-                model_db['future_fixture_draws_next'].iloc[i] = model_db['future_fixture_draws_' + str(round+1)].iloc[i]
-                model_db['future_fixture_losses_next'].iloc[i] = model_db['future_fixture_losses_' + str(round+1)].iloc[i]
-                model_db['future_fixture_goals_for_next'].iloc[i] = model_db['future_fixture_goals_for_' + str(round+1)].iloc[i]
-                model_db['future_fixture_goals_against_next'].iloc[i] = model_db['future_fixture_goals_against_' + str(round+1)].iloc[i]
-                model_db['future_fixture_goals_diff_next'].iloc[i] = model_db['future_fixture_goals_diff_' + str(round+1)].iloc[i]
-                model_db['future_fixture_played_next'].iloc[i] = model_db['future_fixture_played_' + str(round+1)].iloc[i]
-                model_db['future_fixture_yc_next'].iloc[i] = model_db['future_fixture_yc_' + str(round+1)].iloc[i]
-                model_db['future_fixture_rc_next'].iloc[i] = model_db['future_fixture_rc_' + str(round+1)].iloc[i]
-
-        model_db = self.one_hot_encode(model_db, 'was_home')
-        model_db = self.one_hot_encode(model_db, 'element_type')
-        model_db = self.one_hot_encode(model_db, 'team_unique_id')
-        model_db = self.one_hot_encode(model_db, 'future_fixture_team_unique_id_next')
-        for i in range(1, 39):
-            model_db = self.one_hot_encode(model_db, 'future_fixture_team_unique_id_' + str(i))
+        model_db = self.one_hot_encode(model_db, 'was_home', drop=False)
+        model_db = self.one_hot_encode(model_db, 'element_type', drop=False)
 
         model_db['points_next'] = 0
         unique_ids = model_db['unique_id'].unique()
 
+        team_stats = team_stats.drop(columns=['team_name'])
+        team_stats = team_stats.drop(columns=['team_unique_id'])
+        team_stats = team_stats.drop(columns=['position'])
+        team_stats = team_stats.drop(columns=['team_id_against'])
+        team_stats = team_stats.drop(columns=['team_unique_id_against'])
+        team_stats = team_stats.drop(columns=['against_position'])
+        team_stats = team_stats.drop(columns=['win'])
+        team_stats = team_stats.drop(columns=['draw'])
+        team_stats = team_stats.drop(columns=['loss'])
+        team_stats = team_stats.drop(columns=['team_score'])
+        team_stats = team_stats.drop(columns=['team_concede'])
+        team_stats = team_stats.drop(columns=['total_wins'])
+        team_stats = team_stats.drop(columns=['total_draws'])
+        team_stats = team_stats.drop(columns=['total_losses'])
+        team_stats = team_stats.drop(columns=['was_home'])
+        team_stats = team_stats.drop(columns=['against_team_name'])
+        team_stats = team_stats.drop(columns=['team_results_all'])
+        team_stats = team_stats.drop(columns=['team_results_home'])
+        team_stats = team_stats.drop(columns=['team_results_away'])
+        team_stats = team_stats.drop(columns=['team_score_all'])
+        team_stats = team_stats.drop(columns=['team_score_home'])
+        team_stats = team_stats.drop(columns=['team_score_away'])
+        team_stats = team_stats.drop(columns=['team_concede_all'])
+        team_stats = team_stats.drop(columns=['team_concede_home'])
+        team_stats = team_stats.drop(columns=['team_concede_away'])
+
+        # team_stats['round'] = team_stats['round'] - 1
+        # team_stats['round'] = team_stats[team_stats['round'] > 0]
+
+        # print(model_db.shape)
+        #
+        # model_db = model_db.merge(team_stats, on=['season', 'team_id', 'round'], how='inner')
+        #
+        # print(model_db.shape)
+
+        model_db_list = []
+
         for unique_id in unique_ids:
             print(f'Processing {unique_id} of {np.max(unique_ids)}')
-            player_data_temp = model_db[model_db['unique_id']==unique_id]
-            for i in range(player_data_temp.shape[0]):
-                if i < player_data_temp.shape[0] - 1:
-                    player_data_temp['points_next'].iloc[i] = player_data_temp['total_points'].iloc[i+1]
+            player_data_temp = model_db[model_db['unique_id']==unique_id].sort_values('round')
+            # player_data_temp = player_data_temp[player_data_temp['round']<player_data_temp['round'].max()].sort_values('round')
+            for i in range(player_data_temp.shape[0]-1):
+                player_data_temp['points_next'].iloc[i] = player_data_temp['total_points'].iloc[i+1]
 
-            model_db[model_db['unique_id']==unique_id] = player_data_temp
+            model_db_list.append(player_data_temp)
+
+        model_db = pd.concat(model_db_list, axis=0).reset_index(drop=True)
+
+        model_db_row_list = []
+        team_stats_row_list = []
+
+        for i in range(model_db.shape[0]):
+            model_db_row = model_db.iloc[i, :]
+            row_round = model_db_row['round']+1
+            row_season = model_db_row['season']
+            row_team = model_db_row['team_id']
+            team_stats_row = team_stats[(team_stats['round']==row_round) & (team_stats['season']==row_season) & (team_stats['team_id']==row_team)]
+
+            # model_db_row_list.append(model_db_row)
+            team_stats_row_list.append(team_stats_row)
+
+
+        team_stats_df = pd.concat(team_stats_row_list, axis=0).reset_index(drop=True)
+        model_db = pd.concat([model_db.reset_index(drop=True), team_stats_df], axis=1).reset_index(drop=True)
+        # model_db_row = pd.concat([model_db_row.to_frame().T.reset_index(drop=True), row_team_stats.reset_index(drop=True)], axis=1)
+
+        # model_db = pd.concat(model_db_row_list, axis=0).reset_index(drop=True)
+
+        columns = list(model_db.columns)
+        columns_final = columns.copy()
+
+        columns_final.remove('kickoff_time')
+        columns_final.remove('team_name')
+        columns_final.remove('team_played')
+        columns_final.remove('next_fixture_team')
+        columns_final.remove('next_fixture_played')
+        columns_final.remove('team_unique_id')
+        columns_final.remove('team_id')
+
+        for column in columns:
+            if column.split('_')[0] == 'range' or column.split('_')[0] == 'std' or column.split('_')[0] == 'se':
+                columns_final.remove(column)
+
+        model_db = model_db[columns_final]
 
         model_db.to_csv(path.join(path_processed, filename_modelling_db), index=False)
 
     def one_hot_encode(self, data,
-                       column_name):
+                       column_name,
+                       drop=True):
 
         data_onehot = pd.get_dummies(data[column_name],prefix=column_name)
-        data = data.drop(columns=[column_name])
+        if drop is True:
+            data = data.drop(columns=[column_name])
         data = pd.concat([data, data_onehot], axis=1)
 
         return data

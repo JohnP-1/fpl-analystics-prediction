@@ -284,8 +284,6 @@ data['total_total_points_any_all/pound'] = data['total_total_points_any_all'] / 
 data['name_first'] = data['name'].str.split('_', expand=True)[0]
 data['name_last'] = data['name'].str.split('_', expand=True)[1].str.slice(start=0, stop=20)
 
-print(list(data.columns))
-
 path_league_data = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Cache', 'league_standings_full.csv')
 path_league_data_full = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Cache', 'league_data_full.csv')
 available_indicators_all = data.columns
@@ -332,13 +330,16 @@ styles = {
         'overflowX': 'scroll'
     }
 }
-cache = Cache(app.server, config={
-    # try 'filesystem' if you don't want to setup redis
-    'CACHE_TYPE': 'redis',
-    'CACHE_REDIS_URL': os.environ.get('REDIS_URL', '')
-})
+# cache = Cache(app.server, config={
+#     # try 'filesystem' if you don't want to setup redis
+#     'CACHE_TYPE': 'redis',
+#     'CACHE_REDIS_URL': os.environ.get('REDIS_URL', '')
+# })
+#
+# app.config.suppress_callback_exceptions = True
 
-app.config.suppress_callback_exceptions = True
+server = app.server
+
 
 app.layout = html.Div([
     dcc.Tabs(id='tabs-example', value='PA', children=[
@@ -434,15 +435,6 @@ def render_content(tab):
 
                 html.Div([
 
-                    # html.Div([
-                    #     html.Div(children='''
-                    #         Aggregate:
-                    #     '''),
-                    #     dcc.Dropdown(
-                    #         id='fig-aggregate-column',
-                    #         options=[{'label': i, 'value': i} for i in available_indicators],
-                    #         value='mean_total_points_any_3')
-                    # ], style={'width': '48%', 'float': 'left', 'display': 'inline-block'}),
                     html.Div([
                         html.Div(children='''
                             Feature:
@@ -492,7 +484,7 @@ def render_content(tab):
                         dcc.Input(
                             id='n',
                             value='10')
-                    ], style={'width': '48%', 'float': 'right', 'display': 'inline-block'}),
+                    ], style={'width': '100%', 'float': 'right', 'display': 'inline-block'}),
 
 
             ], style={'width': '48%', 'float': 'right', 'display': 'inline-block'}),
@@ -1481,18 +1473,12 @@ def APA_update_aggregate_graph(plot_type,
 
     aggregate_column_name = aggregate_column_type + '_' + aggregate_column_target + '_' + aggregate_column_location + '_' + aggregate_column_n
 
-    print(aggregate_column_name)
-
     data_filt = data.copy()
     data_filt = data_filt[data_filt['season']==season]
 
     element_type = postion2element_type(position_type)
 
     y_data_error = determine_error_bar(aggregate_column_target, aggregate_column_type, aggregate_column_location, aggregate_column_n, errorbar_column_name)
-    print(y_data_error)
-    # if y_data_error is None:
-    #     data_filt['error_none'] = 0
-    #     y_data_error = 'error_none'
 
     if player_selection_type == 'Top players':
         if element_type != -1:
@@ -1549,14 +1535,14 @@ def APA_update_aggregate_graph(plot_type,
     elif plot_type == 'Box':
         fig = px.box(data_filt,
                      x=xaxis_column_name,
-                     y=yaxis_column_name,
+                     y=aggregate_column_target,
                      points="all")
 
         fig.update_traces(customdata=data_filt['unique_id'].unique(), selector=dict(type='box'))
 
         fig.update(layout_coloraxis_showscale=False)
 
-        fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
+        fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest', yaxis_title=aggregate_column_target,)
         fig.update(layout_coloraxis_showscale=False)
 
     return fig
