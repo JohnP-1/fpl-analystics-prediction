@@ -18,6 +18,8 @@ DataLoader = DLH.DataLoaderHistoric()
 DataLoaderFixt = DL.DataLoader()
 fixtures = DataLoaderFixt.scrape_fixtures()
 fixtures.to_csv(path.join('/home/john/Documents/projects/fpl-analystics-prediction/Data/2020-21', 'fixtures.csv'), index=False)
+player_data = pd.read_csv(path.join(path_processed, filename_player_database))
+
 
 # seasons = [2016,
 #            2017,
@@ -422,46 +424,81 @@ seasons = [2016,
 
 # seasons = [2020]
 
-for season in seasons:
-    DataLoader.process_fixtures_season(season, path_processed)
 
-DataLoader.process_team_stats_init(seasons,
-                                path_processed)
+target_columns = ['assists',
+                          'bonus',
+                          'bps',
+                          'clean_sheets',
+                          'creativity',
+                          'goals_conceded',
+                          'goals_scored',
+                          'ict_index',
+                          'influence',
+                          'minutes',
+                          'own_goals',
+                          'penalties_missed',
+                          'penalties_saved',
+                          'red_cards',
+                          'saves',
+                          'selected',
+                          'threat',
+                          'total_points',
+                          'transfers_balance',
+                          'value',
+                          'yellow_cards']
+player_data = DataLoaderFixt.calculate_statrolling_features(player_data,
+                                        path_processed,
+                                        filename_player_database,
+                                        filename_player_metadata,
+                                        filename_team_metadata,
+                                        2020,
+                                        target_columns,
+                                        gw_curr=21,
+                                        window_size=10,
+                                        home=None)
 
-DataLoader.process_team_stats(seasons,
-                            path_processed)
+player_data.to_csv(path.join(path_processed, filename_player_database), index=False)
 
-for season in seasons:
-    DataLoader.process_fixture_odds(path_processed,
-                                 'fixtures.csv',
-                                 'team_stats.csv',
-                                 season,
-                                 results_window=3)
-    DataLoader.process_fixture_odds(path_processed,
-                                 'fixtures.csv',
-                                 'team_stats.csv',
-                                 season,
-                                 results_window=4)
-    DataLoader.process_fixture_odds(path_processed,
-                                 'fixtures.csv',
-                                 'team_stats.csv',
-                                 season,
-                                 results_window=5)
-    DataLoader.process_fixture_odds(path_processed,
-                                 'fixtures.csv',
-                                 'team_stats.csv',
-                                 season,
-                                 results_window=10)
-
-    DataLoader.process_team_form(path_processed,
-                                 'team_stats.csv',
-                                 results_window=3)
-    DataLoader.process_team_form(path_processed,
-                                 'team_stats.csv',
-                                 results_window=4)
-    DataLoader.process_team_form(path_processed,
-                                 'team_stats.csv',
-                                 results_window=5)
-    DataLoader.process_team_form(path_processed,
-                                 'team_stats.csv',
-                                 results_window=10)
+# for season in seasons:
+#     DataLoader.process_fixtures_season(season, path_processed)
+#
+# DataLoader.process_team_stats_init(seasons,
+#                                 path_processed)
+#
+# DataLoader.process_team_stats(seasons,
+#                             path_processed)
+#
+# for season in seasons:
+#     DataLoader.process_fixture_odds(path_processed,
+#                                  'fixtures.csv',
+#                                  'team_stats.csv',
+#                                  season,
+#                                  results_window=3)
+#     DataLoader.process_fixture_odds(path_processed,
+#                                  'fixtures.csv',
+#                                  'team_stats.csv',
+#                                  season,
+#                                  results_window=4)
+#     DataLoader.process_fixture_odds(path_processed,
+#                                  'fixtures.csv',
+#                                  'team_stats.csv',
+#                                  season,
+#                                  results_window=5)
+#     DataLoader.process_fixture_odds(path_processed,
+#                                  'fixtures.csv',
+#                                  'team_stats.csv',
+#                                  season,
+#                                  results_window=10)
+#
+#     DataLoader.process_team_form(path_processed,
+#                                  'team_stats.csv',
+#                                  results_window=3)
+#     DataLoader.process_team_form(path_processed,
+#                                  'team_stats.csv',
+#                                  results_window=4)
+#     DataLoader.process_team_form(path_processed,
+#                                  'team_stats.csv',
+#                                  results_window=5)
+#     DataLoader.process_team_form(path_processed,
+#                                  'team_stats.csv',
+#                                  results_window=10)

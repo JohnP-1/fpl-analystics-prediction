@@ -2,28 +2,67 @@ import cvxpy
 import numpy as np
 import pandas as pd
 import os.path as path
+import DataLoader as DL
 
+
+def determine_element_id(data, unique_id, season):
+
+    return data[(data['season']==season) & (data['unique_id']==unique_id)]['element'].unique()[0]
+
+def determine_unique_id(data, element_id, season):
+
+    return int(data[(data['season']==season) & (data['element']==element_id)]['unique_id'].unique()[0])
+
+
+def get_chance_of_playing(data, data_raw, player_unique_id, season):
+
+    player_id = determine_element_id(data, player_unique_id, season)
+
+    for i in range(data.shape[0]):
+        if data_raw['id'].iloc[i] == player_id:
+            chance_of_playing = data_raw['chance_of_playing_this_round'].iloc[i]
+            if np.isnan(chance_of_playing) == True:
+                chance_of_playing = 100
+            return chance_of_playing
+
+
+pd.set_option('display.max_columns', None)
 
 # Import the data:
 path_processed = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Processed')
+path_modelling = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'Prediction')
+
 filename_player_database = 'player_database.csv'
+filename_selection = 'team_selection.csv'
 
 player_data = pd.read_csv(path.join(path_processed, filename_player_database))
 
-player_data = player_data[player_data['season']==2020]
+DataLoaderObj = DL.DataLoader()
+data_raw = DataLoaderObj.scrape_bootstrap_static(keys=['elements'])['elements']
+
+season = 2020
+
+player_data = player_data[player_data['season']==season]
 unique_ids = player_data['unique_id'].unique()
 
 player_temp_list = []
 
 for unique_id in unique_ids:
-
+    cop = get_chance_of_playing(player_data, data_raw, unique_id, season)
     data_temp = player_data[player_data['unique_id']==unique_id]
     data_temp = data_temp[data_temp['round']==data_temp['round'].max()]
-    player_temp_list.append(data_temp)
+    data_temp['cop'] = cop
+    if cop >= 75:
+        player_temp_list.append(data_temp)
 
 player_data = pd.concat(player_temp_list, axis=0).reset_index(drop=True)
 
-pred_column = 'mean_total_points_any_4'
+
+pred_column = 'mean_total_points_any_10'
+
+player_data = player_data.dropna(subset=[pred_column])
+
+print(player_data[pred_column])
 
 player_ids = player_data['unique_id'].values
 player_costs = player_data['value'].values/10
@@ -114,9 +153,14 @@ optimisation_problem.solve(solver=cvxpy.GLPK_MI)
 
 selection = selection.value
 
+columns = ['name', 'team_name', 'element_type', pred_column]
+
 print('The total team cost = ', selection @ player_costs)
 print('The team expected points = ', player_data[pred_column].iloc[selection.nonzero()].sum())
-print(player_data[['name', pred_column]].iloc[selection.nonzero()])
+print(player_data[columns].iloc[selection.nonzero()])
+
+final_selection = player_data[columns].iloc[selection.nonzero()]
+# final_selection['selected'] = 0
 
 #The next step is to select the best team based on the squad, this is once again done through mixed integer optimisation
 
@@ -177,4 +221,12 @@ selection = selection.value
 #
 # print('The total team cost = ', selection @ player_costs)
 print('The team expected points = ', player_data_filt[pred_column].iloc[selection.nonzero()].sum())
-print(player_data_filt[['name', pred_column]].iloc[selection.nonzero()])
+print(player_data_filt[columns].iloc[selection.nonzero()])
+
+final_selection['selection'] = selection * -1
+
+final_selection = final_selection.sort_values(by=['selection', 'element_type'])
+
+final_selection['selection'] = final_selection['selection'] * -1
+
+final_selection.to_csv(path.join(path_modelling, filename_selection), index=False)
