@@ -297,6 +297,20 @@ class DataLoader(DLH.DataLoaderHistoric):
                                                     window_size=5,
                                                     home=False)
 
+
+                print("Processing the rolling stat features, window size = 10")
+                player_database_gw = self.calculate_statrolling_features(player_database_gw,
+                                                    path_processed,
+                                                    filename_player_database,
+                                                    filename_player_metadata,
+                                                    filename_team_metadata,
+                                                    season,
+                                                    target_columns,
+                                                    gw_curr,
+                                                    window_size=10,
+                                                    home=None)
+
+
                 print("Processing the prob greater than 0")
                 player_database_gw = self.calculate_prob_occur(player_database_gw,
                                           path_processed,
