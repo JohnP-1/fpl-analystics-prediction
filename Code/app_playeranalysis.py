@@ -304,8 +304,8 @@ data_league_standings = pd.read_csv(path_league_data_full, encoding='UTF-8')
 data_league_standings = data_league_standings.merge(data_team_ids_summary.drop(columns=['rank', 'rank_sort']), on=['id'])
 labels_league_standings = data_league_standings.columns
 
-league_ids = ['1217918', '1218670']
-league_names = ['The league of Leith', 'The old office Vs no AI']
+league_ids = ['1217918', '1218670', '342405']
+league_names = ['The league of Leith', 'The old office Vs no AI', 'Cairn Energy Primera Liga']
 
 email = 'speeder1987@gmail.com'
 password = 'Footb@ll2020'
@@ -1773,8 +1773,8 @@ def update_aggregate_figure_ycol(aggregate_column_target,
 #     return fig
 
 
-if __name__ == '__main__':
-    app.run_server(debug=False, host='192.168.0.36', port=8051)
-
 # if __name__ == '__main__':
-#     app.run_server(debug=True, port=8051)
+#     app.run_server(debug=False, host='192.168.0.36', port=8051)
+
+if __name__ == '__main__':
+    app.run_server(debug=True, port=8051)
