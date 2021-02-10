@@ -363,11 +363,12 @@ def calculate_player_points(player_form_1, player_form_2, player_cpt, triple_cap
 
     total_points = player_form_1 + player_form_2
 
-    if player_cpt[0] == 'CPT' and triple_captain is False:
-        total_points = total_points * 2
+    if len(player_cpt) > 0:
+        if player_cpt[-1] == 'CPT' and triple_captain is False:
+            total_points = total_points * 2
 
-    if player_cpt[0] == 'CPT' and triple_captain is True:
-        total_points = total_points * 3
+        if player_cpt[-1] == 'CPT' and triple_captain is True:
+            total_points = total_points * 3
 
     return total_points
 
@@ -2216,6 +2217,9 @@ def compute_button(n_clicks,
     player_cpt_gw1 = [player_1_1_cpt, player_1_2_cpt, player_1_3_cpt, player_1_4_cpt, player_1_5_cpt, player_1_6_cpt,
                       player_1_7_cpt, player_1_8_cpt, player_1_9_cpt, player_1_10_cpt, player_1_11_cpt, player_1_12_cpt,
                       player_1_13_cpt, player_1_14_cpt, player_1_15_cpt]
+
+    print(player_1_5_cpt, player_1_7_cpt)
+    print(player_cpt_gw1)
 
     player_form_gw2_g1 = [player_2_1_1_form, player_2_1_2_form, player_2_1_3_form, player_2_1_4_form, player_2_1_5_form,
                           player_2_1_6_form, player_2_1_7_form, player_2_1_8_form, player_2_1_9_form, player_2_1_10_form,
