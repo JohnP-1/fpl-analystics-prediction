@@ -1805,6 +1805,9 @@ class DataLoader(DLH.DataLoaderHistoric):
         model_db = self.one_hot_encode(model_db, 'element_type', drop=False)
 
         model_db['points_next'] = 0
+        model_db['points_next_mean3'] = 0
+        model_db['points_next_mean4'] = 0
+        model_db['points_next_mean5'] = 0
         unique_ids = model_db['unique_id'].unique()
 
         team_stats = team_stats.drop(columns=['team_name'])
@@ -1813,9 +1816,9 @@ class DataLoader(DLH.DataLoaderHistoric):
         team_stats = team_stats.drop(columns=['team_id_against'])
         team_stats = team_stats.drop(columns=['team_unique_id_against'])
         team_stats = team_stats.drop(columns=['against_position'])
-        team_stats = team_stats.drop(columns=['win'])
-        team_stats = team_stats.drop(columns=['draw'])
-        team_stats = team_stats.drop(columns=['loss'])
+        # team_stats = team_stats.drop(columns=['win'])
+        # team_stats = team_stats.drop(columns=['draw'])
+        # team_stats = team_stats.drop(columns=['loss'])
         team_stats = team_stats.drop(columns=['team_score'])
         team_stats = team_stats.drop(columns=['team_concede'])
         team_stats = team_stats.drop(columns=['total_wins'])
@@ -1850,6 +1853,9 @@ class DataLoader(DLH.DataLoaderHistoric):
             # player_data_temp = player_data_temp[player_data_temp['round']<player_data_temp['round'].max()].sort_values('round')
             for i in range(player_data_temp.shape[0]-1):
                 player_data_temp['points_next'].iloc[i] = player_data_temp['total_points'].iloc[i+1]
+                player_data_temp['points_next_mean3'].iloc[i] = player_data_temp['mean_total_points_any_3'].iloc[i+1]
+                player_data_temp['points_next_mean4'].iloc[i] = player_data_temp['mean_total_points_any_4'].iloc[i+1]
+                player_data_temp['points_next_mean5'].iloc[i] = player_data_temp['mean_total_points_any_5'].iloc[i+1]
 
             model_db_list.append(player_data_temp)
 
@@ -1860,7 +1866,7 @@ class DataLoader(DLH.DataLoaderHistoric):
 
         for i in range(model_db.shape[0]):
             model_db_row = model_db.iloc[i, :]
-            row_round = model_db_row['round']+1
+            row_round = model_db_row['round'] + 1
             row_season = model_db_row['season']
             row_team = model_db_row['team_id']
             team_stats_row = team_stats[(team_stats['round']==row_round) & (team_stats['season']==row_season) & (team_stats['team_id']==row_team)]
@@ -1885,6 +1891,9 @@ class DataLoader(DLH.DataLoaderHistoric):
         columns_final.remove('next_fixture_played')
         columns_final.remove('team_unique_id')
         columns_final.remove('team_id')
+        # columns_final.remove('round.1')
+        # columns_final.remove('team_id.1')
+        # columns_final.remove('season.1')
 
         for column in columns:
             if column.split('_')[0] == 'range' or column.split('_')[0] == 'std' or column.split('_')[0] == 'se':
