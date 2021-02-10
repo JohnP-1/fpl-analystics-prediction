@@ -10950,8 +10950,8 @@ def select_transfers_gw4_p15(transfer_tick,
 
     return (player_options)
 
-if __name__ == '__main__':
-    app.run_server(debug=False)
-
 # if __name__ == '__main__':
-#     app.run_server(debug=False, host='192.168.0.36', port=8050)
+#     app.run_server(debug=False)
+
+if __name__ == '__main__':
+    app.run_server(debug=False, host='192.168.0.45', port=8050)
