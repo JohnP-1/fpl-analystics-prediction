@@ -1773,8 +1773,8 @@ def update_aggregate_figure_ycol(aggregate_column_target,
 #     return fig
 
 
-# if __name__ == '__main__':
-#     app.run_server(debug=False, host='192.168.0.45', port=8051)
-
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8051)
+    app.run_server(debug=False, host='192.168.0.45', port=8051)
+
+# if __name__ == '__main__':
+#     app.run_server(debug=True, port=8051)
