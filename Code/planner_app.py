@@ -156,7 +156,7 @@ def determine_player_team_form(team_stats, team_unique_id):
             max_matches = matches
             max_match_idx = i
 
-    team_form = team_form['team_form_all_5'].iloc[max_match_idx]
+    team_form = team_form['team_form_all_10'].iloc[max_match_idx]
 
     return team_form
 
@@ -176,12 +176,12 @@ def determine_player_fixtures(fixture_data, team_codes, team_id, round_next):
             if fixtures_team['team_h'].iloc[i] == team_id:
                 was_home.append('H')
                 opposition.append(determine_player_team_code_id(team_codes, fixtures_team['team_a'].iloc[i]))
-                odds_win.append('{0:.2f}'.format(fixtures_team['home_odds_win_4'].iloc[i]))
+                odds_win.append('{0:.2f}'.format(fixtures_team['home_odds_win_10'].iloc[i]))
                 fixture_diff.append(fixtures_team['team_h_difficulty'].iloc[i])
             else:
                 was_home.append('A')
                 opposition.append(determine_player_team_code_id(team_codes, fixtures_team['team_h'].iloc[i]))
-                odds_win.append('{0:.2f}'.format(fixtures_team['away_odds_win_4'].iloc[i]))
+                odds_win.append('{0:.2f}'.format(fixtures_team['away_odds_win_10'].iloc[i]))
                 fixture_diff.append(fixtures_team['team_a_difficulty'].iloc[i])
 
 
